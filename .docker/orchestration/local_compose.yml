@@ -1,0 +1,142 @@
+---
+version: "3.8"
+
+services:
+  mailhog:
+    hostname: mailhog
+    environment:
+      TIMEZONE: "${TIMEZONE}"
+    image: compucorp/mailhog:v1.0.1
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: "128M"
+
+  #https://hub.docker.com/_/mariadb/
+  db:
+    hostname: db
+    environment:
+      TIMEZONE: "${TIMEZONE}"
+      MARIADB_ROOT_PASSWORD: "${DRUPAL_DB_PASS}"
+      IMPORT_DRUPAL_DB_NAME: "${DRUPAL_DB_NAME}"
+      IMPORT_CIVICRM_DB_NAME: "${CIVICRM_DB_NAME}"
+    image: mariadb:10.3
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: "256M"
+    volumes:
+      - type: bind
+        source: '${SITE_PATH}/sqlimport'
+        target: '/tmp/import'
+      - type: bind
+        source: '${SITE_PATH}/httpdocs/.docker/bind_mounts/mariadb/'
+        target: '/docker-entrypoint-initdb.d'
+      # Optional Volume to automatically import Drupal and Civi Databases
+      - type: bind
+        source: '${SITE_PATH}/mariadb/'
+        target: '/var/lib/mysql'
+
+  redis:
+    hostname: redis
+    environment:
+      TIMEZONE: "${TIMEZONE}"
+    image: compucorp/redis:alpine3.14
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: "128M"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  nginx:
+    hostname: nginx
+    ports:
+      - "${HTTP_PORT}:80"
+    environment:
+      NEW_UID: "${NEW_UID}"
+      NEW_GID: "${NEW_GID}"
+      TIMEZONE: "${TIMEZONE}"
+      CC_ENV: "${CC_ENV}"
+    image: "${NGINX_IMAGE}"
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: "128M"
+    volumes:
+      - type: bind
+        source: '${SITE_PATH}/httpdocs'
+        target: '/var/www/default/htdocs/httpdocs'
+      - type: bind
+        source: '${SITE_PATH}/private_files'
+        target: '/var/www/default/htdocs/private_files'
+      # nested volumes might break
+      - type: bind
+        source: '${SITE_PATH}/public_files'
+        target: '/var/www/default/htdocs/httpdocs/sites/default/files'
+
+  #https://github.com/devilbox/docker-php-fpm
+  php:
+    hostname: php
+    environment:
+      NEW_UID: "${NEW_UID}"
+      NEW_GID: "${NEW_GID}"
+      TIMEZONE: "${TIMEZONE}"
+      CC_ENV: "${CC_ENV}"
+      USE_HTTPS: "${USE_HTTPS}"
+      SITE_URL: "${SITE_URL}"
+      SITE_NAME: "${SITE_NAME}"
+      DRUPAL_DB_NAME: "${DRUPAL_DB_NAME}"
+      DRUPAL_DB_USER: "${DRUPAL_DB_USER}"
+      DRUPAL_DB_PASS: "${DRUPAL_DB_PASS}"
+      DRUPAL_DB_HOST: "${DRUPAL_DB_HOST}"
+      DRUPAL_DB_PORT: "${DRUPAL_DB_PORT}"
+      CIVICRM_DB_NAME: "${CIVICRM_DB_NAME}"
+      CIVICRM_DB_USER: "${CIVICRM_DB_USER}"
+      CIVICRM_DB_PASS: "${CIVICRM_DB_PASS}"
+      CIVICRM_DB_HOST: "${CIVICRM_DB_HOST}"
+      CIVICRM_DB_PORT: "${CIVICRM_DB_PORT}"
+      DRUPAL_HASH_SALT: "${DRUPAL_HASH_SALT}"
+      CIVICRM_SITE_KEY: "${CIVICRM_SITE_KEY}"
+      STRIPE_GBP_FIXED_FEE: "${STRIPE_GBP_FIXED_FEE}"
+      STRIPE_GBP_PERCENTAGE_FEE: "${STRIPE_GBP_PERCENTAGE_FEE}"
+      STRIPE_USD_FIXED_FEE: "${STRIPE_USD_FIXED_FEE}"
+      STRIPE_USD_PERCENTAGE_FEE: "${STRIPE_USD_PERCENTAGE_FEE}"
+      STRIPE_EUR_FIXED_FEE: "${STRIPE_EUR_FIXED_FEE}"
+      STRIPE_EUR_PERCENTAGE_FEE: "${STRIPE_EUR_PERCENTAGE_FEE}"
+      STRIPE_CHF_FIXED_FEE: "${STRIPE_CHF_FIXED_FEE}"
+      STRIPE_CHF_PERCENTAGE_FEE: "${STRIPE_CHF_PERCENTAGE_FEE}"
+      STRIPE_LIVE_PK: "${STRIPE_LIVE_PK}"
+      STRIPE_LIVE_SK: "${STRIPE_LIVE_SK}"
+      STRIPE_TEST_PK: "${STRIPE_TEST_PK}"
+      STRIPE_TEST_SK: "${STRIPE_TEST_SK}"
+    image: "${PHP_IMAGE}"
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "1"
+          memory: "512M"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - redis
+      - db
+    volumes:
+      - type: bind
+        source: '${SITE_PATH}/httpdocs'
+        target: '/var/www/default/htdocs/httpdocs'
+      - type: bind
+        source: '${SITE_PATH}/private_files'
+        target: '/var/www/default/htdocs/private_files'
+      - type: bind
+        source: '${SITE_PATH}/public_files'
+        target: '/var/www/default/htdocs/httpdocs/sites/default/files'

@@ -1,0 +1,150 @@
+---
+version: "3.8"
+
+services:
+{% if env_vars.CC_ENV != "production" %}
+  mailhog:
+    hostname: mailhog
+    environment:
+      TIMEZONE: "${TIMEZONE}"
+    image: compucorp/mailhog:v1.0.1
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: "128M"
+    # ignored for docker swarm
+    depends_on:
+      - php
+    networks:
+      - default
+
+{% endif %}
+  redis:
+    hostname: redis
+    environment:
+      TIMEZONE: "${TIMEZONE}"
+    image: compucorp/redis:alpine3.14
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: "128M"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - default
+
+  nginx:
+    hostname: nginx
+    environment:
+      CC_ENV: "${CC_ENV}"
+      NEW_UID: "${NEW_UID}"
+      NEW_GID: "${NEW_GID}"
+      TIMEZONE: "${TIMEZONE}"
+    image: "${NGINX_IMAGE}"
+    deploy:
+      labels:
+        - traefik.http.routers.{{ site_stack_name }}_nginx.tls=true
+{% if not self_signed %}
+        - traefik.http.routers.{{ site_stack_name }}_nginx.tls.certresolver=LetsEncryptProduction
+{% else %}
+        - traefik.http.routers.{{ site_stack_name }}_nginx.tls.certresolver=LetsEncrypt..Dev ?? WHAT HAPPENS IN THIS CASE ??
+{% endif %}
+        - traefik.http.routers.{{ site_stack_name }}_nginx.rule=Host(`${SITE_URL}`)
+{% if basic_auth is defined %}
+        ### HTTP Basic Authentication ###
+        # Create the basic auth middleware
+        - traefik.http.middlewares.{{ site_stack_name }}_auth.basicauth.users={{ basic_auth | join (",") }}
+        # Remove the basic http headers before sending traffic to the backend service
+        - traefik.http.middlewares.{{ site_stack_name }}_auth.basicauth.removeheader=false
+        # Apply the basic auth middleware:
+        - traefik.http.routers.{{ site_stack_name }}_nginx.middlewares={{ site_stack_name }}_auth@docker
+{% endif %}
+        - traefik.http.services.{{ site_stack_name }}_nginx.loadbalancer.server.port=80
+        - traefik.docker.network=proxy
+        - traefik.enable=true
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1"
+          memory: "128M"
+    # ignored for docker swarm
+    depends_on:
+      - php
+    volumes:
+      - type: bind
+        source: '${SITE_PATH}/files'
+        target: '/var/www/default/htdocs/httpdocs/sites/default/files'
+      - type: bind
+        source: '${SITE_PATH}/private_files'
+        target: '/var/www/default/htdocs/private_files'
+    networks:
+      - proxy
+      - default
+
+  php:
+    hostname: php
+    environment:
+      ## TODO: I don't like how this is not from env file. How will the devs know?
+      ## I'm not sure if it's OK to tell them to edit both this and the local one
+      SITE_URL: "${SITE_URL}"
+      CC_ENV: "${site.env_vars.cc_env}"
+      NEW_UID: "${NEW_UID}"
+      NEW_GID: "${NEW_GID}"
+      TIMEZONE: "${TIMEZONE}"
+      USE_HTTPS: "${USE_HTTPS}"
+      SITE_NAME: "${SITE_NAME}"
+      DRUPAL_DB_NAME: "${DRUPAL_DB_NAME}"
+      DRUPAL_DB_USER: "${DRUPAL_DB_USER}"
+      DRUPAL_DB_PASS: "${DRUPAL_DB_PASS}"
+      DRUPAL_DB_HOST: "${DRUPAL_DB_HOST}"
+      DRUPAL_DB_PORT: "${DRUPAL_DB_PORT}"
+      CIVICRM_DB_NAME: "${CIVICRM_DB_NAME}"
+      CIVICRM_DB_USER: "${CIVICRM_DB_USER}"
+      CIVICRM_DB_PASS: "${CIVICRM_DB_PASS}"
+      CIVICRM_DB_HOST: "${CIVICRM_DB_HOST}"
+      CIVICRM_DB_PORT: "${CIVICRM_DB_PORT}"
+      DRUPAL_HASH_SALT: "${DRUPAL_HASH_SALT}"
+      CIVICRM_SITE_KEY: "${CIVICRM_SITE_KEY}"
+      STRIPE_GBP_FIXED_FEE: "${STRIPE_GBP_FIXED_FEE}"
+      STRIPE_GBP_PERCENTAGE_FEE: "${STRIPE_GBP_PERCENTAGE_FEE}"
+      STRIPE_USD_FIXED_FEE: "${STRIPE_USD_FIXED_FEE}"
+      STRIPE_USD_PERCENTAGE_FEE: "${STRIPE_USD_PERCENTAGE_FEE}"
+      STRIPE_EUR_FIXED_FEE: "${STRIPE_EUR_FIXED_FEE}"
+      STRIPE_EUR_PERCENTAGE_FEE: "${STRIPE_EUR_PERCENTAGE_FEE}"
+      STRIPE_CHF_FIXED_FEE: "${STRIPE_CHF_FIXED_FEE}"
+      STRIPE_CHF_PERCENTAGE_FEE: "${STRIPE_CHF_PERCENTAGE_FEE}"
+      STRIPE_LIVE_PK: "${STRIPE_LIVE_PK}"
+      STRIPE_LIVE_SK: "${STRIPE_LIVE_SK}"
+      STRIPE_TEST_PK: "${STRIPE_TEST_PK}"
+      STRIPE_TEST_SK: "${STRIPE_TEST_SK}"
+    image: "${PHP_IMAGE}"
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "1"
+          memory: "512M"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # ignored for docker swarm
+    depends_on:
+      - redis
+    volumes:
+      - type: bind
+        source: '${SITE_PATH}/files'
+        target: '/var/www/default/htdocs/httpdocs/sites/default/files'
+      - type: bind
+        source: '${SITE_PATH}/private_files'
+        target: '/var/www/default/htdocs/private_files'
+    networks:
+      - default
+
+networks:
+  default:
+  proxy:
+    external: true
+
