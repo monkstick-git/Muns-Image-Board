@@ -96,25 +96,50 @@ class file
       $FileName = $this->mysql->safe($this->FileName);
       $Owner = $this->mysql->safe($this->Owner);
       $this->mysql->query("
-        INSERT INTO `files` 
-          (`content`, `filetype`, `created`, `modified`, `size`, `name`, `owner`)
+        INSERT INTO `files-metadata` 
+          (`filetype`, `created`, `modified`, `size`, `name`, `owner`)
         VALUES
-          ('$content', '$FileType', '$created', '$modified', '$FileSize', '$FileName', '$Owner');
+          ( '$FileType', '$created', '$modified', '$FileSize', '$FileName', '$Owner');
       ");
+
+      # Chunk $content into 1024000 byte (1mb) $chunks
+      $chunks = str_split($content, 1024000);
+      # Get the last insert ID
+      $FileID = $this->mysql->insert_id();
+      # Loop through each chunk
+      foreach ($chunks as $index => $chunk) {
+        $created = $this->mysql->safe(date("Y-m-d H:i:s"));
+        # Insert the chunk
+        $this->mysql->query("
+          INSERT INTO `files-chunk` 
+            (`file_id`, `chunk`, `chunk_no`, `created`)
+          VALUES
+            ('$FileID', '$chunk', '$index', '$created');
+        ");
+      }
     }
   }
 
   public function get($id)
   {
-    $data = $this->mysql->query("SELECT * FROM `files` WHERE `id` = '$id'");
+    $data = $this->mysql->query("SELECT * FROM `files-metadata` WHERE `id` = '$id'");
     $data = $data->fetch_assoc();
-    $this->content = ($this->unblob($data['content']));
+    #$this->content = ($this->unblob($data['content']));
     $this->filetype = $data['filetype'];
     $this->created = $data['created'];
     $this->modified = $data['modified'];
     $this->size = $data['size'];
     $this->FileName = $data['name'];
     $this->owner = $data['owner'];
+
+    # loop over chunks in DB
+    $chunks = $this->mysql->query("SELECT * FROM `files-chunk` WHERE `file_id` = '$id'");
+    $chunks = $chunks->fetch_all(MYSQLI_ASSOC);
+    $chunks = array_map(function ($chunk) {
+      return $chunk['chunk'];
+    }, $chunks);
+    $chunks = implode("", $chunks);
+    $this->content = $this->unblob($chunks);
   }
 
   public function delete()
@@ -125,7 +150,7 @@ class file
   {
     $id = $this->mysql->safe($id);
     $FileType = $this->mysql->safe($FileType);
-    $data = $this->mysql->query("SELECT `id` FROM `files` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $Sorting");
+    $data = $this->mysql->query("SELECT `id` FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $Sorting");
     $files = array();
     while ($row = $data->fetch_assoc()) {
       $files[] = $row;

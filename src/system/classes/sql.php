@@ -26,12 +26,17 @@ class sql
   {
     $this->connect();
     try {
+      logger($query);
       $result = ($this->mysql->query($query));
       return $result;
     } catch (Exception $e) {
       logger($e->getMessage());
       return false;
     }
+  }
+
+  public function insert_id(){
+    return $this->mysql->insert_id; 
   }
 
   public function safe($str)

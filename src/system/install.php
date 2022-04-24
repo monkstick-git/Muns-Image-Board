@@ -22,15 +22,24 @@ $mysql->query("CREATE TABLE IF NOT EXISTS `users` (
 $mysql->query("INSERT INTO `users` (`id`, `username`, `password`, `email`, `name`, `surname`, `role`, `active`, `created`, `modified`) VALUES
 (1, 'admin', '" . password_hash("admin", PASSWORD_DEFAULT) . "', 'monkstick@gmail.com', 'Monk', 'Stick', 'admin', 1, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "');");
 
-# Create Files Table with blob field
-$mysql->query("CREATE TABLE IF NOT EXISTS `files` (
+# Create Files Metadata Table
+$mysql->query("CREATE TABLE IF NOT EXISTS `files-metadata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255),
   `filetype` varchar(255),
   `size` int(11),
-  `content` longblob,
   `created` datetime,
   `modified` datetime,
   `owner` int(11),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
+
+# Create Files Chunk Table with foreign key to files-metadata
+$mysql->query("CREATE TABLE IF NOT EXISTS `files-chunk` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `file_id` int(11),
+  `chunk` longblob,
+  `chunk_no` int(11),
+  `created` datetime,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
