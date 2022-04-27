@@ -8,15 +8,17 @@ $template = '
 
 foreach ($FileArray as $fileKey => $fileValue) {
   $fileID = $fileValue['id'];
-  $fileURL = "/Site/View?id=$fileID";
+  $fileType = explode("/",($fileValue['filetype']))[1];
+  $thumbnailfileURL = "/images/thumbnail/$fileID.$fileType";
+  $fileURL = "/images/raw/$fileID.$fileType";
   $file = new file();
-  $file->get($fileID);
+  $file->loadMinimal($fileID);
   $fileName = $file->FileName;
   $modified = $file->modified;
   $template .= "
 <div class='col-md-4'>
 <div class='card mb-4 box-shadow'>
-  <a href='$fileURL'><img class='card-img-top lazyload' data-src='$fileURL' alt='Thumbnail' style='width: 100%; display: block;' src='https://cdn.dribbble.com/users/3251/screenshots/470914/aah.gif' data-holder-rendered='true' lazyload='on'></a>
+  <a href='$fileURL'><img class='card-img-top lazyload' data-src='$thumbnailfileURL' alt='Thumbnail' style='width: 100%; display: block;' src='https://cdn.dribbble.com/users/3251/screenshots/470914/aah.gif' data-holder-rendered='true' lazyload='on'></a>
   <div class='card-body'>
     <p class='card-text'>$fileName</p>
     <div class='d-flex justify-content-between align-items-center'>

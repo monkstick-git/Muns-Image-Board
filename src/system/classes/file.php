@@ -12,6 +12,7 @@ class file
   public $mysql;
   public $encoded;
   public $decoded;
+  public $thummbnail;
 
   public function __construct()
   {
@@ -62,6 +63,22 @@ class file
     }
   }
 
+  public function CreateImageThumbNail(){
+    $src = $this->unblob($this->encoded);
+    $image = imagecreatefromstring($src);
+    $width = imagesx($image);
+    $height = imagesy($image);
+    $new_width = ($width / 6);
+    $new_height = ($height / 6);
+    $tmp_img = imagecreatetruecolor($new_width, $new_height);
+    imagecopyresampled($tmp_img, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+    ob_start();
+    imagejpeg($tmp_img);
+    $image_string = ob_get_contents();
+    ob_end_clean();
+    return ($image_string);
+  }
+
   public function loadObjectFromUpload($UploadObject)
   {
     # Encode File
@@ -83,6 +100,9 @@ class file
     $this->Created = date("Y-m-d H:i:s");
     # Set Modified Date
     $this->Modified = date("Y-m-d H:i:s");
+
+    # CreateImageThumbNail
+    $this->thumbnail = $this->CreateImageThumbNail();
   }
 
   public function save()
@@ -101,11 +121,11 @@ class file
         VALUES
           ( '$FileType', '$created', '$modified', '$FileSize', '$FileName', '$Owner');
       ");
-
       # Chunk $content into 1024000 byte (1mb) $chunks
       $chunks = str_split($content, 1024000);
       # Get the last insert ID
       $FileID = $this->mysql->insert_id();
+      $this->FileID = $FileID;
       # Loop through each chunk
       foreach ($chunks as $index => $chunk) {
         $created = $this->mysql->safe(date("Y-m-d H:i:s"));
@@ -117,7 +137,27 @@ class file
             ('$FileID', '$chunk', '$index', '$created');
         ");
       }
+
+      # Insert Thumbnail
+      $thumbnail = $this->mysql->safe($this->blob($this->thumbnail));
+      $this->mysql->query("
+        INSERT INTO `files-thumbnail` 
+          (`file_id`, `thumbnail`)
+        VALUES
+          ('$FileID', '$thumbnail');");
     }
+  }
+
+  public function loadMinimal($id){
+    $data = $this->mysql->query("SELECT filetype,created,modified,size,name,owner FROM `files-metadata` WHERE `id` = '$id'");
+    $data = $data->fetch_assoc();
+    #$this->content = ($this->unblob($data['content']));
+    $this->filetype = $data['filetype'];
+    $this->created = $data['created'];
+    $this->modified = $data['modified'];
+    $this->size = $data['size'];
+    $this->FileName = $data['name'];
+    $this->owner = $data['owner'];
   }
 
   public function get($id)
@@ -140,6 +180,12 @@ class file
     }, $chunks);
     $chunks = implode("", $chunks);
     $this->content = $this->unblob($chunks);
+
+    # Get Thumbnail
+    $thumbnail = $this->mysql->query("SELECT * FROM `files-thumbnail` WHERE `file_id` = '$id'");
+    $thumbnail = $thumbnail->fetch_assoc();
+    $this->thumbnail = $this->unblob($thumbnail['thumbnail']);
+    #print_r($this->thummbnail);
   }
 
   public function delete()
@@ -159,6 +205,20 @@ class file
     return $files;
 
   }
+
+  public function get_files_by_owner($id, $FileType = "image", $Sorting = "`modified` DESC")
+  {
+    $id = $this->mysql->safe($id);
+    $FileType = $this->mysql->safe($FileType);
+    $data = $this->mysql->query("SELECT * FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $Sorting");
+    $files = array();
+    while ($row = $data->fetch_assoc()) {
+      $files[] = $row;
+    }
+
+    return $files;
+
+  }  
 
   public function get_owner($id)
   {

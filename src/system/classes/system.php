@@ -9,4 +9,10 @@ class system {
         header("Location: $location");
     }
 
+    public function beAuthenticated(){
+        if(!isset($_SESSION['User'])){
+            $this->redirect('/User/login');
+        }
+    }
+
 }

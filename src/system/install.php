@@ -8,6 +8,7 @@ $mysql->query("CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `api` varchar(255) NOT NULL UNIQUE,
   `email` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
   `surname` varchar(255) NOT NULL,
@@ -15,6 +16,7 @@ $mysql->query("CREATE TABLE IF NOT EXISTS `users` (
   `active` tinyint(1) NOT NULL,
   `created` datetime NOT NULL,
   `modified` datetime NOT NULL,
+  `bio` text,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
 
@@ -41,5 +43,13 @@ $mysql->query("CREATE TABLE IF NOT EXISTS `files-chunk` (
   `chunk` longblob,
   `chunk_no` int(11),
   `created` datetime,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
+
+# Create thumbnail Table
+$mysql->query("CREATE TABLE IF NOT EXISTS `files-thumbnail` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `file_id` int(11),
+  `thumbnail` longblob,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
