@@ -187,7 +187,7 @@ Use this space to list resources you find helpful and would like to give credit 
 [issues-shield]: https://img.shields.io/github/issues/monkstick-git/Muns-Image-Board.svg?style=for-the-badge
 [issues-url]: https://github.com/monkstick-git/Muns-Image-Board/issues
 [license-shield]: https://img.shields.io/github/license/monkstick-git/Muns-Image-Board.svg?style=for-the-badge
-[license-url]: https://github.com/monkstick-git/Muns-Image-Board/blob/master/LICENSE.txt
+[license-url]: https://github.com/monkstick-git/Muns-Image-Board/blob/master/LICENSE
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/kieron-davies-882107169/
 [product-screenshot]: images/screenshot.png
