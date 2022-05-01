@@ -35,6 +35,7 @@ class render
         mt('send', 'pageview');
     </script>
         ";
+        $this->render_template('footer');
         $this->buffer .= "</body></html>";
         echo $this->buffer;
     }

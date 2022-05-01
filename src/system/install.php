@@ -27,6 +27,7 @@ $mysql->query("INSERT INTO `users` (`id`, `username`, `password`, `email`, `name
 # Create Files Metadata Table
 $mysql->query("CREATE TABLE IF NOT EXISTS `files-metadata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `hash` varchar(255) NOT NULL,
   `name` varchar(255),
   `filetype` varchar(255),
   `size` int(11),

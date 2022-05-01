@@ -22,21 +22,57 @@ class sql
     $this->mysql->set_charset('utf8');
   }
 
-  public function query($query)
+  public function query($query, $cache = true, $ttl = 3600)
   {
+    $return = array();
+    #echo $query . "<br>";
     $this->connect();
     try {
-      logger($query);
-      $result = ($this->mysql->query($query));
-      return $result;
+      global $system;
+      $result = "";
+      if ($cache == true) {
+        $cachedData = $system->cache_get($query);
+        if ($cachedData) {
+          $return = unserialize($cachedData);
+        } else {
+          logger("Query: $query");
+          $result = ($this->mysql->query($query));
+          $return = array();
+          if ($this->mysql->insert_id) {
+          } else {
+            while ($row = $result->fetch_assoc()) {
+              $return[] = $row;
+            }
+            if ($cache == true) {
+              $system->cache($query, serialize($return), $ttl);
+            }
+          }
+        }
+        #logger(print_r($result, true));
+      } else {
+        $result = ($this->mysql->query($query));
+        if ($this->mysql->insert_id) {
+        } else {
+          $return = array();
+          while ($row = $result->fetch_assoc()) {
+            $return[] = $row;
+          }
+          if ($cache == true) {
+            $system->cache($query, serialize($return));
+          }
+        }
+      }
+
+      return $return;
     } catch (Exception $e) {
       logger($e->getMessage());
       return false;
     }
   }
 
-  public function insert_id(){
-    return $this->mysql->insert_id; 
+  public function insert_id()
+  {
+    return $this->mysql->insert_id;
   }
 
   public function safe($str)

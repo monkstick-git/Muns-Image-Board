@@ -6,11 +6,11 @@ define('ROOT', "/var/www/default/htdocs/httpdocs/");
 require_once ROOT . '/system/settings.php';
 require_once ROOT . '/system/functions.php';
 
-# Include Classes
-require_once ROOT . '/system/classes/sql.php';
-require_once ROOT . '/system/classes/user.php';
-require_once ROOT . '/system/classes/file.php';
-require_once ROOT . '/system/classes/system.php';
+# Include all .php files in the system/classes/ directory
+$classes = glob(ROOT . '/system/classes/*.php');
+foreach($classes as $class){
+  require_once $class;
+}
 
 global $mysql;
 $mysql = new sql(

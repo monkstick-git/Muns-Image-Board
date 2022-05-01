@@ -1,18 +1,24 @@
 <?php
 # Define Root Path
 define('ROOT', "/var/www/default/htdocs/httpdocs/");
+require_once ROOT . '/vendor/autoload.php';
+$redis = new Predis\Client('tcp://redis:6379');
+
 
 # Include Settings and core Functions
 require_once ROOT . '/system/settings.php';
 require_once ROOT . '/system/functions.php';
 
-# Include Classes
-require_once ROOT . '/system/classes/renderer.php';
-require_once ROOT . '/system/classes/sql.php';
-require_once ROOT . '/system/classes/user.php';
-require_once ROOT . '/system/classes/file.php';
-require_once ROOT . '/system/classes/system.php';
+#require_once ROOT . '/vendor/predis/autoload.php';
 
+# Include all .php files in the system/classes/ directory
+$classes = glob(ROOT . '/system/classes/*.php');
+foreach($classes as $class){
+  require_once $class;
+}
+if(false == isset($_SESSION['cache'])){
+  $_SESSION['cache'] = array();
+}
 global $mysql;
 $mysql = new sql(
   $settings['databases']['default']['host'],
@@ -23,7 +29,7 @@ $mysql = new sql(
 
 global $system;
 $system = new system();
-
+logger("System Loaded");
 session_start();
 
 $whitelisted_pages = array('/User/login', '/User/register', '/User/logout');

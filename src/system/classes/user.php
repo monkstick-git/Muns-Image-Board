@@ -11,9 +11,22 @@ class user
   public $loggedIn = false;
   public $Datecreated;
   public $bio;
+  public $apiKey;
 
   public function __construct()
   {
+  }
+
+  public function is_admin(){
+    global $mysql;
+    $query = $mysql->query("SELECT `role` FROM `users` WHERE `id` = '$this->id'");
+    $query = $query[0];
+    if($query['role'] == "admin"){
+      return true;
+    }else{
+      return false;
+    }
+    return false;
   }
 
   public function get_user_by_api($api)
@@ -21,7 +34,7 @@ class user
     global $mysql;
     $id = $mysql->safe($api);
     $id = $mysql->query("SELECT * FROM `users` WHERE `api` = '$id'");
-    $result = $id->fetch_assoc();
+    $result = $id[0];
     $this->id = $result['id'];
     $this->name = $result['name'];
     $this->surname = $result['surname'];
@@ -30,24 +43,29 @@ class user
     $this->password = $result['password'];
     $this->Datecreated = $result['created'];
     $this->bio = $result['bio'];
-    $this->api = $result['api'];
+    $this->apiKey = $result['api'];
   }
 
   public function get_user_by_id($id)
   {
-    global $mysql;
-    $id = $mysql->safe($id);
-    $id = $mysql->query("SELECT * FROM `users` WHERE `id` = '$id'");
-    $result = $id->fetch_assoc();
-    $this->id = $result['id'];
-    $this->name = $result['name'];
-    $this->surname = $result['surname'];
-    $this->email = $result['email'];
-    $this->username = $result['username'];
-    $this->password = $result['password'];
-    $this->Datecreated = $result['created'];
-    $this->bio = $result['bio'];
-    $this->api = $result['api'];
+    if (isset($id)) {
+        global $mysql;
+        $id = $mysql->safe($id);
+        $id = $mysql->query("SELECT * FROM `users` WHERE `id` = '$id'");
+        $result = $id[0];
+        $this->id = $result['id'];
+        $this->name = $result['name'];
+        $this->surname = $result['surname'];
+        $this->email = $result['email'];
+        $this->username = $result['username'];
+        $this->password = $result['password'];
+        $this->Datecreated = $result['created'];
+        $this->bio = $result['bio'];
+        $this->apiKey = $result['api'];
+    }else{
+      logger("Trying to get ID of NULL");
+      die;
+    }
   }
 
   public function generate_api_key(){
@@ -64,7 +82,7 @@ class user
 
     # If insert was successful, get the user id
     if ($result) {
-      $this->get_user_by_id($mysql->insert_id);
+      $this->get_user_by_id($mysql->insert_id());
       return true;
     } else {
       logger("Error creating user: " . $mysql->error);
@@ -102,7 +120,7 @@ class user
     global $mysql;
     $Username = $mysql->safe($Username);
     $Username = $mysql->query("SELECT * FROM `users` WHERE `username` = '$Username'");
-    $result = $Username->fetch_assoc();
+    $result = $Username[0];
     $this->id = $result['id'];
     $this->name = $result['name'];
     $this->surname = $result['surname'];
@@ -111,7 +129,7 @@ class user
     $this->password = $result['password'];
     $this->Datecreated = $result['created'];
     $this->bio = $result['bio'];
-    $this->api = $result['api'];
+    $this->apiKey = $result['api'];
   }
 
   public function login(){
@@ -130,7 +148,7 @@ class user
     global $mysql;
     $id = $mysql->safe($this->id);
     $id = $mysql->query("SELECT SUM(`size`) AS `size` FROM `files-metadata` WHERE `owner` = '$id'");
-    $result = $id->fetch_assoc();
+    $result = $id[0];
     return $result['size'];
   }
 
@@ -138,7 +156,7 @@ class user
     global $mysql;
     $id = $mysql->safe($this->id);
     $id = $mysql->query("SELECT COUNT(`id`) AS `count` FROM `files-metadata` WHERE `owner` = '$id'");
-    $result = $id->fetch_assoc();
+    $result = $id[0];
     return $result['count'];
   }
 }

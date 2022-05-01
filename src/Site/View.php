@@ -23,9 +23,10 @@ if ( (isset($_GET['type']))  ) {
 
 if(isset($fileID)){
   $id = $fileID;
+  #$id = 'a754dde58a9d283901db01a4a75b5a0a';
 }
-$file = new file();
-$file->get($id);
+$file = new image();
+$file->get_by_hash($id);
 
 if ($type == 'thumbnail') {
   $content = $file->thumbnail;

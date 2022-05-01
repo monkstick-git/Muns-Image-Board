@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Creates a File Object
+ */
 class file
 {
   public $FileID;
@@ -13,34 +16,54 @@ class file
   public $encoded;
   public $decoded;
   public $thummbnail;
+  public $FileHash;
 
+  /**
+   * Constructor
+   */
   public function __construct()
   {
     global $mysql;
     $this->mysql = $mysql;
   }
 
+  /**
+   * Download a file from a URL.
+   * This is commonly used to load via an upload
+   *
+   * @param string $url
+   * @return binary
+   */
   public function get_file_from_url($url)
   {
-    # Download file from URL
     $file = file_get_contents($url);
     return $file;
   }
 
-  # Returns base64 + compressed blob
+  /**
+   * Convert string / binary to compressed base64
+   *
+   * @param string $data
+   * @return string
+   */
   public function blob($data)
   {
     # Get size of $data
     $this->FileSize = strlen($data);
     # Compress the data
-    $data = gzcompress($data);
+    $data = gzcompress($data, 1);
     # Base64 encode the data (convert to binary)
     $data = base64_encode($data);
     # Return the data
     return $data;
   }
 
-  # Returns uncompressed + decoded base64 blob
+  /**
+   * base64 decode and uncompress data
+   *
+   * @param string $data
+   * @return string
+   */
   public function unblob($data)
   {
     # Base64 decode the data
@@ -51,6 +74,11 @@ class file
     return $data;
   }
 
+  /**
+   * Test if loaded data is a valid image
+   *
+   * @return boolean
+   */
   public function validateImage()
   {
     $content = $this->unblob($this->encoded);
@@ -63,35 +91,41 @@ class file
     }
   }
 
-  public function CreateImageThumbNail(){
-    $src = $this->unblob($this->encoded);
-    $image = imagecreatefromstring($src);
-    $width = imagesx($image);
-    $height = imagesy($image);
-    $new_width = ($width / 6);
-    $new_height = ($height / 6);
-    $tmp_img = imagecreatetruecolor($new_width, $new_height);
-    imagecopyresampled($tmp_img, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
-    ob_start();
-    imagejpeg($tmp_img);
-    $image_string = ob_get_contents();
-    ob_end_clean();
-    return ($image_string);
-  }
-
-  public function loadObjectFromUpload($UploadObject)
+  /**
+   * Get file extension from a path
+   *
+   * @param string $path
+   * @return string $mime
+   */
+  public function getObjectType($path)
   {
-    # Encode File
-    $this->encoded = $this->blob(file_get_contents($UploadObject['tmp_name']));
-
-    if (!$this->validateImage($this->encoded)) {
-      return false;
+    $mime = mime_content_type($path);
+    # Convert certain filetypes to better names
+    $conversionTable = array(
+      "image/x-ms-bmp" => "image/bmp",
+      "image/x-windows-bmp" => "image/bmp",
+      "image/jpeg" => "image/jpg",
+      "image/pjpeg" => "image/jpg"
+    );
+    if (array_key_exists($mime, $conversionTable)) {
+      $mime = $conversionTable[$mime];
     }
 
+    # Return the mime type of the file
+    return $mime;
+  }
+
+  /**
+   * Load file from a path
+   * @param mixed $UploadObject
+   * @return void
+   */
+  public function loadObjectFromUpload($UploadObject)
+  {
     # Set Owner
     $this->Owner = $GLOBALS['User']->id;
     # Set FileType
-    $this->FileType = $UploadObject['type'];
+    $this->FileType = $this->getObjectType($UploadObject['tmp_name']);
     # Set FileName
     $this->FileName = $UploadObject['name'];
     # Set FileSize
@@ -100,13 +134,19 @@ class file
     $this->Created = date("Y-m-d H:i:s");
     # Set Modified Date
     $this->Modified = date("Y-m-d H:i:s");
-
-    # CreateImageThumbNail
-    $this->thumbnail = $this->CreateImageThumbNail();
+    # Set file hash
+    $this->FileHash = md5(file_get_contents($UploadObject['tmp_name']));
+    # Set FilePath
+    $this->FilePath = $UploadObject['tmp_name'];
   }
 
+
+  /**
+   * Save file to database
+   */
   public function save()
   {
+    $this->encoded = $this->blob(file_get_contents($this->FilePath));
     if ($this->encoded) {
       $content = $this->mysql->safe($this->encoded);
       $FileType = $this->mysql->safe($this->FileType);
@@ -115,12 +155,13 @@ class file
       $FileSize = $this->mysql->safe($this->FileSize);
       $FileName = $this->mysql->safe($this->FileName);
       $Owner = $this->mysql->safe($this->Owner);
+      $FileHash = $this->mysql->safe($this->FileHash);
       $this->mysql->query("
         INSERT INTO `files-metadata` 
-          (`filetype`, `created`, `modified`, `size`, `name`, `owner`)
+          (`filetype`, `created`, `modified`, `size`, `name`, `owner`, `hash`)
         VALUES
-          ( '$FileType', '$created', '$modified', '$FileSize', '$FileName', '$Owner');
-      ");
+          ( '$FileType', '$created', '$modified', '$FileSize', '$FileName', '$Owner', '$FileHash' );
+      ", false);
       # Chunk $content into 1024000 byte (1mb) $chunks
       $chunks = str_split($content, 1024000);
       # Get the last insert ID
@@ -135,22 +176,18 @@ class file
             (`file_id`, `chunk`, `chunk_no`, `created`)
           VALUES
             ('$FileID', '$chunk', '$index', '$created');
-        ");
+        ", false);
       }
-
-      # Insert Thumbnail
-      $thumbnail = $this->mysql->safe($this->blob($this->thumbnail));
-      $this->mysql->query("
-        INSERT INTO `files-thumbnail` 
-          (`file_id`, `thumbnail`)
-        VALUES
-          ('$FileID', '$thumbnail');");
     }
   }
 
-  public function loadMinimal($id){
-    $data = $this->mysql->query("SELECT filetype,created,modified,size,name,owner FROM `files-metadata` WHERE `id` = '$id'");
-    $data = $data->fetch_assoc();
+  /**
+   * Load Minimal File Metadata from database
+   * @param hash $hash
+   */
+  public function loadMinimal($hash)
+  {
+    $data = ($this->mysql->query("SELECT filetype,created,modified,size,name,owner FROM `files-metadata` WHERE `hash` = '$hash'", true))[0];
     #$this->content = ($this->unblob($data['content']));
     $this->filetype = $data['filetype'];
     $this->created = $data['created'];
@@ -160,21 +197,29 @@ class file
     $this->owner = $data['owner'];
   }
 
+  /**
+   * Loads a file from the database
+   *
+   * @param int $id
+   * @return void
+   */
   public function get($id)
   {
-    $data = $this->mysql->query("SELECT * FROM `files-metadata` WHERE `id` = '$id'");
-    $data = $data->fetch_assoc();
-    #$this->content = ($this->unblob($data['content']));
+    $data = $this->mysql->query("SELECT * FROM `files-metadata` WHERE `id` = '$id'", true);
+    $data = $data[0];
     $this->filetype = $data['filetype'];
     $this->created = $data['created'];
     $this->modified = $data['modified'];
     $this->size = $data['size'];
     $this->FileName = $data['name'];
     $this->owner = $data['owner'];
-
+    $this->FileID = $id;
+    $this->FileHash = $data['hash'];
+    $this->FileType = $data['filetype'];
+    
     # loop over chunks in DB
-    $chunks = $this->mysql->query("SELECT * FROM `files-chunk` WHERE `file_id` = '$id'");
-    $chunks = $chunks->fetch_all(MYSQLI_ASSOC);
+    $chunks = $this->mysql->query("SELECT * FROM `files-chunk` WHERE `file_id` = '$id'", true);
+    $chunks = ($chunks);
     $chunks = array_map(function ($chunk) {
       return $chunk['chunk'];
     }, $chunks);
@@ -182,43 +227,107 @@ class file
     $this->content = $this->unblob($chunks);
 
     # Get Thumbnail
-    $thumbnail = $this->mysql->query("SELECT * FROM `files-thumbnail` WHERE `file_id` = '$id'");
-    $thumbnail = $thumbnail->fetch_assoc();
+    $thumbnail = $this->mysql->query("SELECT * FROM `files-thumbnail` WHERE `file_id` = '$id'", true);
+    $thumbnail = $thumbnail[0];
     $this->thumbnail = $this->unblob($thumbnail['thumbnail']);
     #print_r($this->thummbnail);
   }
 
+  /**
+   * Loads a file from the database
+   *
+   * @param hash $hash
+   * @return void
+   */
+  public function get_by_hash($hash)
+  {
+    $hash = $this->mysql->safe($hash);
+    $id = $this->mysql->query("SELECT * FROM `files-metadata` WHERE `hash` = '$hash'", true);
+    $fileID = ($id[0]['id']);
+    $this->get($fileID);
+  }
+
+  /**
+   * Delete a file from the database
+   */
   public function delete()
   {
   }
 
+
+  /**
+   * Get a list of all file ID's a user owns
+   * @param int $id
+   * @param string $FileType
+   * @param string $Sorting 'modified' DESC, 'created' ASC, 'size' DESC
+   * @return array $files
+   */
   public function get_files_ids_by_owner($id, $FileType = "image", $Sorting = "`modified` DESC")
   {
     $id = $this->mysql->safe($id);
     $FileType = $this->mysql->safe($FileType);
-    $data = $this->mysql->query("SELECT `id` FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $Sorting");
+    $data = $this->mysql->query("SELECT `id` FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $Sorting", true, 5);
     $files = array();
-    while ($row = $data->fetch_assoc()) {
-      $files[] = $row;
+    foreach ($data as $key => $value) {
+      $files[] =  $value;
     }
 
     return $files;
-
   }
 
-  public function get_files_by_owner($id, $FileType = "image", $Sorting = "`modified` DESC")
+  /**
+   * Get a list of all files a user owns
+   * @param int $id UserID
+   * @param string $FileType
+   * @param string $Sorting 'modified' DESC, 'created' ASC, 'size' DESC
+   * @param int $limit default 100
+   * @return array $files
+   */
+  public function get_files_by_owner($id, $FileType = "image", $Sorting = "`modified` DESC", $limit = 100)
   {
     $id = $this->mysql->safe($id);
     $FileType = $this->mysql->safe($FileType);
-    $data = $this->mysql->query("SELECT * FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $Sorting");
+    $limitString = "LIMIT $limit";
+    $data = $this->mysql->query("SELECT * FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $Sorting $limitString", true, 5);
+
     $files = array();
-    while ($row = $data->fetch_assoc()) {
-      $files[] = $row;
+    foreach ($data as $key => $value) {
+      $files[] = $value;
+    }
+
+
+    return $files;
+  }
+
+  public function get_all_owners_files($FileType = "image", $Sorting = "`modified` DESC", $limit = 100)
+  {
+    $FileType = $this->mysql->safe($FileType);
+    $limitString = "LIMIT $limit";
+    $data = $this->mysql->query("SELECT * FROM `files-metadata` WHERE `filetype` LIKE '%$FileType%' ORDER BY $Sorting $limitString", true, 5);
+    $files = array();
+    foreach ($data as $key => $value) {
+      $files[] =  $value;
     }
 
     return $files;
+  }
 
-  }  
+  public function count_total_items($id, $FileType = "image")
+  {
+    if ($id === "all") {
+      $query = "SELECT COUNT(*) FROM `files-metadata` WHERE `filetype` LIKE '%$FileType%'";
+    } else {
+      $query = "SELECT COUNT(*) FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%'";
+    }
+    $id = $this->mysql->safe($id);
+    $FileType = $this->mysql->safe($FileType);
+    $data = $this->mysql->query($query, true, 5);
+    return $data[0]['COUNT(*)'];
+  }
+
+  public function get_file_details()
+  {
+  }
 
   public function get_owner($id)
   {
