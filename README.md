@@ -88,7 +88,8 @@ Features:
 ```bash
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
-git clone git@github.com:monkstick-git/Muns-Image-Board.git
+git clone https://github.com/monkstick-git/Muns-Image-Board
+cd Muns-Image-Board
 mkdir mysql-data
 cd ./src
 docker run --rm --interactive --tty --volume $PWD:/app composer install
