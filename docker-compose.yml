@@ -30,7 +30,7 @@ services:
     hostname: nginx
     ports:
       - "8080:80"
-    image: "compucorp/nginx-waf:1.21.4-owasp3.2.0"
+    image: "bit3/nginx-waf:latest"
     restart: always    
     deploy:
       replicas: 1
@@ -46,10 +46,10 @@ services:
         source: "/home/kdavies/projects/Muns-Image-Board/src"
         target: "/var/www/default/htdocs/httpdocs/"
       - type: bind
-        source: "/home/kdavies/projects/Muns-Image-Board/site.conf"
+        source: "/home/kdavies/projects/Muns-Image-Board/docker-configs/site.conf"
         target: "/etc/nginx/conf.d/default.conf"
       - type: bind
-        source: "/home/kdavies/projects/Muns-Image-Board/nginx.conf"
+        source: "/home/kdavies/projects/Muns-Image-Board/docker-configs/nginx.conf"
         target: "/etc/nginx/nginx.conf"
 
   php:
@@ -74,5 +74,5 @@ services:
         source: "/home/kdavies/projects/Muns-Image-Board/src"
         target: "/var/www/default/htdocs/httpdocs/"
       - type: bind
-        source: "/home/kdavies/projects/Muns-Image-Board/custom-php"
+        source: "/home/kdavies/projects/Muns-Image-Board/docker-configs/custom-php"
         target: "/etc/php-custom.d"

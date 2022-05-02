@@ -3,7 +3,7 @@ $FileArray = $arguments['FileArray'];
 
 $adminMenu = $arguments['adminMenu'];
 $template = '
-<div class="album py-5 bg-light">
+<div class="container album py-5 bg-light">
   <div class="container">
     <div class="row">
 ';
@@ -34,7 +34,7 @@ foreach ($FileArray as $key => $value) {
   $template .= "
 <div class='col-md-4'>
 <div class='card mb-4 box-shadow'>
-  <a href='$fileURL'><img class='card-img-top lazyload ' data-src='$thumbnailfileURL' alt='Thumbnail' style='width: 100%; ' src='https://cdn.dribbble.com/users/3251/screenshots/470914/aah.gif' data-holder-rendered='true' lazyload='on'></a>
+  <a href='$fileURL'><img class='card-img-top lazyload ' data-src='$thumbnailfileURL' alt='Thumbnail' style='height: 100%; ' src='https://cdn.dribbble.com/users/3251/screenshots/470914/aah.gif' data-holder-rendered='true' lazyload='on'></a>
   <div class='card-body'>
     <p class='card-text'>$fileName</p>
     <div class='d-flex justify-content-between align-items-center'>

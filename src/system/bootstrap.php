@@ -21,15 +21,35 @@ if(false == isset($_SESSION['cache'])){
 }
 global $mysql;
 $mysql = new sql(
-  $settings['databases']['default']['host'],
-  $settings['databases']['default']['user'],
-  $settings['databases']['default']['pass'],
-  $settings['databases']['default']['name']
+  $settings['databases']['writer']['host'],
+  $settings['databases']['writer']['user'],
+  $settings['databases']['writer']['pass'],
+  $settings['databases']['writer']['name']
 );
+
+global $mysql_slaves;
+$mysql_slaves = new sql_slaves();
+
+foreach($settings['databases']['slaves'] as $slave){
+  
+   $FormattedHost = array (
+    "host" => $slave['host'],
+    "user" => $slave['user'],
+    "pass" => $slave['pass'],
+    "name" => $slave['name']
+  );
+  $mysql_slaves->addHost($FormattedHost);
+}
 
 global $system;
 $system = new system();
 logger("System Loaded");
+// session_set_cookie_params([
+//   'path' => '/',
+//   'domain' => $_SERVER['HTTP_HOST'],
+//   'httponly' => true,
+//   'samesite' => 'lax'
+// ]);
 session_start();
 
 $whitelisted_pages = array('/User/login', '/User/register', '/User/logout');

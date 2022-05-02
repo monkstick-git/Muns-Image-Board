@@ -18,8 +18,8 @@ class user
   }
 
   public function is_admin(){
-    global $mysql;
-    $query = $mysql->query("SELECT `role` FROM `users` WHERE `id` = '$this->id'");
+    global $mysql_slaves;
+    $query = $mysql_slaves->query("SELECT `role` FROM `users` WHERE `id` = '$this->id'");
     $query = $query[0];
     if($query['role'] == "admin"){
       return true;
@@ -31,9 +31,9 @@ class user
 
   public function get_user_by_api($api)
   {
-    global $mysql;
-    $id = $mysql->safe($api);
-    $id = $mysql->query("SELECT * FROM `users` WHERE `api` = '$id'");
+    global $mysql_slaves;
+    $id = $mysql_slaves->safe($api);
+    $id = $mysql_slaves->query("SELECT * FROM `users` WHERE `api` = '$id'");
     $result = $id[0];
     $this->id = $result['id'];
     $this->name = $result['name'];
@@ -49,9 +49,9 @@ class user
   public function get_user_by_id($id)
   {
     if (isset($id)) {
-        global $mysql;
-        $id = $mysql->safe($id);
-        $id = $mysql->query("SELECT * FROM `users` WHERE `id` = '$id'");
+        global $mysql_slaves;
+        $id = $mysql_slaves->safe($id);
+        $id = $mysql_slaves->query("SELECT * FROM `users` WHERE `id` = '$id'");
         $result = $id[0];
         $this->id = $result['id'];
         $this->name = $result['name'];
@@ -105,9 +105,9 @@ class user
 
   public function check_if_username_exists($Username)
   {
-    global $mysql;
-    $Username = $mysql->safe($Username);
-    $Username = $mysql->query("SELECT * FROM `users` WHERE `username` = '$Username'");
+    global $mysql_slaves;
+    $Username = $mysql_slaves->safe($Username);
+    $Username = $mysql_slaves->query("SELECT * FROM `users` WHERE `username` = '$Username'");
     if ($Username->num_rows > 0) {
       return true;
     } else {
@@ -117,9 +117,9 @@ class user
 
   public function get_user_by_username($Username)
   {
-    global $mysql;
-    $Username = $mysql->safe($Username);
-    $Username = $mysql->query("SELECT * FROM `users` WHERE `username` = '$Username'");
+    global $mysql_slaves;
+    $Username = $mysql_slaves->safe($Username);
+    $Username = $mysql_slaves->query("SELECT * FROM `users` WHERE `username` = '$Username'");
     $result = $Username[0];
     $this->id = $result['id'];
     $this->name = $result['name'];
@@ -145,17 +145,17 @@ class user
   }
 
   public function getSpaceUsed(){
-    global $mysql;
-    $id = $mysql->safe($this->id);
-    $id = $mysql->query("SELECT SUM(`size`) AS `size` FROM `files-metadata` WHERE `owner` = '$id'");
+    global $mysql_slaves;
+    $id = $mysql_slaves->safe($this->id);
+    $id = $mysql_slaves->query("SELECT SUM(`size`) AS `size` FROM `files-metadata` WHERE `owner` = '$id'");
     $result = $id[0];
     return $result['size'];
   }
 
   public function getImageCount(){
-    global $mysql;
-    $id = $mysql->safe($this->id);
-    $id = $mysql->query("SELECT COUNT(`id`) AS `count` FROM `files-metadata` WHERE `owner` = '$id'");
+    global $mysql_slaves;
+    $id = $mysql_slaves->safe($this->id);
+    $id = $mysql_slaves->query("SELECT COUNT(`id`) AS `count` FROM `files-metadata` WHERE `owner` = '$id'");
     $result = $id[0];
     return $result['count'];
   }

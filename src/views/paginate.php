@@ -3,8 +3,8 @@
 $page  = $arguments['page'];
 $pages = $arguments['pages'];
 $template = '
-<span class="fixed-bottom">
-<nav aria-label="test" class="">
+<div class="container">
+<div class="row">
 <ul class="pagination justify-content-center row" style="margin: auto">
 ';
 
@@ -18,7 +18,7 @@ for ($i = 1; $i <= $pages; $i++) {
 }
 
 $template .= "
+</div>
+</div>
 </ul>
-</nav>
-</span>
 ";

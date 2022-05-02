@@ -1,5 +1,6 @@
 {
   "require": {
-      "predis/predis": "1.1.10"
+      "predis/predis": "1.1.10",
+      "twbs/bootstrap": "4.1.3"
   }
 }

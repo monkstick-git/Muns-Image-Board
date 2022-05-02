@@ -22,6 +22,7 @@ $MenuItems = array(
 
 
 $template = '
+<header>
 <nav class="navbar navbar-expand-md navbar-dark bg-dark">
       <a class="navbar-brand" href="#">MunBoard</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,5 +90,7 @@ $template .= '
 </ul>
 </div>
 </nav>
+</header>
+<main role="main" class="main">
 ';
 

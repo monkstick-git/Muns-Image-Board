@@ -35,5 +35,4 @@ if ($type == 'thumbnail') {
 }
 #$content = $file->thumbnail;
 header("Content-Type: $file->filetype");
-
 echo $content;

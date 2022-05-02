@@ -13,6 +13,7 @@ class file
   public $FilePath;
   public $Owner;
   public $mysql;
+  public $mysql_slave;
   public $encoded;
   public $decoded;
   public $thummbnail;
@@ -25,6 +26,8 @@ class file
   {
     global $mysql;
     $this->mysql = $mysql;
+    global $mysql_slaves;
+    $this->mysql_slave = $mysql_slaves;
   }
 
   /**
@@ -187,7 +190,7 @@ class file
    */
   public function loadMinimal($hash)
   {
-    $data = ($this->mysql->query("SELECT filetype,created,modified,size,name,owner FROM `files-metadata` WHERE `hash` = '$hash'", true))[0];
+    $data = ($this->mysql_slave->query("SELECT filetype,created,modified,size,name,owner FROM `files-metadata` WHERE `hash` = '$hash'", true))[0];
     #$this->content = ($this->unblob($data['content']));
     $this->filetype = $data['filetype'];
     $this->created = $data['created'];
@@ -205,7 +208,7 @@ class file
    */
   public function get($id)
   {
-    $data = $this->mysql->query("SELECT * FROM `files-metadata` WHERE `id` = '$id'", true);
+    $data = $this->mysql_slave->query("SELECT * FROM `files-metadata` WHERE `id` = '$id'", true);
     $data = $data[0];
     $this->filetype = $data['filetype'];
     $this->created = $data['created'];
@@ -218,7 +221,7 @@ class file
     $this->FileType = $data['filetype'];
     
     # loop over chunks in DB
-    $chunks = $this->mysql->query("SELECT * FROM `files-chunk` WHERE `file_id` = '$id'", true);
+    $chunks = $this->mysql_slave->query("SELECT * FROM `files-chunk` WHERE `file_id` = '$id'", true);
     $chunks = ($chunks);
     $chunks = array_map(function ($chunk) {
       return $chunk['chunk'];
@@ -227,7 +230,7 @@ class file
     $this->content = $this->unblob($chunks);
 
     # Get Thumbnail
-    $thumbnail = $this->mysql->query("SELECT * FROM `files-thumbnail` WHERE `file_id` = '$id'", true);
+    $thumbnail = $this->mysql_slave->query("SELECT * FROM `files-thumbnail` WHERE `file_id` = '$id'", true);
     $thumbnail = $thumbnail[0];
     $this->thumbnail = $this->unblob($thumbnail['thumbnail']);
     #print_r($this->thummbnail);
@@ -241,8 +244,8 @@ class file
    */
   public function get_by_hash($hash)
   {
-    $hash = $this->mysql->safe($hash);
-    $id = $this->mysql->query("SELECT * FROM `files-metadata` WHERE `hash` = '$hash'", true);
+    $hash = $this->mysql_slave->safe($hash);
+    $id = $this->mysql_slave->query("SELECT * FROM `files-metadata` WHERE `hash` = '$hash'", true);
     $fileID = ($id[0]['id']);
     $this->get($fileID);
   }
@@ -264,9 +267,9 @@ class file
    */
   public function get_files_ids_by_owner($id, $FileType = "image", $Sorting = "`modified` DESC")
   {
-    $id = $this->mysql->safe($id);
-    $FileType = $this->mysql->safe($FileType);
-    $data = $this->mysql->query("SELECT `id` FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $Sorting", true, 5);
+    $id = $this->mysql_slave->safe($id);
+    $FileType = $this->mysql_slave->safe($FileType);
+    $data = $this->mysql_slave->query("SELECT `id` FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $Sorting", true, 5);
     $files = array();
     foreach ($data as $key => $value) {
       $files[] =  $value;
@@ -285,10 +288,10 @@ class file
    */
   public function get_files_by_owner($id, $FileType = "image", $Sorting = "`modified` DESC", $limit = 100)
   {
-    $id = $this->mysql->safe($id);
-    $FileType = $this->mysql->safe($FileType);
+    $id = $this->mysql_slave->safe($id);
+    $FileType = $this->mysql_slave->safe($FileType);
     $limitString = "LIMIT $limit";
-    $data = $this->mysql->query("SELECT * FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $Sorting $limitString", true, 5);
+    $data = $this->mysql_slave->query("SELECT * FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $Sorting $limitString", true, 5);
 
     $files = array();
     foreach ($data as $key => $value) {
@@ -301,9 +304,9 @@ class file
 
   public function get_all_owners_files($FileType = "image", $Sorting = "`modified` DESC", $limit = 100)
   {
-    $FileType = $this->mysql->safe($FileType);
+    $FileType = $this->mysql_slave->safe($FileType);
     $limitString = "LIMIT $limit";
-    $data = $this->mysql->query("SELECT * FROM `files-metadata` WHERE `filetype` LIKE '%$FileType%' ORDER BY $Sorting $limitString", true, 5);
+    $data = $this->mysql_slave->query("SELECT * FROM `files-metadata` WHERE `filetype` LIKE '%$FileType%' ORDER BY $Sorting $limitString", true, 5);
     $files = array();
     foreach ($data as $key => $value) {
       $files[] =  $value;
@@ -319,9 +322,9 @@ class file
     } else {
       $query = "SELECT COUNT(*) FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%'";
     }
-    $id = $this->mysql->safe($id);
-    $FileType = $this->mysql->safe($FileType);
-    $data = $this->mysql->query($query, true, 5);
+    $id = $this->mysql_slave->safe($id);
+    $FileType = $this->mysql_slave->safe($FileType);
+    $data = $this->mysql_slave->query($query, true, 5);
     return $data[0]['COUNT(*)'];
   }
 

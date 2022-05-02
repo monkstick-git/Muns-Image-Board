@@ -1,5 +1,7 @@
 <?php
-$template = '
+ob_start();
+?>
+
 <!doctype html>
 <html lang="en">
 
@@ -15,26 +17,27 @@ $template = '
   <!-- Bootstrap core JavaScript
   ================================================== -->
   <!-- Placed at the end of the document so the pages load faster -->
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-  <script>window.jQuery || document.write(\'<script src="/assets/js/jquery-slim.min.js"><\/script>\')</script>
-  <script src="/assets/js/popper.min.js"></script>
-  <script src="/assets/js/bootstrap/bootstrap.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="/vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
   <!-- Bootstrap core CSS -->
-  <link href="/assets/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+  <link href="/vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Custom styles for this template -->
   <link href="//vjs.zencdn.net/7.10.2/video-js.min.css" rel="stylesheet">
   <script src="//vjs.zencdn.net/7.10.2/video.min.js"></script>
   <style type="text/css">
-      table {
-          border: 2px #2b2b2b solid;
-          width: 1280px;
-          height: 10%;
-          max-height: 640px;
-          min-height: 640px;
-          background-color: #fbfbfb;
-      }
+    table {
+      border: 2px #2b2b2b solid;
+      width: 1280px;
+      height: 10%;
+      max-height: 640px;
+      min-height: 640px;
+      background-color: #fbfbfb;
+    }
 
-      td,
+    td,
     th {
       border: 2px #2b2b2b solid;
       text-align: center;
@@ -42,6 +45,8 @@ $template = '
   </style>
   <title>MunBoard</title>
 </head>
+<body>
 
-<body class="text-center">
-';
+<?php
+$template=ob_get_contents();
+ob_end_clean();
