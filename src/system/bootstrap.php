@@ -69,9 +69,14 @@ if ((isset($_SESSION['logged_in']) == true)) {
   $GLOBALS['User'] = $User;
 }
 
+if($_REQUEST['api'] == true){
+
+}else{
 # Site Layout
 $Buffer = "";
 # Site Header gets rendered on construction.
 $render = new render();
+}
+
 
 
