@@ -47,7 +47,7 @@ class image extends file
       parent::save();
       # Insert Thumbnail
       $thumbnail = $this->mysql->safe($this->blob($this->thumbnail));
-      $this->mysql->query("
+      $this->mysql->insert("
         INSERT INTO `files-thumbnail` 
           (`file_id`, `thumbnail`)
         VALUES
