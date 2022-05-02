@@ -1,4 +1,5 @@
 <?php include './system/bootstrap.php';
+ob_clean();
 
 if (isset($_FILES['data'])) {
   if (isset($_REQUEST['api'])) {
