@@ -93,6 +93,7 @@ cd Muns-Image-Board
 mkdir mysql-data
 cd ./src
 docker run --rm --interactive --tty --volume $PWD:/app composer install
+cd ../
 docker-compose up -d
 ```
 
