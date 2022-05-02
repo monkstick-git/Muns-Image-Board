@@ -22,6 +22,27 @@ class sql
     $this->mysql->set_charset('utf8');
   }
 
+  public function insert($query)
+  {
+    # Inserts should never be cached
+    $return = false;
+    $this->connect();
+    try {
+      $result = "";
+      $this->mysql->query($query);
+      if ($this->mysql->insert_id) {
+        return $this->mysql->insert_id;
+      } else {
+        $return = true;
+      }
+
+      return $return;
+    } catch (Exception $e) {
+      logger($e->getMessage());
+      return false;
+    }
+  }
+
   public function query($query, $cache = true, $ttl = 3600)
   {
     $return = array();

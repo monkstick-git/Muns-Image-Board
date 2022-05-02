@@ -4,7 +4,7 @@ include 'bootstrap.php';
 # and inserts the default data.
 
 # Create Users Table
-$mysql->query("CREATE TABLE IF NOT EXISTS `users` (
+$mysql->insert("CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
@@ -20,12 +20,14 @@ $mysql->query("CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
 
+$tmpUser = new user();
+$api = $tmpUser->generate_api_key();
 # Create default admin user
-$mysql->query("INSERT INTO `users` (`id`, `username`, `password`, `email`, `name`, `surname`, `role`, `active`, `created`, `modified`) VALUES
-(1, 'admin', '" . password_hash("admin", PASSWORD_DEFAULT) . "', 'monkstick@gmail.com', 'Monk', 'Stick', 'admin', 1, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "');");
+$mysql->insert("INSERT INTO `users` (`id`, `username`, `password`, `api`, `email`, `name`, `surname`, `role`, `active`, `created`, `modified`) VALUES
+(1, 'admin', '" . password_hash("admin", PASSWORD_DEFAULT) . "','$api', 'monkstick@gmail.com', 'Monk', 'Stick', 'admin', 1, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "');");
 
 # Create Files Metadata Table
-$mysql->query("CREATE TABLE IF NOT EXISTS `files-metadata` (
+$mysql->insert("CREATE TABLE IF NOT EXISTS `files-metadata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `hash` varchar(255) NOT NULL,
   `name` varchar(255),
@@ -38,7 +40,7 @@ $mysql->query("CREATE TABLE IF NOT EXISTS `files-metadata` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
 
 # Create Files Chunk Table with foreign key to files-metadata
-$mysql->query("CREATE TABLE IF NOT EXISTS `files-chunk` (
+$mysql->insert("CREATE TABLE IF NOT EXISTS `files-chunk` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `file_id` int(11),
   `chunk` longblob,
@@ -48,9 +50,18 @@ $mysql->query("CREATE TABLE IF NOT EXISTS `files-chunk` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
 
 # Create thumbnail Table
-$mysql->query("CREATE TABLE IF NOT EXISTS `files-thumbnail` (
+$mysql->insert("CREATE TABLE IF NOT EXISTS `files-thumbnail` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `file_id` int(11),
   `thumbnail` longblob,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
+
+# Create the Updates Table
+$mysql->insert("CREATE TABLE IF NOT EXISTS `updates` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `version` varchar(255) NOT NULL,
+  `description` text,
+  `created` datetime NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1", false);

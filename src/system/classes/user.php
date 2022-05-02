@@ -12,6 +12,7 @@ class user
   public $Datecreated;
   public $bio;
   public $apiKey;
+  public $role;
 
   public function __construct()
   {

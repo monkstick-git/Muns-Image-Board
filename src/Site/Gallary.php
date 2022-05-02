@@ -41,5 +41,6 @@ $render->render_template('image-gallary', array(
 
 $render->render_template('paginate', array(
   'page' => $page,
-  'pages' => $totalPages
+  'pages' => $totalPages,
+  'url' => "/Site/Gallary?page="
 ));

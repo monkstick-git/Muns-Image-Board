@@ -21,28 +21,19 @@ class system
         }
     }
 
-    // public function cache($input, $data)
-    // {
-    //     $id = base64_encode($input);
-    //     if (isset($_SESSION['cache'][$id])) {
-    //     } else {
-    //         logger("Adding to cache: $input");
-    //         #$this->cache[$id] = $data;
-    //         $_SESSION['cache'][$id] = $data;
-    //     }
-    // }
-
-    // public function cache_get($query)
-    // {
-    //     $id = base64_encode($query);
-    //     if (isset($_SESSION['cache'][$id])) {
-    //         $cached_Obj = $_SESSION['cache'][$id];
-    //         logger("Returning from cache: $id");
-    //         #logger(print_r($cached_Obj, true));
-    //         return $cached_Obj;
-    //     } else {
-    //     }
-    // }
+    public function beAdmin()
+    {
+        if (!isset($_SESSION['User'])) {
+            $this->redirect('/User/login');
+        }
+        if($GLOBALS['User']->is_admin() == false){
+            # return not authorized header
+            header('HTTP/1.0 403 Forbidden');
+            return false;
+        }else{
+            return true;
+        }
+    }
 
     public function cache($input, $data, $ttl = 60)
     {
