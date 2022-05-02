@@ -79,11 +79,12 @@ class user
     $Username = $mysql->safe($this->username);
     $Password =  password_hash($this->password, PASSWORD_DEFAULT);
     $apiKey = $mysql->safe($this->generate_api_key());
-    $result = $mysql->query("INSERT INTO `users` (`username`, `password`, `api`, `email`, `name`, `surname`, `role`, `active`, `created`, `modified`) VALUES ('$Username', '$Password', '$apiKey', 'null', 'null', 'null', 'user', 1, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "');");
+    $result = $mysql->insert("INSERT INTO `users` (`username`, `password`, `api`, `email`, `name`, `surname`, `role`, `active`, `created`, `modified`) VALUES ('$Username', '$Password', '$apiKey', 'null', 'null', 'null', 'user', 1, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "');");
 
     # If insert was successful, get the user id
     if ($result) {
-      $this->get_user_by_id($mysql->insert_id());
+      logger("Registered new user $result ⚠️⚠️⚠️");
+      $this->get_user_by_id($result);
       return true;
     } else {
       logger("Error creating user: " . $mysql->error);
@@ -107,9 +108,10 @@ class user
   public function check_if_username_exists($Username)
   {
     global $mysql_slaves;
+
     $Username = $mysql_slaves->safe($Username);
-    $Username = $mysql_slaves->query("SELECT * FROM `users` WHERE `username` = '$Username'");
-    if ($Username->num_rows > 0) {
+    $Username = $mysql_slaves->query("SELECT * FROM `users` WHERE `username` = '$Username'", false);
+    if (count($Username) > 0) {
       return true;
     } else {
       return false;
