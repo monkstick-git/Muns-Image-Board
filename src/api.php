@@ -18,18 +18,33 @@ if (isset($_FILES['data'])) {
         $image->thumbnail = $image->CreateImageThumbNail();
         $image->save();
         $type = explode("/", $image->FileType)[1];
-        
+
         ob_clean();
         ob_start();
-        echo "https://xn--tu8h.foo.wales/images/raw/" . $image->FileHash . "." . $type;
+        echo $settings['site_url'] . "images/raw/" . $image->FileHash . "." . $type . "?api=1";
         header("Content-Type: $image->FileType");
         #header("Content-Length: " . ob_get_length());
         ob_end_flush();
         die;
       } else {
-        http_response_code(400);
-        echo "Only images are allowed to be uploaded to the API";
+        $exploded = explode(".", $_FILES['data']['name']);
+        $count = count($exploded);
+        $fileTypeGuess =  $exploded[$count - 1];
+        #die;
+        $file = new file();
+        $file->loadObjectFromUpload($_FILES['data']);
+        $file->save();
+        $type = $fileTypeGuess; #explode("/", $file->FileType)[1];
+        ob_clean();
+        ob_start();
+        echo $settings['site_url'] . "Site/download/" . $file->FileHash . "." . $type . "?api=1";
+        header("Content-Type: $file->FileType");
+        #die;
       }
+    }else{
+      # Throw Unauthorised
+      header("HTTP/1.0 401 Unauthorized");
+      die;
     }
   }
 } else {

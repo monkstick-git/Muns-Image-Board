@@ -112,6 +112,11 @@ class file
     );
     if (array_key_exists($mime, $conversionTable)) {
       $mime = $conversionTable[$mime];
+    }else{
+      $exploded = explode(".", $path);
+      $count = count($exploded);
+      $fileTypeGuess =  $exploded[$count - 1];
+      $mime = $fileTypeGuess;
     }
 
     # Return the mime type of the file

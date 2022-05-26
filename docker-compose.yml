@@ -2,7 +2,6 @@
 version: "3.8"
 
 services:
-
   redis:
     image: redis:alpine
     deploy:
@@ -31,7 +30,7 @@ services:
     ports:
       - "8080:80"
     image: "bit3/nginx-waf:latest"
-    restart: always    
+    restart: always
     deploy:
       replicas: 1
       resources:
