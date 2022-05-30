@@ -23,14 +23,12 @@ if (isset($_FILES['data'])) {
         ob_start();
         echo $settings['site_url'] . "images/raw/" . $image->FileHash . "." . $type . "?api=1";
         header("Content-Type: $image->FileType");
-        #header("Content-Length: " . ob_get_length());
         ob_end_flush();
         die;
       } else {
         $exploded = explode(".", $_FILES['data']['name']);
         $count = count($exploded);
         $fileTypeGuess =  $exploded[$count - 1];
-        #die;
         $file = new file();
         $file->loadObjectFromUpload($_FILES['data']);
         $file->save();
@@ -39,9 +37,8 @@ if (isset($_FILES['data'])) {
         ob_start();
         echo $settings['site_url'] . "Site/download/" . $file->FileHash . "." . $type . "?api=1";
         header("Content-Type: $file->FileType");
-        #die;
       }
-    }else{
+    } else {
       # Throw Unauthorised
       header("HTTP/1.0 401 Unauthorized");
       die;

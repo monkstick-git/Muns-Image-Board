@@ -108,7 +108,14 @@ class file
       "image/x-ms-bmp" => "image/bmp",
       "image/x-windows-bmp" => "image/bmp",
       "image/jpeg" => "image/jpg",
-      "image/pjpeg" => "image/jpg"
+      "image/pjpeg" => "image/jpg",
+      "image/png" => "image/png",
+      "image/gif" => "image/gif",
+      "image/tiff" => "image/tiff",
+      "image/x-tiff" => "image/tiff",
+      "image/x-targa" => "image/tga",
+      "image/x-tga" => "image/tga",
+      "image/x-bmp" => "image/bmp"
     );
     if (array_key_exists($mime, $conversionTable)) {
       $mime = $conversionTable[$mime];
@@ -134,6 +141,7 @@ class file
     $this->Owner = $GLOBALS['User']->id;
     # Set FileType
     $this->FileType = $this->getObjectType($UploadObject['tmp_name']);
+    logger($this->FileType);
     # Set FileName
     $this->FileName = $UploadObject['name'];
     # Set FileSize
