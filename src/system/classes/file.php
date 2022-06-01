@@ -206,12 +206,12 @@ class file
   {
     $data = ($this->mysql_slave->query("SELECT filetype,created,modified,size,name,owner FROM `files-metadata` WHERE `hash` = '$hash'", true))[0];
     #$this->content = ($this->unblob($data['content']));
-    $this->filetype = $data['filetype'];
+    $this->fileType = $data['filetype'];
     $this->created = $data['created'];
     $this->modified = $data['modified'];
-    $this->size = $data['size'];
+    $this->FileSize = $data['size'];
     $this->FileName = $data['name'];
-    $this->owner = $data['owner'];
+    $this->Owner = $data['owner'];
   }
 
   /**
