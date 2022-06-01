@@ -26,9 +26,11 @@ $mysql = new sql(
   $settings['databases']['writer']['pass'],
   $settings['databases']['writer']['name']
 );
+$mysql->cache = $settings['cache'];
 
 global $mysql_slaves;
 $mysql_slaves = new sql_slaves();
+$mysql_slaves->cache = $settings['cache'];
 
 foreach($settings['databases']['slaves'] as $slave){
   
@@ -69,7 +71,7 @@ if ((isset($_SESSION['logged_in']) == true)) {
   $GLOBALS['User'] = $User;
 }
 
-if($_REQUEST['api'] == true){
+if(isset($_REQUEST['api'])){
 
 }else{
 # Site Layout

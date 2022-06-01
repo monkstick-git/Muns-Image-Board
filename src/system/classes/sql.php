@@ -7,6 +7,7 @@ class sql
   private $db_pass;
   private $db_name;
   public $mysql;
+  public $cache = true;
 
   public function __construct($db_host, $db_user, $db_pass, $db_name)
   {
@@ -45,6 +46,9 @@ class sql
 
   public function query($query, $cache = true, $ttl = 3600)
   {
+    if($this->cache == false){
+      $cache = false;
+    }
     $return = array();
     #echo $query . "<br>";
     $this->connect();

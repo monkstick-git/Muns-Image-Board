@@ -120,10 +120,11 @@ class file
     if (array_key_exists($mime, $conversionTable)) {
       $mime = $conversionTable[$mime];
     }else{
-      $exploded = explode(".", $path);
-      $count = count($exploded);
-      $fileTypeGuess =  $exploded[$count - 1];
-      $mime = $fileTypeGuess;
+      //$exploded = explode(".", $path);
+      //$count = count($exploded);
+      //$fileTypeGuess =  $exploded[$count - 1];
+      //$mime = $fileTypeGuess;
+      $mime = $mime;
     }
 
     # Return the mime type of the file
@@ -141,7 +142,7 @@ class file
     $this->Owner = $GLOBALS['User']->id;
     # Set FileType
     $this->FileType = $this->getObjectType($UploadObject['tmp_name']);
-    logger($this->FileType);
+    logger("Saving as type: " . $this->FileType);
     # Set FileName
     $this->FileName = $UploadObject['name'];
     # Set FileSize
