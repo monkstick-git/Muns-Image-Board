@@ -5,7 +5,7 @@ services:
   redis:
     image: redis:alpine
     volumes:
-      - ./redis-data:/data
+      - ${sitePath}/redis-data:/data
     deploy:
       resources:
         limits:
@@ -17,7 +17,7 @@ services:
     image: mysql:5.7
     container_name: mysql
     volumes:
-      - ./mysql-data:/var/lib/mysql
+      - ${sitePath}/mysql-data:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: "root"
       MYSQL_DATABASE: "munboard"
@@ -44,13 +44,13 @@ services:
       - php
     volumes:
       - type: bind
-        source: "/home/kdavies/projects/Muns-Image-Board/src"
+        source: "${sitePath}/src"
         target: "/var/www/default/htdocs/httpdocs/"
       - type: bind
-        source: "/home/kdavies/projects/Muns-Image-Board/docker-configs/site.conf"
+        source: "${sitePath}/docker-configs/site.conf"
         target: "/etc/nginx/conf.d/default.conf"
       - type: bind
-        source: "/home/kdavies/projects/Muns-Image-Board/docker-configs/nginx.conf"
+        source: "${sitePath}/docker-configs/nginx.conf"
         target: "/etc/nginx/nginx.conf"
 
   php:
@@ -72,8 +72,8 @@ services:
     # ignored for docker swarm
     volumes:
       - type: bind
-        source: "/home/kdavies/projects/Muns-Image-Board/src"
+        source: "${sitePath}/src"
         target: "/var/www/default/htdocs/httpdocs/"
       - type: bind
-        source: "/home/kdavies/projects/Muns-Image-Board/docker-configs/custom-php"
+        source: "${sitePath}/docker-configs/custom-php"
         target: "/etc/php-custom.d"
