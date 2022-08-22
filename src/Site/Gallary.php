@@ -1,6 +1,13 @@
 <?php
 include '../system/bootstrap.php';
 $render->render_template('navbar');
+if (!$_SESSION['logged_in']) {
+    header('Location: /User/login');
+}
+ else {
+  #$render->render_template('login');
+}
+
 
 $adminMenu = false;
 if (isset(($_REQUEST['admin']))) {

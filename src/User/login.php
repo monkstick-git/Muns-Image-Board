@@ -28,7 +28,7 @@ if ($Username && $Password) {
         $_SESSION['user_id'] = $User->id;
         header('Location: /');
     } else {
-        $render->render_template('login', array('error' => 'Invalid username or password.'));
+        $render->render_template('login', array('errors' => 'Invalid username or password.'));
     }
 } else {
     $render->render_template('login');

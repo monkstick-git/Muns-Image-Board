@@ -17,7 +17,7 @@ $template = '
       <label for="password" class="sr-only">Password</label>
       <input type="password" name="password" id="password" class="form-control" placeholder="Password" required>
       <input type="password" name="password_confirm" id="password_confirm" class="form-control" placeholder="Confirm Password" required>
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Register New Account</button>
       <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
 ';
 
