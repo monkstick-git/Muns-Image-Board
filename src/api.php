@@ -1,6 +1,18 @@
 <?php include './system/bootstrap.php';
 ob_clean();
 
+# Api for uploading images
+# This is a simple API that allows users to upload images to the site and get a link back to the image
+# The API is protected by an API key that is passed in the request
+# The API key is used to authenticate the user and ensure that only authenticated users can upload images
+# Your API key can be found at /User/profile
+
+# To authenticate and upload an image, you need to send a POST request to the API with the following parameters:
+# 1. data - The image file to upload
+# 2. api - The API key to authenticate the user
+
+# Example using curl: curl https://YOUR.DOMAIN/api.php -F "data=@./somefile.jpg" -F "api=YOUR_API_KEY" 
+
 if (isset($_FILES['data'])) {
   if (isset($_REQUEST['api'])) {
     $GLOBALS['User']->get_user_by_api($_REQUEST['api']);

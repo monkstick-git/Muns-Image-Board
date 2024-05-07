@@ -14,6 +14,8 @@ ob_start();
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/Images/favicons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/Images/favicons/favicon-16x16.png">
   <link rel="manifest" href="/assets/Images/favicons/site.webmanifest">
+  <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
+
   <!-- Bootstrap core JavaScript
   ================================================== -->
   <!-- Placed at the end of the document so the pages load faster -->
@@ -24,6 +26,8 @@ ob_start();
   <script src="/vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
   <!-- Bootstrap core CSS -->
   <link href="/vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
   <!-- Custom styles for this template -->
   <link href="//vjs.zencdn.net/7.10.2/video-js.min.css" rel="stylesheet">
   <script src="//vjs.zencdn.net/7.10.2/video.min.js"></script>

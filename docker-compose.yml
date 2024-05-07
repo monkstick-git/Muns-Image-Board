@@ -16,6 +16,8 @@ services:
   mysql:
     image: mysql:5.7
     container_name: mysql
+    env_file:
+      - "${sitePath}/.env"    
     volumes:
       - ${sitePath}/mysql-data:/var/lib/mysql
     environment:
@@ -55,6 +57,8 @@ services:
 
   php:
     hostname: php
+    env_file:
+      - "${sitePath}/.env"
     environment:
       NEW_GID: 1000
       NEW_UID: 1000

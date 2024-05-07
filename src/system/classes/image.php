@@ -9,12 +9,19 @@ class image extends file
   }
 
 
-  public function CreateImageThumbNail(){
-    $src = file_get_contents( $this->FilePath );
+  public function CreateImageThumbNail()
+  {
+    $src = file_get_contents($this->FilePath);
+    $fileIsHeic = Maestroerror\HeicToJpg::isHeic($this->FilePath);
+    if ($fileIsHeic) {
+      $src = Maestroerror\HeicToJpg::convert("$this->FilePath")->get();
+    }
+
+
     $image = imagecreatefromstring($src);
     # Minimum Width and Height
-    $min_width = 200;
-    $min_height = 200;
+    $min_width = 512;
+    $min_height = 512;
     # Get current dimensions
     $width = imagesx($image);
     $height = imagesy($image);
@@ -39,15 +46,17 @@ class image extends file
     ob_end_clean();
     return ($image_string);
   }
-      # CreateImageThumbNail
-      #$this->thumbnail = $this->CreateImageThumbNail();
+  # CreateImageThumbNail
+  #$this->thumbnail = $this->CreateImageThumbNail();
 
 
-  public function save() {
-      parent::save();
-      # Insert Thumbnail
-      $thumbnail = $this->mysql->safe($this->blob($this->thumbnail));
-      $this->mysql->insert("
+  public function save()
+  {
+    
+    parent::save();
+    # Insert Thumbnail
+    $thumbnail = $this->mysql->safe($this->blob($this->thumbnail));
+    $this->mysql->insert("
         INSERT INTO `files-thumbnail` 
           (`file_id`, `thumbnail`)
         VALUES
