@@ -18,13 +18,14 @@ class user
   {
   }
 
-  public function is_admin(){
+  public function is_admin()
+  {
     global $mysql_slaves;
     $query = $mysql_slaves->query("SELECT `role` FROM `users` WHERE `id` = '$this->id'");
     $query = $query[0];
-    if($query['role'] == "admin"){
+    if ($query['role'] == "admin") {
       return true;
-    }else{
+    } else {
       return false;
     }
     return false;
@@ -50,26 +51,27 @@ class user
   public function get_user_by_id($id)
   {
     if (isset($id)) {
-        global $mysql_slaves;
-        $id = $mysql_slaves->safe($id);
-        $id = $mysql_slaves->query("SELECT * FROM `users` WHERE `id` = '$id'");
-        $result = $id[0];
-        $this->id = $result['id'];
-        $this->name = $result['name'];
-        $this->surname = $result['surname'];
-        $this->email = $result['email'];
-        $this->username = $result['username'];
-        $this->password = $result['password'];
-        $this->Datecreated = $result['created'];
-        $this->bio = $result['bio'];
-        $this->apiKey = $result['api'];
-    }else{
+      global $mysql_slaves;
+      $id = $mysql_slaves->safe($id);
+      $id = $mysql_slaves->query("SELECT * FROM `users` WHERE `id` = '$id'");
+      $result = $id[0];
+      $this->id = $result['id'];
+      $this->name = $result['name'];
+      $this->surname = $result['surname'];
+      $this->email = $result['email'];
+      $this->username = $result['username'];
+      $this->password = $result['password'];
+      $this->Datecreated = $result['created'];
+      $this->bio = $result['bio'];
+      $this->apiKey = $result['api'];
+    } else {
       logger("Trying to get ID of NULL");
       die;
     }
   }
 
-  public function generate_api_key(){
+  public function generate_api_key()
+  {
     return md5(uniqid(rand(), true));
   }
 
@@ -77,7 +79,7 @@ class user
   {
     global $mysql;
     $Username = $mysql->safe($this->username);
-    $Password =  password_hash($this->password, PASSWORD_DEFAULT);
+    $Password = password_hash($this->password, PASSWORD_DEFAULT);
     $apiKey = $mysql->safe($this->generate_api_key());
     $result = $mysql->insert("INSERT INTO `users` (`username`, `password`, `api`, `email`, `name`, `surname`, `role`, `active`, `created`, `modified`) VALUES ('$Username', '$Password', '$apiKey', 'null', 'null', 'null', 'user', 1, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "');");
 
@@ -102,6 +104,23 @@ class user
       return false;
     } else {
       return true;
+    }
+  }
+
+  public function setPassword($Password)
+  {
+    global $mysql;
+    if ($this->password_complexity_check($Password)) {
+      $Password = password_hash($Password, PASSWORD_DEFAULT);
+      $id = $mysql->safe($this->id);
+      $result = $mysql->insert("UPDATE `users` SET `password` = '$Password' WHERE `id` = '$id'");
+      if ($result) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
     }
   }
 
@@ -135,19 +154,22 @@ class user
     $this->apiKey = $result['api'];
   }
 
-  public function login(){
+  public function login()
+  {
     $this->loggedIn = true;
   }
 
-  public function logout(){
+  public function logout()
+  {
     $this->loggedIn = false;
     session_start();
     session_destroy();
-    
-    header('Location: /');    
+
+    header('Location: /');
   }
 
-  public function getSpaceUsed(){
+  public function getSpaceUsed()
+  {
     global $mysql_slaves;
     $id = $mysql_slaves->safe($this->id);
     $id = $mysql_slaves->query("SELECT SUM(`size`) AS `size` FROM `files-metadata` WHERE `owner` = '$id'");
@@ -155,7 +177,8 @@ class user
     return $result['size'];
   }
 
-  public function getImageCount(){
+  public function getImageCount()
+  {
     global $mysql_slaves;
     $id = $mysql_slaves->safe($this->id);
     $id = $mysql_slaves->query("SELECT COUNT(`id`) AS `count` FROM `files-metadata` WHERE `owner` = '$id'");
