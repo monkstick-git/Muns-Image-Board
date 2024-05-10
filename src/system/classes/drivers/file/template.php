@@ -14,7 +14,7 @@ class file_driver_DRIVERNAME
 
     }
 
-    public function set(int $id, $content)
+    public function set(int $id, $content, $Hash)
     {
 
         $this->Encoded = Compress($content); # Run the file though Compress first
@@ -22,7 +22,7 @@ class file_driver_DRIVERNAME
         # Write File;
     }
 
-    public function get($id)
+    public function get($id, $Hash)
     {
         $Data = ""; # Load the Data from somewhere
         return Expand($Data); # Return the data, making sure to run it through Expand
