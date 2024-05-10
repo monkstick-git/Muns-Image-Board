@@ -3,6 +3,8 @@
 class image extends file
 {
 
+  public $Thumbnail;
+
   public function __construct()
   {
     parent::__construct();
@@ -11,11 +13,11 @@ class image extends file
 
   public function CreateImageThumbNail()
   {
-    $src = file_get_contents($this->FilePath);
-    $fileIsHeic = Maestroerror\HeicToJpg::isHeic($this->FilePath);
-    if ($fileIsHeic) {
-      $src = Maestroerror\HeicToJpg::convert("$this->FilePath")->get();
-    }
+    $src = $this->Content;
+    // $fileIsHeic = Maestroerror\HeicToJpg::isHeic($this->FilePath);
+    // if ($fileIsHeic) {
+    //   $src = Maestroerror\HeicToJpg::convert("$this->FilePath")->get();
+    // }
 
 
     $image = imagecreatefromstring($src);
@@ -50,16 +52,43 @@ class image extends file
   #$this->thumbnail = $this->CreateImageThumbNail();
 
 
-  public function save()
+  public function set()
   {
-    
-    parent::save();
+    parent::set();
     # Insert Thumbnail
-    $thumbnail = $this->mysql->safe($this->blob($this->thumbnail));
-    $this->mysql->insert("
+    $thumbnail = $this->Mysql->safe($this->CreateImageThumbNail());
+    $this->Mysql->insert("
         INSERT INTO `files-thumbnail` 
           (`file_id`, `thumbnail`)
         VALUES
-          ('$this->FileID', '$thumbnail');", false);
+          ('$this->FileID', '$thumbnail');");
   }
+
+  public function get($id)
+  {
+    parent::get($id);
+    # Get the thumbnail as this is an image
+    $Data = $this->Mysql->query("
+      SELECT `thumbnail` 
+      FROM `files-thumbnail` 
+      WHERE `file_id` = '$this->FileID';", true);
+
+    $this->Thumbnail = $Data[0]['thumbnail'];
+  }
+
+  # This function only exists to add a thumbnail to an image for now
+  public function update()
+  {
+    parent::update();
+    # Insert Thumbnail
+    $thumbnail = $this->Mysql->safe($this->CreateImageThumbNail());
+    $this->Mysql->insert("
+        INSERT INTO `files-thumbnail` 
+          (`file_id`, `thumbnail`)
+        VALUES
+          ('$this->FileID', '$thumbnail');");
+  }
+
 }
+
+

@@ -9,14 +9,18 @@ $redis = new Predis\Client('tcp://redis:6379');
 require_once ROOT . '/system/settings.php';
 require_once ROOT . '/system/functions.php';
 
+# Make $settings accessible globally
+global $settings;
+
 #require_once ROOT . '/vendor/predis/autoload.php';
 
 # Include all .php files in the system/classes/ directory
 $classes = glob(ROOT . '/system/classes/*.php');
-foreach($classes as $class){
+foreach ($classes as $class) {
+  logger("Loaded: " . $class);
   require_once $class;
 }
-if(false == isset($_SESSION['cache'])){
+if (false == isset($_SESSION['cache'])) {
   $_SESSION['cache'] = array();
 }
 global $mysql;
@@ -32,9 +36,9 @@ global $mysql_slaves;
 $mysql_slaves = new sql_slaves();
 $mysql_slaves->cache = $settings['cache'];
 
-foreach($settings['databases']['slaves'] as $slave){
-  
-   $FormattedHost = array (
+foreach ($settings['databases']['slaves'] as $slave) {
+
+  $FormattedHost = array(
     "host" => $slave['host'],
     "user" => $slave['user'],
     "pass" => $slave['pass'],
@@ -60,24 +64,24 @@ $page = str_replace(".php", "", $_SERVER['DOCUMENT_URI']);
 define('PAGE', $page);
 
 if ((isset($_SESSION['logged_in']) == true)) {
-  if($_SESSION['logged_in'] == true){
+  if ($_SESSION['logged_in'] == true) {
     $User = new user();
     $User->get_user_by_id($_SESSION['user_id']);
     $GLOBALS['User'] = $User;
     $_SESSION['User'] = $User;
   }
-}else{
+} else {
   $User = new user();
   $GLOBALS['User'] = $User;
 }
 
-if(isset($_REQUEST['api'])){
+if (isset($_REQUEST['api'])) {
 
-}else{
-# Site Layout
-$Buffer = "";
-# Site Header gets rendered on construction.
-$render = new render();
+} else {
+  # Site Layout
+  $Buffer = "";
+  # Site Header gets rendered on construction.
+  $render = new render();
 }
 
 

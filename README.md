@@ -79,6 +79,13 @@ Features:
 - [Redis](https://redis.io/)
 - [NesCafe](https://www.nestle.co.uk/en-gb/brands/coffee-nescafe)
 
+### Development Verbs
+I decided to use Microsofts Powershell documentation for all verbs for ease of use and a nice standard. They can be seen here.
+
+https://learn.microsoft.com/en-us/powershell/scripting/developer/cmdlet/approved-verbs-for-windows-powershell-commands?view=powershell-7.4
+
+Please note: Private functions will start with a _ and might not adhere to the standards above.
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->

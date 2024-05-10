@@ -25,11 +25,12 @@ if (isset($fileID)) {
   #$id = 'a754dde58a9d283901db01a4a75b5a0a';
 }
 $file = new file();
-$file->get_by_hash($id);
+$file->get($id);
 
 ob_clean();
 ob_start();
 header("Content-Type: $file->filetype");
-echo $file->content;;
+echo $file->content;
+;
 ob_flush();
 die;

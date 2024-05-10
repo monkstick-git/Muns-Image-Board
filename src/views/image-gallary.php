@@ -13,7 +13,7 @@ foreach ($FileArray as $key => $value) {
   #print_r($fileValue);
   #echo "<br>";
   $fileID = $fileValue['hash'];
-  if($adminMenu){
+  if ($adminMenu) {
     $fileOwner = $fileValue['owner'];
     $tmpUser = new user();
     $tmpUser->get_user_by_id($fileOwner);
@@ -21,16 +21,18 @@ foreach ($FileArray as $key => $value) {
   } else {
     #$fileOwner = $GLOBALS['User']->id;
   }
-  $fileType = explode("/",($fileValue['filetype']))[1];
+  $fileType = explode("/", ($fileValue['filetype']))[1];
   $thumbnailfileURL = "/images/thumbnail/$fileID.$fileType";
   $fileURL = "/images/raw/$fileID.$fileType";
   $file = new image();
-  $file->loadMinimal($fileID);
+  $file->getFileMetadata($fileID);
   $fileName = $file->FileName;
-  $modified = $file->modified;
-  if($adminMenu){
+  $modified = $file->Modified;
+  if ($adminMenu) {
     $adminString = "<div>$ownerName</div>";
-  }else{$adminString = "";}
+  } else {
+    $adminString = "";
+  }
   $template .= "
 <div class='col-md-4'>
 <div class='card mb-4 box-shadow'>

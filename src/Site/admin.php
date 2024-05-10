@@ -5,14 +5,15 @@ $limit = 100000;
 
 # ToDo
 global $system;
-if(false == $system->beAdmin()){
-    echo "Not authorized";
-    exit;
+if (false == $system->beAdmin()) {
+  echo "Not authorized";
+  exit;
 }
 
 $files = new file();
-$FileArray = $files->get_all_owners_files('', "`id` DESC", $limit);
+$FileArray = $files->Find(null, null, "`id` DESC", $limit);
 
 $render->render_template('file-browser', array(
   'FileArray' => $FileArray
-));
+)
+);

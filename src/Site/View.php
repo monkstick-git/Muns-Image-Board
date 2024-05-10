@@ -10,29 +10,37 @@ $fileID = $splitURL[3];
 # Get the left hand side of the filename.type (e.g: 10.jpg -> 10)
 $fileID = explode(".", $fileID)[0];
 
-if ( (isset($_GET['type']))  ) {
+if ((isset($_GET['type']))) {
   $type = $_GET['type'];
 } else {
-  if((isset($fileType))){
+  if ((isset($fileType))) {
     $type = $fileType;
-  }else{
+  } else {
     $type = false;
   }
-  
+
 }
 
-if(isset($fileID)){
+if (isset($fileID)) {
   $id = $fileID;
-  #$id = 'a754dde58a9d283901db01a4a75b5a0a';
 }
 $file = new image();
-$file->get_by_hash($id);
+$file->get($id);
 
 if ($type == 'thumbnail') {
-  $content = $file->thumbnail;
+  if (isset($file->Thumbnail) && $file->Thumbnail != "") {
+    $content = $file->Thumbnail;
+  } else {
+    $file->ThumbNail = $file->CreateImageThumbNail();
+    $file->update();
+    $content = $file->Thumbnail;
+  }
 } else {
-  $content = $file->content;
+  $content = $file->Content;
 }
-#$content = $file->thumbnail;
-header("Content-Type: $file->filetype");
+
+header("Content-Type: $file->FileType");
+# set header to real filename. Use "attachment" to force download instead of view
+header("Content-Disposition: inline; filename=\"$file->FileName\"");
+
 echo $content;

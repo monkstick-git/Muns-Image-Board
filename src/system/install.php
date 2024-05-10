@@ -36,6 +36,7 @@ $mysql->insert("CREATE TABLE IF NOT EXISTS `files-metadata` (
   `created` datetime,
   `modified` datetime,
   `owner` int(11),
+  `driver` varchar(255),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
 
@@ -64,4 +65,4 @@ $mysql->insert("CREATE TABLE IF NOT EXISTS `updates` (
   `description` text,
   `created` datetime NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1", false);
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
