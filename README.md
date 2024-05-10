@@ -21,7 +21,7 @@
     <a href="FILL ME IN"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://📷.foo.wales">View Demo</a>
+    <a href="https://img.foo.wales">View Demo</a>
     ·
     <a href="https://github.com/monkstick-git/Muns-Image-Board/issues">Report Bug</a>
     ·
