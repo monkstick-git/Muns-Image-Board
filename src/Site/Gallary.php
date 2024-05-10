@@ -10,7 +10,7 @@ if (!$_SESSION['logged_in']) {
 
 $adminMenu = false;
 #if (isset(($_REQUEST['admin']))) {
-if ($_REQUEST['admin'] == 'true') {
+if (isset($_REQUEST['admin']) && $_REQUEST['admin'] == 'true') {
   if ($GLOBALS['User'] && $GLOBALS['User']->is_admin()) {
     $adminMenu = true;
   }

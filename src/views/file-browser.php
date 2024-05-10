@@ -32,6 +32,12 @@ foreach ($FileArray as $key => $value) {
   $fileName = $file->FileName;
   $modified = $file->Modified;
   $Size = $file->FileSize;
+  # Convert Size to human readable
+  $Size = $Size / 1024; # KB
+  # Round to 2 decimal places
+  $Size = round($Size, 2);
+  # Add KB to the end
+  $Size = $Size . " KB";
   $type = $file->FileType;
   #$Owner = $file->Owner;
   $template .= "<tr>
