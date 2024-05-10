@@ -102,7 +102,7 @@ class file
     }
 
     $file = new ("file_driver_" . $this->Driver); # <--- This is awesome
-    return $file->set($this->FileID, $this->Content);
+    return $file->set($this->FileID, $this->Content, $this->FileHash);
   }
 
   public function get($id)
@@ -172,7 +172,7 @@ class file
     }
 
     $file = new ("file_driver_" . $this->Driver); # <--- This is awesome
-    return $file->get($id);
+    return $file->get($id, $this->FileHash);
   }
 
 

@@ -9,6 +9,7 @@ $MenuItems = array(
   'RightBarLoggedIn' => array(
     'account' => array(
       'Profile' => '/User/profile',
+      'My Files' => '/User/myfiles',
       'Logout' => '/User/logout'
     )
     ),

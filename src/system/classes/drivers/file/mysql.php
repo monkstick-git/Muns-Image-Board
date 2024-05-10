@@ -20,9 +20,10 @@ class file_driver_mysql
         $this->mysql_slave = $mysql_slaves;
     }
 
-    public function set(int $id, $content)
+    public function set(int $id, $content, $Hash)
     {
-
+        # Hash isn't used here, but it's a good idea to keep it in case we need it later.
+        
         $this->Encoded = Compress($content);
         # Chunk $content into 1024000 byte (1mb) $chunks
         $chunks = str_split($this->Encoded, 1024000);

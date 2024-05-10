@@ -17,7 +17,7 @@ global $settings;
 # Include all .php files in the system/classes/ directory
 $classes = glob(ROOT . '/system/classes/*.php');
 foreach ($classes as $class) {
-  logger("Loaded: " . $class);
+  #logger("Loaded: " . $class);
   require_once $class;
 }
 if (false == isset($_SESSION['cache'])) {
