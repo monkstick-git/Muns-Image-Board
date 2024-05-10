@@ -4,7 +4,6 @@ define('ROOT', "/var/www/default/htdocs/httpdocs/");
 require_once ROOT . '/vendor/autoload.php';
 $redis = new Predis\Client('tcp://redis:6379');
 
-
 # Include Settings and core Functions
 require_once ROOT . '/system/settings.php';
 require_once ROOT . '/system/functions.php';
@@ -56,24 +55,35 @@ logger("System Loaded");
 //   'httponly' => true,
 //   'samesite' => 'lax'
 // ]);
-session_start();
 
 $whitelisted_pages = array('/User/login', '/User/register', '/User/logout');
 #$page = str_replace("/", "", $_SERVER['DOCUMENT_URI']);
 $page = str_replace(".php", "", $_SERVER['DOCUMENT_URI']);
 define('PAGE', $page);
 
-if ((isset($_SESSION['logged_in']) == true)) {
-  if ($_SESSION['logged_in'] == true) {
-    $User = new user();
-    $User->get_user_by_id($_SESSION['user_id']);
-    $GLOBALS['User'] = $User;
-    $_SESSION['User'] = $User;
-  }
-} else {
+# TODO: Move all the user login logic to a separate class
+
+session_start();
+# Check if a session is already set
+if (!isset($_SESSION['visited'])) {
+  $_SESSION['visited'] = true;
   $User = new user();
   $GLOBALS['User'] = $User;
+  $_SESSION['User'] = $User;
+} else {
+  $User = $_SESSION['User'];
+  $GLOBALS['User'] = $User;
 }
+
+
+
+if ((isset($_SESSION['logged_in']) == true)) {
+  if ($_SESSION['logged_in'] == true) {
+    $User->get_user_by_id($_SESSION['user_id']);
+  }
+}
+
+# End of login logic
 
 if (isset($_REQUEST['api'])) {
 

@@ -1,7 +1,9 @@
 <?php
 $FileArray = $arguments['FileArray'];
 
-$template = '
+ob_start();
+?>
+
 <table class="table">
   <thead>
     <tr>
@@ -15,9 +17,9 @@ $template = '
     </tr>
   </thead>
   <tbody>
-';
 
-foreach ($FileArray as $key => $value) {
+<?php foreach ($FileArray as $key => $value): 
+
   $fileValue = $value;
   $fileID = $fileValue['hash'];
   $fileOwner = $fileValue['owner'];
@@ -40,17 +42,23 @@ foreach ($FileArray as $key => $value) {
   $Size = $Size . " KB";
   $type = $file->FileType;
   #$Owner = $file->Owner;
-  $template .= "<tr>
-      <th scope=\"row\">$fileID</th>
-      <td>$fileName</td>
-      <td>$modified</td>
-      <td>$Size</td>
-      <td>$ownerName</td>
-      <td>$type</td>
-      <td><a href=\"$fileURL\" target=\"_blank\">Download</a></td>";
-}
+  ?>
 
-$template .= '
+      <tr>
+      <th scope="row"><?=$fileID?></th>
+      <td><?=$fileName?></td>
+      <td><?=$modified?></td>
+      <td><?=$Size?></td>
+      <td><?=$ownerName?></td>
+      <td><?=$type?></td>
+      <td><a href="<?=$fileURL?>" target="_blank">Download</a></td>
+<?php endforeach; ?>
+
+
 </tbody>
 </table>
-';
+
+<?php
+$template = ob_get_contents();
+ob_end_clean();
+?>

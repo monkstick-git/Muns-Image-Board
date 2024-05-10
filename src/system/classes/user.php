@@ -14,8 +14,11 @@ class user
   public $apiKey;
   public $role;
 
+  public $CSRF;
+
   public function __construct()
   {
+    $this->CSRF = new csrf();
   }
 
   public function is_admin()

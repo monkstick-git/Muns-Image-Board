@@ -1,8 +1,10 @@
 <?php
 include '../system/bootstrap.php';
 $render->render_template('navbar');
-if (!$_SESSION['logged_in']) {
+if (!isset($_SESSION['logged_in'])) {
   header('Location: /User/login');
+  $render->render_template('login');
+  die();
 } else {
   #$render->render_template('login');
 }
