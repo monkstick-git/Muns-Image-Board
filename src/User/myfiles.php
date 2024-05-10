@@ -11,7 +11,4 @@ $arguments = array(
     'FileArray' => $files
 );
 
-
 $render->render_template('file-browser', $arguments);
-
-

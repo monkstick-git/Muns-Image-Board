@@ -1,4 +1,9 @@
 <?php
+
+# Set PHP Memory Limit to 512MB
+ini_set('memory_limit', '512M');
+ini_set('post_max_size', '512M');
+
 # Define Root Path
 define('ROOT', "/var/www/default/htdocs/httpdocs/");
 require_once ROOT . '/vendor/autoload.php';

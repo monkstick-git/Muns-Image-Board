@@ -41,18 +41,16 @@ ob_start();
               </div>
               <div class='d-flex mt-2'>
                 <form action='/User/edit' method='post'>
-                  <?php
-                  if ($NoMatch) {
-                    echo ("<div class='alert alert-warning' role='alert'>");
-                    echo ($NoMatch);
-                    echo ("</div><br>");
-                  }
-                  if ($PasswordSuccess) {
-                    echo ("<div class='alert alert-success' role='alert'>");
-                    echo ($PasswordSuccess);
-                    echo ("</div><br>");
-                  }
-                  ?>
+                  <?php if ($NoMatch): ?>
+                    <div class='alert alert-warning' role='alert'>
+                      <?= $NoMatch ?>
+                    </div><br>
+                  <?php endif; ?>
+                  <?php if ($PasswordSuccess): ?>
+                    <div class='alert alert-success' role='alert'>
+                      <?= $PasswordSuccess ?>
+                    </div><br>
+                  <?php endif; ?>
                   <label for='password'>New Password:</label>
                   <input type='password' id='password' name='password'><br>
                   <label for='passwordConfirm'>Confirm New Password:</label>

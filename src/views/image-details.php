@@ -9,7 +9,6 @@ $FileHash = $image->FileHash;
 $fileName = $image->FileName;
 $modified = $image->Modified;
 
-# Display User Profile
 ob_start();
 ?>
 <div class="container-fluid ">
