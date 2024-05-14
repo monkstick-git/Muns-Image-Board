@@ -57,7 +57,7 @@ if ($Username || $Password || $Password_Confirm) {
             $arguments = array(
                 'success' => "User created successfully"
             );
-            $render->render_template('register', $arguments);
+            $render->render_template('login', $arguments);
         } else {
             $arguments = array(
                 'errors' => array(

@@ -10,7 +10,7 @@ class file
   public $FileName;
   public $FileSize;
   public $FileType;
-  public $PublicFile = false;
+  public $PublicFile; # 0 = Private, 1 = Public
   public $FilePath;
   public $Owner;
   public $Mysql;
@@ -53,6 +53,10 @@ class file
       $data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `id` = '$id'", true);
     }
 
+    if($data == false){
+      # No image found
+      return false;
+    }
     #$data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `id` = '$id'", true);
     $data = $data[0];
     $this->Created = $data['created'];
@@ -64,6 +68,7 @@ class file
     $this->FileHash = $data['hash'];
     $this->FileType = $data['filetype'];
     $this->Driver = $data['driver'];
+    $this->PublicFile = $data['public'];
   }
 
   public function set()
@@ -75,12 +80,23 @@ class file
       $this->Driver = $settings['fileDriver'];
     }
 
+    # Convert $this->PublicFile to an int
+    // if($this->PublicFile == true){
+    //   logger("File is public");
+    //   $this->PublicFile = 1;
+    // }else{
+    //   logger("File is private");
+    //   $this->PublicFile = 0;
+    // }
+
+    logger("🔴The PublicFile is set to: " . $this->PublicFile);
+
     # Save the file MetaData First
     $this->Mysql->insert("
     INSERT INTO `files-metadata` 
-      (`filetype`, `created`, `modified`, `size`, `name`, `owner`, `hash`, `driver`)
+      (`filetype`, `created`, `modified`, `size`, `name`, `owner`, `hash`, `driver`, `public`)
     VALUES
-      ( '$this->FileType', '$this->Created', '$this->Modified', '$this->FileSize', '$this->FileName', '$this->Owner', '$this->FileHash', '$this->Driver' );
+      ( '$this->FileType', '$this->Created', '$this->Modified', '$this->FileSize', '$this->FileName', '$this->Owner', '$this->FileHash', '$this->Driver', '$this->PublicFile' );
   ");
 
     # Once Metadate is saved, Save the blob to the driver
@@ -107,8 +123,20 @@ class file
 
   public function get($id)
   {
-    $this->getFileMetadata($id);
+    if($this->getFileMetadata($id) == false){
+      return false;
+    }
     logger("❌ getting file: " . $this->FileID);
+    # Check if the file is public or not
+    if($this->PublicFile == 0){
+      # If the file is private, check if the user is the owner
+      if($this->Owner != $GLOBALS['User']->id){
+        logger("🔒 File is private and user is not the owner");
+        return false;
+      }
+    }else{
+      logger("🔓 File is public");
+    }
     $File = $this->_getFileFromDriver($this->FileID); # This should be a complete file object, not individual blobs, encrypted, compressed etc
     $this->Content = $File;
     return $File;

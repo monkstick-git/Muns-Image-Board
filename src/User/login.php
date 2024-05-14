@@ -8,6 +8,16 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true) {
     header('Location: /');
 }
 
+# Check if the permission is set
+# Commenting out as all users should be able to login
+// if($_SESSION['User']->has_permission(SYSTEM_CAN_LOGIN)){
+//     logger("User has permission to login");
+// }else{
+//     logger("User does not have permission to login");
+//     $render->render_template('login', array('errors' => 'You do not have permission to login.'));
+//     die();
+// }
+
 if (isset($_REQUEST['username'])) {
     $Username = $_REQUEST['username'] ? $_REQUEST['username'] : false;
 } else {

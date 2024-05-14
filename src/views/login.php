@@ -4,6 +4,9 @@ if (isset($arguments)) {
   if (isset($arguments['errors'])) {
     $Error = $arguments['errors'];
   }
+  if (isset($arguments['success'])) {
+    $Success = $arguments['success'];
+  }
 }
 
 $CSRF = $_SESSION['User']->CSRF->Token;
@@ -27,6 +30,12 @@ ob_start();
   <?php if ($Error): ?>
     <div class="alert alert-warning" role="alert">
       <?= $Error ?>
+    </div>
+  <?php endif; ?>
+
+  <?php if ($Success): ?>
+    <div class="alert alert-success" role="alert">
+      <?= $Success ?>
     </div>
   <?php endif; ?>
 

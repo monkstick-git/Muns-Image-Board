@@ -20,12 +20,6 @@ $mysql->insert("CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
 
-$tmpUser = new user();
-$api = $tmpUser->generate_api_key();
-# Create default admin user
-$mysql->insert("INSERT INTO `users` (`id`, `username`, `password`, `api`, `email`, `name`, `surname`, `role`, `active`, `created`, `modified`) VALUES
-(1, 'admin', '" . password_hash("admin", PASSWORD_DEFAULT) . "','$api', 'monkstick@gmail.com', 'Monk', 'Stick', 'admin', 1, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "');");
-
 # Create Files Metadata Table
 $mysql->insert("CREATE TABLE IF NOT EXISTS `files-metadata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -39,6 +33,26 @@ $mysql->insert("CREATE TABLE IF NOT EXISTS `files-metadata` (
   `driver` varchar(255),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
+
+# Create Permissions Table
+# Use a json object to store the permissions
+$mysql->insert("CREATE TABLE IF NOT EXISTS `permissions-system` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `permissions` json,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1");
+
+$tmpUser = new user();
+$api = $tmpUser->generate_api_key();
+# Create default admin user
+$mysql->insert("INSERT INTO `users` (`id`, `username`, `password`, `api`, `email`, `name`, `surname`, `role`, `active`, `created`, `modified`) VALUES
+(1, 'admin', '" . password_hash("admin", PASSWORD_DEFAULT) . "','$api', 'monkstick@gmail.com', 'Monk', 'Stick', 'admin', 1, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "');");
+
+# Create default permissions for the admin user if not exists (see system/permissions/system.php for ID's)
+# If the bit hasn't been set, set it
+#$tmpUser->Permissions->set_system_permission(SYSTEM_CAN_LOGIN);
+
 
 # Create Files Chunk Table with foreign key to files-metadata
 $mysql->insert("CREATE TABLE IF NOT EXISTS `files-chunk` (

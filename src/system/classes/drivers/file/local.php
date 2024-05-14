@@ -6,6 +6,7 @@ class file_driver_local
 
     public $Encoded;
 
+    # TODO: This should be read from the settings file 
     public $Dest = "/var/www/default/htdocs/httpdocs/uploads/";
 
     /**
@@ -16,7 +17,7 @@ class file_driver_local
 
     }
 
-    public function createDirectories($fileName)
+    private function createDirectories($fileName)
     {
         # For each character in the filename hash, create a directory
         $hash = $fileName;

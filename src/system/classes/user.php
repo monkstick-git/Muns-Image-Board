@@ -16,9 +16,42 @@ class user
 
   public $CSRF;
 
+  private $Permissions;
+
   public function __construct()
   {
     $this->CSRF = new csrf();
+    $this->Permissions = new permissions();
+  }
+
+  public function has_permission($Permission)
+  {
+    if ($this->id == null) {
+      logger("User ID is NULL, setting to 0 (Guest)");
+      $this->id = 0; # Guest user
+    }
+
+    return $this->Permissions->get($Permission, $this->id);
+  }
+
+  public function set_permission($Permission)
+  {
+    return $this->Permissions->set($Permission, $this->id);
+  }
+
+  /**
+   * Get all permissions for the user
+   * @return array
+   */
+  public function getPermissions(){
+
+    if ($this->id == null) {
+      logger("User ID is NULL, setting to 0 (Guest)");
+      $this->id = 0; # Guest user
+    }
+
+    return $this->Permissions->getAll($this->id);
+
   }
 
   public function is_admin()
@@ -31,7 +64,6 @@ class user
     } else {
       return false;
     }
-    return false;
   }
 
   public function get_user_by_api($api)
@@ -85,6 +117,17 @@ class user
     $Password = password_hash($this->password, PASSWORD_DEFAULT);
     $apiKey = $mysql->safe($this->generate_api_key());
     $result = $mysql->insert("INSERT INTO `users` (`username`, `password`, `api`, `email`, `name`, `surname`, `role`, `active`, `created`, `modified`) VALUES ('$Username', '$Password', '$apiKey', 'null', 'null', 'null', 'user', 1, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "');");
+
+    logger("✅ User created with new ID of: $result");
+    $this->id = $result;
+
+    # Next, set the default permissions for the user (which is SYSTEM.CAN_LOGIN, SYSTEM.CAN_LOGOUT, FILE.READ_OWN, FILE.WRITE_OWN, FILE.DELETE_OWN)
+    $this->set_permission("SYSTEM.CAN_LOGIN");
+    $this->set_permission("SYSTEM.CAN_LOGOUT");
+    $this->set_permission("FILE.READ_OWN");
+    $this->set_permission("FILE.WRITE_OWN");
+    $this->set_permission("FILE.DELETE_OWN");
+
 
     # If insert was successful, get the user id
     if ($result) {

@@ -14,7 +14,7 @@ services:
           memory: "256M"
 
   mysql:
-    image: mysql:5.7
+    image: mysql:8
     container_name: mysql
     env_file:
       - "${sitePath}/.env"    

@@ -50,7 +50,8 @@ class sql
       $cache = false;
     }
     $return = array();
-    #echo $query . "<br>";
+    # Comment and uncomment the line below to enable/disable query logging (DANGEROUS!)
+    //echo $query . "<br>";
     $this->connect();
     try {
       global $system;

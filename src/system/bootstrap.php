@@ -3,15 +3,33 @@
 # Set PHP Memory Limit to 512MB
 ini_set('memory_limit', '512M');
 ini_set('post_max_size', '512M');
-
 # Define Root Path
 define('ROOT', "/var/www/default/htdocs/httpdocs/");
+
 require_once ROOT . '/vendor/autoload.php';
 $redis = new Predis\Client('tcp://redis:6379');
 
 # Include Settings and core Functions
 require_once ROOT . '/system/settings.php';
 require_once ROOT . '/system/functions.php';
+
+# Get the clients real IP address. Check for headers set by a proxy etc
+$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
+
+# If server is in a docker container, set the IP to the docker container IP
+if (isset($_SERVER['HTTP_X_REAL_IP'])) {
+  $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
+}
+
+# Check for Cloudflare headers
+if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+  $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
+}
+
+#print_r($_SERVER['REMOTE_ADDR']);
+
+#print_r($_SERVER);
+
 
 # Make $settings accessible globally
 global $settings;
@@ -88,16 +106,17 @@ if ((isset($_SESSION['logged_in']) == true)) {
   }
 }
 
-# End of login logic
-
-if (isset($_REQUEST['api'])) {
+# Check if $_REQUEST contains render=false (r)
+if (isset($_REQUEST['r']) && $_REQUEST['r'] == "0") {
 
 } else {
-  # Site Layout
-  $Buffer = "";
-  # Site Header gets rendered on construction.
-  $render = new render();
+  # End of login logic
+  if (isset($_REQUEST['api'])) {
+
+  } else {
+    # Site Layout
+    $Buffer = "";
+    # Site Header gets rendered on construction.
+    $render = new render();
+  }
 }
-
-
-

@@ -15,6 +15,10 @@ ob_start();
               <td width="50%" align="right"><b>Select File</b></td>
               <td width="50%">
                 <input type="file" id="select_file" multiple />
+                <!-- Add a tickbox for 'Public' or 'Private' -->
+                <br>
+                <label for="public">Should File be Public</label>
+                <input type="checkbox" id="public" name="public" value="1" />
               </td>
             </tr>
           </table>
@@ -40,6 +44,9 @@ ob_start();
 
         for (var count = 0; count < _('select_file').files.length; count++) {
           form_data.append("filesToUpload[]", _('select_file').files[count]);
+          // add the public checkbox value to the form data
+          form_data.append("public", _('public').checked);
+          console.log(_('public').checked);
           image_number++;
         }
 

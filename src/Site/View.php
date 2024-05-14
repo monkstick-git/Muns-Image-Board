@@ -25,7 +25,10 @@ if (isset($fileID)) {
   $id = $fileID;
 }
 $file = new image();
-$file->get($id);
+if($file->get($id) == false){
+  echo "File not Found or you do not have permission to view this file";
+  die();
+}
 
 if ($type == 'thumbnail') {
   if (isset($file->Thumbnail) && $file->Thumbnail != "") {
