@@ -115,18 +115,19 @@ Goto site:port/system/install.php to populate the database and create the schema
 ## Roadmap
 
 - [ ] Add Changelog
-- [ ] Upgrader Scripts for schema changes
-- [ ] New Schema for System information ( like version, total images, space etc )
+- [x] Upgrader Scripts for schema changes
+- [x] New Schema for System information ( like version, total images, space etc )
 - [ ] Add Support for video playback
 - [ ] Add Support for URL shortening
-- [ ] Add Support for General File Hosting
-- [ ] Plugin Support
+- [x] Add Support for General File Hosting
+- [x] Plugin Support
 - [ ] Password Protect Images
 - [ ] Custom Gallaries
 - [ ] More Blob Stores
   - [ ] S3
   - [ ] NextCloud (WebDav)
-  - [ ] Disk (Local)
+  - [x] Disk (Local)
+  - [x] Mysql Blob
 
 See the [open issues](https://github.com/monkstick-git/Muns-Image-Board/issues) for a full list of proposed features (and known issues).
 
