@@ -28,4 +28,9 @@ class file_driver_DRIVERNAME
         return Expand($Data); # Return the data, making sure to run it through Expand
     }
 
+    public function delete($id, $Hash)
+    {
+        # Delete the file
+    }
+
 }

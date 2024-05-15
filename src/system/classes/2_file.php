@@ -71,6 +71,14 @@ class file
     $this->PublicFile = $data['public'];
   }
 
+  public function delete($softDelete = false){
+    logger("❌ Deleting file: " . $this->FileID);
+    $id = $this->Mysql->safe($this->FileID);
+    $this->Mysql->insert("DELETE FROM `files-metadata` WHERE `id` = '$id'");
+
+    $this->_deleteFileFromDriver();
+  }
+
   public function set()
   {
     logger("✅ Saving file: " . $this->FileID);
@@ -103,6 +111,21 @@ class file
     $this->FileID = $this->Mysql->insert_id();
     #$this->Content = 
     $this->_saveFileToDriver();
+  }
+
+
+  private function _deleteFileFromDriver(){
+    # Load the required driver on demand, depending on what driver was used to upload the file.
+    # Sanity check $this->Driver before trying to load the driver.
+
+    if (isset($this->Driver) && file_exists(ROOT . '/system/classes/drivers/file/' . $this->Driver . ".php")) {
+      require_once ROOT . '/system/classes/drivers/file/' . $this->Driver . ".php";
+    } else {
+      logger("Error Finding Driver: " . $this->Driver);
+    }
+
+    $file = new ("file_driver_" . $this->Driver); # <--- This is awesome
+    return $file->delete($this->FileID, $this->FileHash);
   }
 
   private function _saveFileToDriver()

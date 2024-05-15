@@ -42,7 +42,8 @@ ob_start();
                 <div class='btn-group'>
                   <a type='button' class='btn btn-sm btn-outline-secondary'
                     href='/Site/files/details?id=<?php echo $fileID; ?>'>Details</a>
-                  <button type='button' class='btn btn-sm btn-outline-secondary'>Delete</button>
+                    <a type='button' class='btn btn-sm btn-outline-secondary'
+                    href='/Site/files/delete?id=<?php echo $fileID; ?>'>❌ Delete ❌</a>
                 </div>
                 <small class='text-muted'><?php echo $modified; ?></small>
                 <?php echo $adminString; ?>

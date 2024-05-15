@@ -1,3 +1,4 @@
 /src/vendor/*
 /mysql-data/*
 /src/uploads/*
+/redis-data/*

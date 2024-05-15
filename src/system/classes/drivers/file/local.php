@@ -56,4 +56,11 @@ class file_driver_local
         return Expand($content);
     }
 
+    public function delete($id, $hash)
+    {
+        $DestinationDir = $this->Dest;
+        $DestinationDir .= $hash[0] . "/" . $hash[1] . "/" . $hash[2] . "/";
+        return unlink($DestinationDir . $hash);
+    }
+
 }
