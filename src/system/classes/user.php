@@ -27,7 +27,7 @@ class user
   public function has_permission($Permission)
   {
     if ($this->id == null) {
-      logger("User ID is NULL, setting to 0 (Guest)");
+      mlog("User ID is NULL, setting to 0 (Guest)");
       $this->id = 0; # Guest user
     }
 
@@ -46,7 +46,7 @@ class user
   public function getPermissions(){
 
     if ($this->id == null) {
-      logger("User ID is NULL, setting to 0 (Guest)");
+      mlog("User ID is NULL, setting to 0 (Guest)");
       $this->id = 0; # Guest user
     }
 
@@ -100,7 +100,7 @@ class user
       $this->bio = $result['bio'];
       $this->apiKey = $result['api'];
     } else {
-      logger("Trying to get ID of NULL");
+      mlog("Trying to get ID of NULL");
       die;
     }
   }
@@ -118,7 +118,7 @@ class user
     $apiKey = $mysql->safe($this->generate_api_key());
     $result = $mysql->insert("INSERT INTO `users` (`username`, `password`, `api`, `email`, `name`, `surname`, `role`, `active`, `created`, `modified`) VALUES ('$Username', '$Password', '$apiKey', 'null', 'null', 'null', 'user', 1, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "');");
 
-    logger("✅ User created with new ID of: $result");
+    mlog("✅ User created with new ID of: $result");
     $this->id = $result;
 
     # Next, set the default permissions for the user (which is SYSTEM.CAN_LOGIN, SYSTEM.CAN_LOGOUT, FILE.READ_OWN, FILE.WRITE_OWN, FILE.DELETE_OWN)
@@ -131,11 +131,11 @@ class user
 
     # If insert was successful, get the user id
     if ($result) {
-      logger("Registered new user $result ⚠️⚠️⚠️");
+      mlog("Registered new user $result ⚠️⚠️⚠️");
       $this->get_user_by_id($result);
       return true;
     } else {
-      logger("Error creating user: " . $mysql->error);
+      mlog("Error creating user: " . $mysql->error);
       return false;
     }
   }

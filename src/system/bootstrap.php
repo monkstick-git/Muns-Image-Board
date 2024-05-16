@@ -6,13 +6,6 @@ ini_set('post_max_size', '512M');
 # Define Root Path
 define('ROOT', "/var/www/default/htdocs/httpdocs/");
 
-require_once ROOT . '/vendor/autoload.php';
-$redis = new Predis\Client('tcp://redis:6379');
-
-# Include Settings and core Functions
-require_once ROOT . '/system/settings.php';
-require_once ROOT . '/system/functions.php';
-
 # Get the clients real IP address. Check for headers set by a proxy etc
 $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
 
@@ -26,25 +19,59 @@ if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
   $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
 }
 
-#print_r($_SERVER['REMOTE_ADDR']);
+# Manually load the logging class before anything else
+require_once ROOT . '/system/classes/log.php';
+# Now ensure there is always a logger available
+global $logger;
+$logger = new log($_SERVER['REMOTE_ADDR']);
+function mlog($Message, $Severity = "info"){
+  # Show what called the logger
+  # Try and get the class
+  $trace = debug_backtrace();
+  if(isset($trace[1])){
+    if(isset($trace[1]['class'])){
+      $Class = $trace[1]['class'];
+    }else{
+      $Class = "Unknown";
+    }
+    if(isset($trace[1]['function'])){
+      $Function = $trace[1]['function'];
+    }else{
+      $Function = "Unknown";
+    }
+    $Info = "$Class::$Function";
+  }else{
+    $Info = "Unknown";
+  }
 
-#print_r($_SERVER);
+  #error_log($Info);
+  global $logger;
+  $logger->log($Info . ": " . $Message, $Severity);
+}
+
+mlog("Bootstrap-Full loading begin");
+
+require_once ROOT . '/vendor/autoload.php';
+$redis = new Predis\Client('tcp://redis:6379');
+
+# Include Settings and core Functions
+require_once ROOT . '/system/settings.php';
+require_once ROOT . '/system/functions.php';
 
 
 # Make $settings accessible globally
 global $settings;
 
-#require_once ROOT . '/vendor/predis/autoload.php';
-
 # Include all .php files in the system/classes/ directory
 $classes = glob(ROOT . '/system/classes/*.php');
 foreach ($classes as $class) {
-  #logger("Loaded: " . $class);
   require_once $class;
 }
+
 if (false == isset($_SESSION['cache'])) {
   $_SESSION['cache'] = array();
 }
+
 global $mysql;
 $mysql = new sql(
   $settings['databases']['writer']['host'],
@@ -59,13 +86,13 @@ $mysql_slaves = new sql_slaves();
 $mysql_slaves->cache = $settings['cache'];
 
 foreach ($settings['databases']['slaves'] as $slave) {
-
   $FormattedHost = array(
     "host" => $slave['host'],
     "user" => $slave['user'],
     "pass" => $slave['pass'],
     "name" => $slave['name']
   );
+
   $mysql_slaves->addHost($FormattedHost);
 }
 

@@ -41,7 +41,7 @@ class system
         $id = base64_encode($input);
         if (null !== ($redis->get($id))) {
         } else {
-            logger("Adding to cache: $input");
+            mlog("Adding to cache: $input");
             $redis->set($id, $data, 'EX', $ttl);
         }
     }
@@ -52,8 +52,8 @@ class system
         $id = base64_encode($query);
         if (null !== ($redis->get($id))) {
             $cached_Obj = $redis->get($id);
-            logger("Returning from cache: $id");
-            #logger(print_r($cached_Obj, true));
+            mlog("Returning from cache: $id");
+            #mlog(print_r($cached_Obj, true));
             return $cached_Obj;
         } else {
         }

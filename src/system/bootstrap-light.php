@@ -7,6 +7,14 @@
 define('ROOT', "/var/www/default/htdocs/httpdocs/");
 $isCLI = (php_sapi_name() == "cli") ? true : false;
 
+# Manually load the logging class before anything else
+require_once ROOT . '/system/classes/log.php';
+# Now ensure there is always a logger available
+global $logger;
+$logger = new log();
+
+$logger->log("Bootstrap-light loading begin");
+
 require_once ROOT . '/vendor/autoload.php';
 $redis = new Predis\Client('tcp://redis:6379');
 

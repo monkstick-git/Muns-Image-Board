@@ -6,6 +6,7 @@ $image = ($arguments['image']);
 $type = $image->FileType;
 $shortType = explode("/", $type)[1];
 $FileHash = $image->FileHash;
+$FileID = $FileHash . "_" . $image->FileID;
 $fileName = $image->FileName;
 $modified = $image->Modified;
 
@@ -15,8 +16,8 @@ ob_start();
   <row>
     <div class='col-md-4'>
       <div class='card mb-4 box-shadow'>
-        <a href='/images/raw/<?= $FileHash ?>.<?= $shortType ?>'><img class='card-img-top lazyload '
-            data-src='/images/raw/<?= $FileHash ?>.<?= $shortType ?>' alt='Thumbnail' style='width: 100%; '
+        <a href='/images/raw/<?= $FileID ?>.<?= $shortType ?>'><img class='card-img-top lazyload '
+            data-src='/images/raw/<?= $FileID ?>.<?= $shortType ?>' alt='Thumbnail' style='width: 100%; '
             src='https://cdn.dribbble.com/users/3251/screenshots/470914/aah.gif' data-holder-rendered='true'
             lazyload='on'></a>
         <div class='card-body'>
@@ -24,7 +25,7 @@ ob_start();
           <div class='d-flex justify-content-between align-items-center'>
             <div class='btn-group'>
               <a type='button' class='btn btn-sm btn-outline-secondary'
-                href='/images/raw/<?= $FileHash ?>.<?= $shortType ?>'>Details</a>
+                href='/images/raw/<?= $FileID ?>.<?= $shortType ?>'>Details</a>
               <button type='button' class='btn btn-sm btn-outline-secondary'>Delete</button>
             </div>
             <small class='text-muted'><?= $modified ?></small>

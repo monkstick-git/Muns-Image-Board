@@ -7,7 +7,6 @@ $hash = filter_input(INPUT_GET, 'id');
 $file = new file();
 $file->get($hash);
 if (explode("/", $file->FileType)[0] === "image") {
-  echo $file->FileHash;
   $type = $file->FileType;
   $FileHash = $file->FileHash;
   $render->render_template('image-details', array(
@@ -15,5 +14,5 @@ if (explode("/", $file->FileType)[0] === "image") {
   )
   );
 } else {
-  echo "we're dealing with a file";
+  mlog("Invalid image type: " . $file->FileType);
 }

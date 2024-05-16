@@ -43,31 +43,25 @@ class file
 
   public function getFileMetadata($id)
   {
-    # First, we need to figure out if we're dealing with a file ID, or a file Hash
-    if (strlen($id) == 32) { # If the ID is 32 characters long, it's a hash
-      logger("Getting Metadata for file with Hash: $id");
-      $id = $this->Mysql_Slave->safe($id);
-      $data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `hash` = '$id'", true);
-      if($data == false){
-        logger("Something went wrong getting file metadata for: " . $id);
-      }else{
-        logger("Found metadata for: " . $data[0]['id']);
-      }
-    } else { # Otherwise, it's probably an ID or UniqueID. Confirm with a int check
-      if (!is_numeric($id) && strpos($id, "_") !== false){
-        # If the ID contains an underscore, it's a UniqueID. We can extract the ID from it.
-        $id = explode("_", $id)[1];
-      }else{
-        # If the ID is a number, we can safely use it as is.
-        $id = (int) $id;
-        $id = $this->Mysql_Slave->safe($id);
-      }
-      $data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `id` = '$id'", true);
+    # As of now, I only want to accept an $id as a uniqueID. That means both the hash and the ID.
+    if (!is_numeric($id) && strpos($id, "_") !== false) {
+      # If the ID contains an underscore, it's a UniqueID. We can extract the ID from it.
+      $imageID = explode("_", $id)[1];
+      $imageID = $this->Mysql_Slave->safe($imageID);
+      $hash = explode("_", $id)[0];
+      $hash = $this->Mysql_Slave->safe($hash);
+      mlog("Extracted ID: " . $imageID);
+      mlog("Extracted Hash: " . $hash);
+    } else {
+      mlog("Invalid ID: " . $id);
+      die("Invalid ID: " . $id);
     }
+    $data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `id` = '$imageID' AND `hash` = '$hash'", true);
 
-    if($data == false){
+
+    if ($data == false) {
       # No image found
-      logger("No file found with ID: " . $id);
+      mlog("No file found with ID: " . $id);
       return false;
     }
     #$data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `id` = '$id'", true);
@@ -86,8 +80,9 @@ class file
     return true;
   }
 
-  public function delete($softDelete = false){
-    logger("❌ Deleting file: " . $this->UniqueID);
+  public function delete($softDelete = false)
+  {
+    mlog("❌ Deleting file: " . $this->UniqueID);
     $id = $this->Mysql->safe($this->FileID);
     $this->Mysql->insert("DELETE FROM `files-metadata` WHERE `id` = '$id'");
 
@@ -96,7 +91,7 @@ class file
 
   public function set()
   {
-    logger("✅ Saving file: " . $this->FileID);
+    mlog("✅ Saving file: " . $this->FileID);
     # If a driver hasn't been set, use the default in settings
     if ($this->Driver === null) {
       global $settings;
@@ -105,14 +100,14 @@ class file
 
     # Convert $this->PublicFile to an int
     // if($this->PublicFile == true){
-    //   logger("File is public");
+    //   mlog("File is public");
     //   $this->PublicFile = 1;
     // }else{
-    //   logger("File is private");
+    //   mlog("File is private");
     //   $this->PublicFile = 0;
     // }
 
-    logger("🔴The PublicFile is set to: " . $this->PublicFile);
+    mlog("🔴The PublicFile is set to: " . $this->PublicFile);
 
     # Save the file MetaData First
     $this->Mysql->insert("
@@ -123,23 +118,24 @@ class file
   ");
 
     # Once Metadate is saved, Save the blob to the driver
-    logger("File Metadata Saved, Getting the ID of the file...");
+    mlog("File Metadata Saved, Getting the ID of the file...");
     $this->FileID = $this->Mysql->insert_id();
-    logger("Done! - File ID: " . $this->FileID);
+    mlog("Done! - File ID: " . $this->FileID);
     $this->UniqueID = $this->FileHash . "_" . $this->FileID;
     #$this->Content = 
     $this->_saveFileToDriver();
   }
 
 
-  private function _deleteFileFromDriver(){
+  private function _deleteFileFromDriver()
+  {
     # Load the required driver on demand, depending on what driver was used to upload the file.
     # Sanity check $this->Driver before trying to load the driver.
 
     if (isset($this->Driver) && file_exists(ROOT . '/system/classes/drivers/file/' . $this->Driver . ".php")) {
       require_once ROOT . '/system/classes/drivers/file/' . $this->Driver . ".php";
     } else {
-      logger("Error Finding Driver: " . $this->Driver);
+      mlog("Error Finding Driver: " . $this->Driver);
     }
 
     $file = new ("file_driver_" . $this->Driver); # <--- This is awesome
@@ -155,7 +151,7 @@ class file
     if (isset($this->Driver) && file_exists(ROOT . '/system/classes/drivers/file/' . $this->Driver . ".php")) {
       require_once ROOT . '/system/classes/drivers/file/' . $this->Driver . ".php";
     } else {
-      logger("Error Finding Driver: " . $this->Driver);
+      mlog("Error Finding Driver: " . $this->Driver);
     }
 
     $file = new ("file_driver_" . $this->Driver); # <--- This is awesome
@@ -164,33 +160,33 @@ class file
 
   public function get($id)
   {
-    if($this->getFileMetadata($id) == false){
-      logger("Failed to get file metadata for: " . $id);
+    if ($this->getFileMetadata($id) == false) {
+      mlog("Failed to get file metadata for: " . $id);
       return false;
     }
-    logger("❌ getting file: " . $this->UniqueID);
+    mlog("❌ getting file: " . $this->UniqueID);
     # Check if the file is public or not
     // This logic needs reworking, disabled for now
     // if($this->PublicFile == 0){
     //   # If the file is private, check if the user is the owner
     //   if($this->Owner != $GLOBALS['User']->id){
-    //     logger("🔒 File is private and user is not the owner");
+    //     mlog("🔒 File is private and user is not the owner");
     //     return false;
     //   }
     // }else{
-    //   logger("🔓 File is public");
+    //   mlog("🔓 File is public");
     // }
     $File = $this->_getFileFromDriver($this->UniqueID); # This should be a complete file object, not individual blobs, encrypted, compressed etc
     $this->Content = $File;
-    logger("✅ 2_file File loaded: " . $this->UniqueID);
-    logger("✅ File Size: " . strlen($File));
+    mlog("✅ 2_file File loaded: " . $this->UniqueID);
+    mlog("✅ File Size: " . strlen($File));
 
     return $this; # Return the file object
   }
 
   public function update()
   {
-    logger("✅ Updating file: " . $this->UniqueID);
+    mlog("✅ Updating file: " . $this->UniqueID);
     $this->Modified = date("Y-m-d H:i:s");
     # Save the file MetaData First
     $this->Mysql->insert("
@@ -221,7 +217,7 @@ class file
     if ($userID == null) {
       $data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `filetype` LIKE '%$FileType%' ORDER BY $fileSort $limitString", true, 5);
     } else {
-      $data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `owner` = '$userID' AND `filetype` LIKE '%$FileType%' ORDER BY $fileSort $limitString", true, 5);
+      $data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $fileSort $limitString", true, 5);
     }
 
 
@@ -242,7 +238,7 @@ class file
     if (isset($this->Driver) && file_exists(ROOT . '/system/classes/drivers/file/' . $this->Driver . ".php")) {
       require_once ROOT . '/system/classes/drivers/file/' . $this->Driver . ".php";
     } else {
-      logger("Error Finding Driver: " . $this->Driver);
+      mlog("Error Finding Driver: " . $this->Driver);
     }
 
     $file = new ("file_driver_" . $this->Driver); # <--- This is awesome
@@ -272,7 +268,7 @@ class file
     $this->Owner = $GLOBALS['User']->id;
     # Set FileType
     $this->FileType = $this->getObjectType($UploadObject['tmp_name']);
-    logger("Saving as type: " . $this->FileType);
+    mlog("Saving as type: " . $this->FileType);
     # Set FileName
     $this->FileName = $UploadObject['name'];
     # Set FileSize

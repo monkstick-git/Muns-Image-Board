@@ -28,7 +28,11 @@ class sql_slaves extends sql
 
   public function connect()
   {
-    $this->mysql = new mysqli($this->selectRandomHost()['host'], $this->selectRandomHost()['user'], $this->selectRandomHost()['pass'], $this->selectRandomHost()['name']);
+    $RandomHost = $this->selectRandomHost();
+    mlog("Slave Connecting to: " . $RandomHost['host'] . " - " . $RandomHost['name'] . " - " . $RandomHost['user'] . " - " . $RandomHost['pass']);
+    #$this->mysql = new mysqli($this->selectRandomHost()['host'], $this->selectRandomHost()['user'], $this->selectRandomHost()['pass'], $this->selectRandomHost()['name']);
+    $this->mysql = new mysqli($RandomHost['host'], $RandomHost['user'], $RandomHost['pass'], $RandomHost['name']);
     $this->mysql->set_charset('utf8');
   }
+
 }

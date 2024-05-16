@@ -4,9 +4,9 @@ $render->render_template('navbar');
 $system->beAuthenticated();
 
 if($_SESSION['User']->has_permission("FILE.READ_OWN")){
-    logger("User has permission to read own files");
+    mlog("User has permission to read own files");
 }else{
-    logger("User does not have permission to read own files");
+    mlog("User does not have permission to read own files");
     $render->render_template('error', array('error' => 'You do not have permission to view your files.'));
     die();
 }

@@ -34,7 +34,7 @@ class file_driver_local
 
     public function set($UniqueID, $content)
     {
-        logger("📂 Recieved file to save: $UniqueID");
+        mlog("📂 Recieved file to save: $UniqueID");
         $this->Encoded = Compress($content);
         # Chunk $content into 1024000 byte (1mb) $chunks
         $DestinationDir = $this->createDirectories($UniqueID);
@@ -50,17 +50,17 @@ class file_driver_local
     {
         $DestinationDir = $this->Dest;
         $DestinationDir .= $UniqueID[0] . "/" . $UniqueID[1] . "/" . $UniqueID[2] . "/";
-        logger("📂 Trying to read the file: $UniqueID");
+        mlog("📂 Trying to read the file: $UniqueID");
         if (!file_exists($DestinationDir . $UniqueID)) {
-            logger("File not found: $UniqueID");
+            mlog("File not found: $UniqueID");
             return false;
         }
         $file = fopen($DestinationDir . $UniqueID, "r");
-        logger("📂 File opened: $UniqueID");
+        mlog("📂 File opened: $UniqueID");
         $content = fread($file, filesize($DestinationDir . $UniqueID));
-        logger("📂 File read: $UniqueID");
+        mlog("📂 File read: $UniqueID");
         fclose($file);
-        logger("📂 File closed: $UniqueID");
+        mlog("📂 File closed: $UniqueID");
         return Expand($content);
     }
 
@@ -70,7 +70,7 @@ class file_driver_local
         $DestinationDir .= $UniqueID[0] . "/" . $UniqueID[1] . "/" . $UniqueID[2] . "/";
         # test if the file exists first
         if (!file_exists($DestinationDir . $UniqueID)) {
-            logger("File not found to delete: $UniqueID");
+            mlog("File not found to delete: $UniqueID");
             return true;
         }else{
             return unlink($DestinationDir . $UniqueID);

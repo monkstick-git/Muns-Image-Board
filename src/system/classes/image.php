@@ -56,7 +56,7 @@ class image extends file
   {
     parent::set();
     # Insert Thumbnail
-    logger("Creating Thumbnail for Image: $this->FileName");
+    mlog("Creating Thumbnail for Image: $this->FileName");
     $thumbnail = $this->Mysql->safe($this->CreateImageThumbNail());
     $this->Mysql->insert("
         INSERT INTO `files-thumbnail` 
@@ -67,11 +67,14 @@ class image extends file
 
   public function get($id)
   {
-    parent::get($id); # This bit works
+    if(parent::get($id) == false) {
+      # Return early if the parent class fails.
+      # There's not going to be a thumbnail if the file doesn't exist
+      return false;
+    }
 
     # This bit I'm still unsure about
-
-    logger("Image.php -> get() -> $id");
+    mlog("Getting Thumbnail for Image: $this->FileID");
     # Get the thumbnail as this is an image
     $Data = $this->Mysql->query("
       SELECT `thumbnail` 

@@ -7,24 +7,24 @@ if ($_SESSION['user']->loggedIn) {
   if (isset($_FILES['filesToUpload'])) {
     # Check if $_POST['public'] is set to 1, if not set it to 0
     if (!isset($_POST['public'])) {
-      logger("✅File privacy is not set, defaulting to private");
+      mlog("✅File privacy is not set, defaulting to private");
       $Privacy = false; # Default to private
     }else{
-      logger("✅Upload File privacy is set to: " . $_POST['public']);
+      mlog("✅Upload File privacy is set to: " . $_POST['public']);
       $Privacy = $_POST['public']; # Set to users choice
       # Convert Privacy "true" and "false" strings to boolean
       $Privacy = filter_var($Privacy, FILTER_VALIDATE_BOOLEAN);
-      logger(gettype($Privacy));
-      logger("🔴 PRIVACY SETTING IS: " . $Privacy);
+      mlog(gettype($Privacy));
+      mlog("🔴 PRIVACY SETTING IS: " . $Privacy);
     }
 
-    logger("File privacy is set to: " . $Privacy);
+    mlog("File privacy is set to: " . $Privacy);
     # Convert the boolean to an int
     if($Privacy == true){
-      logger("✅ File is uploaded with public privacy");
+      mlog("✅ File is uploaded with public privacy");
       $Privacy = 1;
     }else{
-      logger("🔒 File is uploaded with private privacy");
+      mlog("🔒 File is uploaded with private privacy");
       $Privacy = 0;
     }
 

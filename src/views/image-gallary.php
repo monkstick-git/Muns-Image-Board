@@ -10,7 +10,7 @@ ob_start();
       <?php foreach ($FileArray as $key => $value): ?>
         <?php
         $fileValue = $value;
-        $fileID = $fileValue['hash'];
+        $fileID = $fileValue['hash'] . "_" . $fileValue['id'];
         if ($adminMenu):
           $fileOwner = $fileValue['owner'];
           $tmpUser = new user();

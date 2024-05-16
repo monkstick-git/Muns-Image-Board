@@ -6,21 +6,17 @@ if (!isset($_SESSION['logged_in'])) {
   $render->render_template('login');
   die();
 } else {
-  #$render->render_template('login');
+
 }
 
 
 $adminMenu = false;
-#if (isset(($_REQUEST['admin']))) {
 if (isset($_REQUEST['admin']) && $_REQUEST['admin'] == 'true') {
   if ($GLOBALS['User'] && $GLOBALS['User']->is_admin()) {
     $adminMenu = true;
   }
 }
-#}
 
-
-#$page = 1;
 $page = abs(filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT));
 if ($page <= 0) {
   $page = 1;
@@ -42,7 +38,6 @@ if (false == $adminMenu) {
 
 $totalItems = $files->Count($GLOBALS['User']->id);
 $totalPages = ceil($totalItems / $items_per_page);
-#echo($totalItems);
 $render->render_template('image-gallary', array(
   'FileArray' => $FileArray,
   'adminMenu' => $adminMenu

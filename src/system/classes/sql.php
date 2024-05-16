@@ -19,12 +19,14 @@ class sql
 
   public function connect()
   {
+    mlog("Master Connecting to: " . $this->db_host . " - " . $this->db_name . " - " . $this->db_user . " - " . $this->db_pass);
     $this->mysql = new mysqli($this->db_host, $this->db_user, $this->db_pass, $this->db_name);
     $this->mysql->set_charset('utf8');
   }
 
   public function insert($query)
   {
+    mlog($query);
     # Inserts should never be cached
     $return = false;
     $this->connect();
@@ -39,7 +41,7 @@ class sql
 
       return $return;
     } catch (Exception $e) {
-      logger($e->getMessage());
+      mlog($e->getMessage());
       return false;
     }
   }
@@ -48,10 +50,13 @@ class sql
   {
     if($this->cache == false){
       $cache = false;
+      $isCache = "false";
+    }else{
+      $isCache = "true";
     }
+
     $return = array();
-    # Comment and uncomment the line below to enable/disable query logging (DANGEROUS!)
-    //echo $query . "<br>";
+    mlog("Query:" . $query . " - Cache: " . $isCache . " - TTL: " . $ttl . " - Database: " . $this->db_name);
     $this->connect();
     try {
       global $system;
@@ -61,7 +66,7 @@ class sql
         if ($cachedData) {
           $return = unserialize($cachedData);
         } else {
-          logger("Query: $query");
+          mlog($query);
           $result = ($this->mysql->query($query));
           $return = array();
           if ($this->mysql->insert_id) {
@@ -74,7 +79,7 @@ class sql
             }
           }
         }
-        #logger(print_r($result, true));
+        mlog(print_r($result, true));
       } else {
         $result = ($this->mysql->query($query));
         if ($this->mysql->insert_id) {
@@ -91,7 +96,7 @@ class sql
 
       return $return;
     } catch (Exception $e) {
-      logger($e->getMessage());
+      mlog($e->getMessage());
       return false;
     }
   }

@@ -11,9 +11,9 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true) {
 # Check if the permission is set
 # Commenting out as all users should be able to login
 // if($_SESSION['User']->has_permission(SYSTEM_CAN_LOGIN)){
-//     logger("User has permission to login");
+//     mlog("User has permission to login");
 // }else{
-//     logger("User does not have permission to login");
+//     mlog("User does not have permission to login");
 //     $render->render_template('login', array('errors' => 'You do not have permission to login.'));
 //     die();
 // }
@@ -37,11 +37,11 @@ if ($Username && $Password) {
     # Check the CSRF 
     if($CSRF==$_REQUEST['csrf']){
         # CSRF is valid
-        logger("CSRF is valid");
+        mlog("CSRF is valid");
     }else{
-        logger("CSRF is NOT valid");
-        logger("CSRF of User : " . $CSRF);
-        logger("CSRF Recieved: " . $_REQUEST['csrf']);
+        mlog("CSRF is NOT valid");
+        mlog("CSRF of User : " . $CSRF);
+        mlog("CSRF Recieved: " . $_REQUEST['csrf']);
         $render->render_template('login', array('errors' => 'Invalid CSRF token, Please refresh the page and try again.'));
         die();
     }

@@ -2,3 +2,4 @@
 /mysql-data/*
 /src/uploads/*
 /redis-data/*
+/src/logs/*

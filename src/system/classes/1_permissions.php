@@ -22,7 +22,7 @@ class permissions
         $Permission = $Permission[1];
 
         if ($UserID == null) {
-            logger("User ID is NULL, setting to 0 (Guest)");
+            mlog("User ID is NULL, setting to 0 (Guest)");
             $UserID = 0; # Guest user
         }
 
@@ -60,15 +60,15 @@ class permissions
         # Get all the current permissions as an array
         $CurrentPermissions = $this->getAll($id);
         $CurrentPermissions = json_decode($CurrentPermissions, true);
-        logger("Current Permissions is of type: " . gettype($CurrentPermissions));
+        mlog("Current Permissions is of type: " . gettype($CurrentPermissions));
 
         # Check if the user has any permissions (false)
         if ($CurrentPermissions == false) {
-            logger("User does not have any permissions - assuming false");
+            mlog("User does not have any permissions - assuming false");
             $hasPermissions = false;
             $CurrentPermissions = array();
         } else {
-            logger("User has permissions: " . json_encode($CurrentPermissions));
+            mlog("User has permissions: " . json_encode($CurrentPermissions));
             $hasPermissions = true;
         }
 
@@ -79,7 +79,7 @@ class permissions
 
         # Convert the array to a json object
         $NewPermissions = json_encode($NewPermissions);
-        logger("Setting permissions for user $id to $NewPermissions");
+        mlog("Setting permissions for user $id to $NewPermissions");
 
         global $mysql;
         if ($hasPermissions) {
@@ -97,7 +97,7 @@ class permissions
         }
 
         # If we get here, something went wrong
-        logger("Failed to set permissions for user $id");
+        mlog("Failed to set permissions for user $id");
         return false;
 
     }
