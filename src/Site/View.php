@@ -26,6 +26,7 @@ if (isset($fileID)) {
 }
 $file = new image();
 if($file->get($id) == false){
+  logger("Failed to get image:" . $id);
   echo "File not Found or you do not have permission to view this file";
   die();
 }

@@ -56,6 +56,7 @@ class image extends file
   {
     parent::set();
     # Insert Thumbnail
+    logger("Creating Thumbnail for Image: $this->FileName");
     $thumbnail = $this->Mysql->safe($this->CreateImageThumbNail());
     $this->Mysql->insert("
         INSERT INTO `files-thumbnail` 
@@ -66,14 +67,24 @@ class image extends file
 
   public function get($id)
   {
-    parent::get($id);
+    parent::get($id); # This bit works
+
+    # This bit I'm still unsure about
+
+    logger("Image.php -> get() -> $id");
     # Get the thumbnail as this is an image
     $Data = $this->Mysql->query("
       SELECT `thumbnail` 
       FROM `files-thumbnail` 
       WHERE `file_id` = '$this->FileID';", true);
 
-    $this->Thumbnail = $Data[0]['thumbnail'];
+    if ($Data) {
+      $this->Thumbnail = $Data[0]['thumbnail'];
+    } else {
+      $this->Thumbnail = null;
+    }
+
+    return true;
   }
 
   # This function only exists to add a thumbnail to an image for now

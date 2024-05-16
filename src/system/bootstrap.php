@@ -107,6 +107,8 @@ if ((isset($_SESSION['logged_in']) == true)) {
 }
 
 # Check if $_REQUEST contains render=false (r)
+# This is used to disable the site layout, which is useful
+# for API endpoints and displaying raw data
 if (isset($_REQUEST['r']) && $_REQUEST['r'] == "0") {
 
 } else {

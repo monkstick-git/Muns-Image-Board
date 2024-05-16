@@ -20,15 +20,15 @@ class file_driver_mysql
         $this->mysql_slave = $mysql_slaves;
     }
 
-    public function set(int $id, $content, $Hash)
+    public function set($UniqueID, $content)
     {
-        # Hash isn't used here, but it's a good idea to keep it in case we need it later.
-        
         $this->Encoded = Compress($content);
         # Chunk $content into 1024000 byte (1mb) $chunks
         $chunks = str_split($this->Encoded, 1024000);
-        # Get the last insert ID
-        $FileID = $id;
+
+        # Split $UniqueID on _
+        $ID = explode("_", $UniqueID)[1];
+        #$FileID = $UniqueID;
         # Loop through each chunk
         foreach ($chunks as $index => $chunk) {
             $created = $this->mysql->safe(date("Y-m-d H:i:s"));
@@ -37,14 +37,15 @@ class file_driver_mysql
             INSERT INTO `files-chunk` 
                 (`file_id`, `chunk`, `chunk_no`, `created`)
             VALUES
-                ('$FileID', '$chunk', '$index', '$created');
+                ('$ID', '$chunk', '$index', '$created');
         ");
         }
     }
 
-    public function get($id)
+    public function get($UniqueID)
     {
 
+        $id = explode("_", $UniqueID)[1];
         # loop over chunks in DB
         $chunks = $this->mysql_slave->query("SELECT * FROM `files-chunk` WHERE `file_id` = '$id'", true);
 
@@ -53,6 +54,14 @@ class file_driver_mysql
         }, $chunks);
 
         return Expand(implode("", $chunks));
+    }
+
+    public function delete($UniqueID)
+    {
+        $id = explode("_", $UniqueID)[1];
+        # Make sure ID is a valid number and is sanitized
+        $id = $this->mysql->safe($id);
+        $this->mysql->insert("DELETE FROM `files-chunk` WHERE `file_id` = '$id'");
     }
 
 }
