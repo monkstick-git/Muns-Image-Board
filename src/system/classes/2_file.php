@@ -20,6 +20,7 @@ class file
   #public $thummbnail; # This shouldn't tecnically exist here as it's specific to images.
   public $FileHash;
   public $Driver;
+  public $UniqueID;
 
   /**
    * The raw blob of the file
@@ -42,19 +43,31 @@ class file
 
   public function getFileMetadata($id)
   {
-
     # First, we need to figure out if we're dealing with a file ID, or a file Hash
     if (strlen($id) == 32) { # If the ID is 32 characters long, it's a hash
+      logger("Getting Metadata for file with Hash: $id");
       $id = $this->Mysql_Slave->safe($id);
       $data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `hash` = '$id'", true);
-    } else { # Otherwise, it's probably an ID. Confirm with a int check
-      $id = (int) $id;
-      $id = $this->Mysql_Slave->safe($id);
+      if($data == false){
+        logger("Something went wrong getting file metadata for: " . $id);
+      }else{
+        logger("Found metadata for: " . $data[0]['id']);
+      }
+    } else { # Otherwise, it's probably an ID or UniqueID. Confirm with a int check
+      if (!is_numeric($id) && strpos($id, "_") !== false){
+        # If the ID contains an underscore, it's a UniqueID. We can extract the ID from it.
+        $id = explode("_", $id)[1];
+      }else{
+        # If the ID is a number, we can safely use it as is.
+        $id = (int) $id;
+        $id = $this->Mysql_Slave->safe($id);
+      }
       $data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `id` = '$id'", true);
     }
 
     if($data == false){
       # No image found
+      logger("No file found with ID: " . $id);
       return false;
     }
     #$data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `id` = '$id'", true);
@@ -69,10 +82,12 @@ class file
     $this->FileType = $data['filetype'];
     $this->Driver = $data['driver'];
     $this->PublicFile = $data['public'];
+    $this->UniqueID = $data['hash'] . "_" . $data['id'];
+    return true;
   }
 
   public function delete($softDelete = false){
-    logger("❌ Deleting file: " . $this->FileID);
+    logger("❌ Deleting file: " . $this->UniqueID);
     $id = $this->Mysql->safe($this->FileID);
     $this->Mysql->insert("DELETE FROM `files-metadata` WHERE `id` = '$id'");
 
@@ -108,7 +123,10 @@ class file
   ");
 
     # Once Metadate is saved, Save the blob to the driver
+    logger("File Metadata Saved, Getting the ID of the file...");
     $this->FileID = $this->Mysql->insert_id();
+    logger("Done! - File ID: " . $this->FileID);
+    $this->UniqueID = $this->FileHash . "_" . $this->FileID;
     #$this->Content = 
     $this->_saveFileToDriver();
   }
@@ -125,7 +143,7 @@ class file
     }
 
     $file = new ("file_driver_" . $this->Driver); # <--- This is awesome
-    return $file->delete($this->FileID, $this->FileHash);
+    return $file->delete($this->UniqueID);
   }
 
   private function _saveFileToDriver()
@@ -141,33 +159,38 @@ class file
     }
 
     $file = new ("file_driver_" . $this->Driver); # <--- This is awesome
-    return $file->set($this->FileID, $this->Content, $this->FileHash);
+    return $file->set($this->UniqueID, $this->Content);
   }
 
   public function get($id)
   {
     if($this->getFileMetadata($id) == false){
+      logger("Failed to get file metadata for: " . $id);
       return false;
     }
-    logger("❌ getting file: " . $this->FileID);
+    logger("❌ getting file: " . $this->UniqueID);
     # Check if the file is public or not
-    if($this->PublicFile == 0){
-      # If the file is private, check if the user is the owner
-      if($this->Owner != $GLOBALS['User']->id){
-        logger("🔒 File is private and user is not the owner");
-        return false;
-      }
-    }else{
-      logger("🔓 File is public");
-    }
-    $File = $this->_getFileFromDriver($this->FileID); # This should be a complete file object, not individual blobs, encrypted, compressed etc
+    // This logic needs reworking, disabled for now
+    // if($this->PublicFile == 0){
+    //   # If the file is private, check if the user is the owner
+    //   if($this->Owner != $GLOBALS['User']->id){
+    //     logger("🔒 File is private and user is not the owner");
+    //     return false;
+    //   }
+    // }else{
+    //   logger("🔓 File is public");
+    // }
+    $File = $this->_getFileFromDriver($this->UniqueID); # This should be a complete file object, not individual blobs, encrypted, compressed etc
     $this->Content = $File;
-    return $File;
+    logger("✅ 2_file File loaded: " . $this->UniqueID);
+    logger("✅ File Size: " . strlen($File));
+
+    return $this; # Return the file object
   }
 
   public function update()
   {
-    logger("✅ Updating file: " . $this->FileID);
+    logger("✅ Updating file: " . $this->UniqueID);
     $this->Modified = date("Y-m-d H:i:s");
     # Save the file MetaData First
     $this->Mysql->insert("
@@ -223,7 +246,7 @@ class file
     }
 
     $file = new ("file_driver_" . $this->Driver); # <--- This is awesome
-    return $file->get($id, $this->FileHash);
+    return $file->get($this->UniqueID);
   }
 
 
@@ -264,6 +287,7 @@ class file
     $this->FilePath = $UploadObject['tmp_name'];
 
     $this->Content = file_get_contents($UploadObject['tmp_name']);
+    #$this->UniqueID = $this->FileHash . "_" . $this->FileID;
   }
 
   public function getObjectType($path)

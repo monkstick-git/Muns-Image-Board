@@ -32,35 +32,50 @@ class file_driver_local
         return $DestinationDir;
     }
 
-    public function set(int $id, $content, $Hash)
+    public function set($UniqueID, $content)
     {
-
+        logger("📂 Recieved file to save: $UniqueID");
         $this->Encoded = Compress($content);
         # Chunk $content into 1024000 byte (1mb) $chunks
-        $DestinationDir = $this->createDirectories($Hash);
+        $DestinationDir = $this->createDirectories($UniqueID);
 
         # Write the file to disk
-        $file = fopen($DestinationDir . $Hash, "w");
+        $file = fopen($DestinationDir . $UniqueID, "w");
         fwrite($file, $this->Encoded);
         fclose($file);
 
     }
 
-    public function get($id, $hash)
+    public function get($UniqueID)
     {
         $DestinationDir = $this->Dest;
-        $DestinationDir .= $hash[0] . "/" . $hash[1] . "/" . $hash[2] . "/";
-        $file = fopen($DestinationDir . $hash, "r");
-        $content = fread($file, filesize($DestinationDir . $hash));
+        $DestinationDir .= $UniqueID[0] . "/" . $UniqueID[1] . "/" . $UniqueID[2] . "/";
+        logger("📂 Trying to read the file: $UniqueID");
+        if (!file_exists($DestinationDir . $UniqueID)) {
+            logger("File not found: $UniqueID");
+            return false;
+        }
+        $file = fopen($DestinationDir . $UniqueID, "r");
+        logger("📂 File opened: $UniqueID");
+        $content = fread($file, filesize($DestinationDir . $UniqueID));
+        logger("📂 File read: $UniqueID");
         fclose($file);
+        logger("📂 File closed: $UniqueID");
         return Expand($content);
     }
 
-    public function delete($id, $hash)
+    public function delete($UniqueID)
     {
         $DestinationDir = $this->Dest;
-        $DestinationDir .= $hash[0] . "/" . $hash[1] . "/" . $hash[2] . "/";
-        return unlink($DestinationDir . $hash);
+        $DestinationDir .= $UniqueID[0] . "/" . $UniqueID[1] . "/" . $UniqueID[2] . "/";
+        # test if the file exists first
+        if (!file_exists($DestinationDir . $UniqueID)) {
+            logger("File not found to delete: $UniqueID");
+            return true;
+        }else{
+            return unlink($DestinationDir . $UniqueID);
+        }
+        
     }
 
 }
