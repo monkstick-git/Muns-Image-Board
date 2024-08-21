@@ -14,25 +14,16 @@ ob_start();
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/Images/favicons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/Images/favicons/favicon-16x16.png">
   <link rel="manifest" href="/assets/Images/favicons/site.webmanifest">
-  <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
-
-  <!-- Bootstrap core JavaScript
-  ================================================== -->
-  <!-- Placed at the end of the document so the pages load faster -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
-    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-
-  <script src="https://unpkg.com/@popperjs/core@2"></script>
-  <script src="/vendor/twbs/bootstrap/dist/js/bootstrap.min.js"></script>
-  <!-- Bootstrap core CSS -->
-  <link href="/vendor/twbs/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Use only one Bootstrap CSS file -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-
-  <!-- Custom styles for this template -->
+  
+  <link href="https://unpkg.com/filepond/dist/filepond.css" rel="stylesheet">
   <link href="//vjs.zencdn.net/7.10.2/video-js.min.css" rel="stylesheet">
-  <script src="//vjs.zencdn.net/7.10.2/video.min.js"></script>
-  <style type="text/css">
+  
+  <style>
+    /* Consolidated CSS */
     table {
       border: 2px #2b2b2b solid;
       width: 1280px;
@@ -42,17 +33,64 @@ ob_start();
       background-color: #fbfbfb;
     }
 
-    td,
-    th {
+    td, th {
       border: 2px #2b2b2b solid;
       text-align: center;
     }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .card-img-top {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .col-md-4 {
+      margin-bottom: 20px;
+    }
+
+    .btn-group {
+      width: 100%;
+      justify-content: center;
+    }
+
+    @media (min-width: 576px) {
+      .btn-group {
+        justify-content: flex-start;
+      }
+    }
+
+    .text-muted {
+      width: 100%;
+      text-align: center;
+    }
+
+    @media (min-width: 576px) {
+      .text-muted {
+        text-align: left;
+      }
+    }
   </style>
+
   <title>MunBoard</title>
 </head>
 
 <body>
 
-  <?php
-  $template = ob_get_contents();
-  ob_end_clean();
+  <!-- Bootstrap and other scripts loaded deferred -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-vtXRMe3mGCbOeY7l30aIg8H9p3GdeSe4IFlP6G8JMa7o7lXvnz3GFKzPxzJdPfGK" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@popperjs/core@2" defer></script>
+  <script src="/vendor/twbs/bootstrap/dist/js/bootstrap.min.js" defer></script>
+  <script src="//vjs.zencdn.net/7.10.2/video.min.js" defer></script>
+
+<?php
+$template = ob_get_contents();
+ob_end_clean();
+?>

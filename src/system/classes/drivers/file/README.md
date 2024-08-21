@@ -1,21 +1,43 @@
-This directory is used to store your file drivers.
-Drivers are used to store files in different storage providers, such as a database, file, s3 etc.
+# File Drivers
 
-All file drivers must have the following public functions as a minimum.
-$UniqueID is a unique identifier for the file.
-Currently, this is an MD5 hash plus "_" plus the metadata ID.
+This directory is used to store file drivers, which handle file storage across different storage providers such as databases, local files, S3, etc.
 
-get($UniqueID)
-Returns: One complete file of all chunks combined
+## Required Public Functions
 
-set($UniqueID, $Content)
-Returns: True or False (Set, or not set)
+All file drivers must implement the following public functions:
 
-delete($UniqueID)
-Returns: True or False (Deleted, or not deleted)
+### `get($UniqueID)`
 
+**Description**: Retrieves a complete file by combining all chunks associated with the given unique identifier.
 
-The file drivers are NOT responsible for storing metadata about files. Only for storing and retrieving blobs based on the unique ID.
+**Parameters**:
+- `$UniqueID`: A unique identifier for the file. This is typically an MD5 hash concatenated with the metadata ID (e.g., `md5_hash_metadataID`).
 
-## Note
-It is a really good idea to create a util script in the util directory to run the maintenance script for the file driver. This will allow you to run the maintenance script via a cron job.  This helps with the cleanup of old files, and the removal of files that are no longer needed.
+**Returns**: The full file content as a single string or data structure.
+
+### `set($UniqueID, $Content)`
+
+**Description**: Stores the file content in the storage provider.
+
+**Parameters**:
+- `$UniqueID`: A unique identifier for the file.
+- `$Content`: The content of the file to be stored.
+
+**Returns**: `True` if the content is successfully stored, `False` otherwise.
+
+### `delete($UniqueID)`
+
+**Description**: Deletes the file associated with the given unique identifier.
+
+**Parameters**:
+- `$UniqueID`: A unique identifier for the file.
+
+**Returns**: `True` if the file is successfully deleted, `False` otherwise.
+
+## Important Notes
+
+- **File Metadata**: The file drivers are not responsible for storing metadata about the files. They are only responsible for storing and retrieving the binary data (blobs) based on the unique ID.
+
+- **Utility Scripts**: It's a good practice to create a utility script in the `util` directory to run maintenance tasks for the file driver. This script can be scheduled as a cron job to clean up old files and remove files that are no longer needed.
+
+By adhering to these guidelines, you'll ensure consistent behavior across different storage providers and make it easier to maintain and extend your storage capabilities.

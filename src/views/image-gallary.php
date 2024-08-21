@@ -30,23 +30,22 @@ ob_start();
           $adminString = "";
         endif;
         ?>
-        <div class='col-md-4'>
-          <div class='card mb-4 box-shadow'>
-            <a href='<?php echo $fileURL; ?>'><img class='card-img-top lazyload '
-                data-src='<?php echo $thumbnailfileURL; ?>' alt='Thumbnail' style='height: 100%; '
-                src='https://cdn.dribbble.com/users/3251/screenshots/470914/aah.gif' data-holder-rendered='true'
-                lazyload='on'></a>
-            <div class='card-body'>
-              <p class='card-text'><?php echo $fileName; ?></p>
-              <div class='d-flex justify-content-between align-items-center'>
-                <div class='btn-group'>
-                  <a type='button' class='btn btn-sm btn-outline-secondary'
-                    href='/Site/files/details?id=<?php echo $fileID; ?>'>Details</a>
-                    <a type='button' class='btn btn-sm btn-outline-secondary'
-                    href='/Site/files/delete?id=<?php echo $fileID; ?>'>❌ Delete ❌</a>
+        <div class="col-md-4">
+          <div class="card mb-4 box-shadow">
+            <a href="<?php echo $fileURL; ?>">
+              <img class="card-img-top lazyload" data-src="<?php echo $thumbnailfileURL; ?>" alt="Thumbnail"
+                src="<?php echo $thumbnailfileURL; ?>" data-holder-rendered="true" lazyload="on">
+            </a>
+            <div class="card-body">
+              <p class="card-text"><?php echo $fileName; ?></p>
+              <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center">
+                <div class="btn-group mb-2 mb-sm-0">
+                  <a type="button" class="btn btn-sm btn-outline-secondary"
+                    href="/Site/files/details?id=<?php echo $fileID; ?>">Details</a>
+                  <a type="button" class="btn btn-sm btn-outline-secondary"
+                    href="/Site/files/delete?id=<?php echo $fileID; ?>">❌ Delete ❌</a>
                 </div>
-                <small class='text-muted'><?php echo $modified; ?></small>
-                <?php echo $adminString; ?>
+                <small class="text-muted text-center text-sm-start">2024-08-21 13:39:41</small>
               </div>
             </div>
           </div>
@@ -55,7 +54,7 @@ ob_start();
     </div>
   </div>
 </div>
-<script src='https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.js"></script>
 <script>
   $('.lazyload').lazyload();
 </script>

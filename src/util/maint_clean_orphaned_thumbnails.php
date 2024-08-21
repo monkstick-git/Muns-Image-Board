@@ -5,6 +5,7 @@
 require_once '../system/bootstrap-light.php';
 
 global $system;
+mlog("Executing maintenance script: " . basename(__FILE__));
 # Check if the script is being ran via the CLI
 if ((php_sapi_name() == "cli") == false) {
   echo "This script is only available via the CLI";
@@ -22,9 +23,9 @@ $DeletedFiles = array();
 foreach ($files as $fileID => $chunks) {
   $fileClass = new file();
   if ($fileClass->get($fileID) == false) {
-    logger("❌ File not found in metadata: " . $fileID);
+    mlog("❌ File not found in metadata: " . $fileID);
     $DeletedFiles[] = $fileID;
-    logger("Executing: DELETE FROM `files-thumbnail` WHERE `file_id` = '$fileID'");
+    mlog("Executing: DELETE FROM `files-thumbnail` WHERE `file_id` = '$fileID'");
     $mysql->insert("DELETE FROM `files-thumbnail` WHERE `file_id` = '$fileID'");
   }
 }
