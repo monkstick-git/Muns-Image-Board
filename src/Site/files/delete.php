@@ -1,6 +1,7 @@
 <?php
 include '../../system/bootstrap.php';
 $render->render_template('navbar');
+$PreviousPage = $_SERVER['HTTP_REFERER'];
 
 # Displays details of a file
 $hash = filter_input(INPUT_GET, 'id');
@@ -12,6 +13,13 @@ if($_SESSION['user']->id != $file->Owner){
     exit();
 }else{
     mlog("✅ User is the owner of the file - attempting to delete");
-    $file->delete();
+    if($file->delete()){
+        mlog("✅ File deleted");
+    }else{
+        mlog("🔴 File not deleted");
+    }
+    
+    # Redirect back to where the user came from
+    header("Location: $PreviousPage");
 }
 

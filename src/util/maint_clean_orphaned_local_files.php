@@ -7,6 +7,8 @@
 require_once '../system/bootstrap-light.php';
 global $system;
 
+mlog("Executing maintenance script: " . basename(__FILE__));
+
 # Check if the script is being ran via the CLI
 if ((php_sapi_name() == "cli") == false) {
   echo "This script is only available via the CLI";
@@ -23,16 +25,17 @@ $files = new RecursiveIteratorIterator(
 
 $DeletedFiles = array();
 foreach ($files as $file) {
+  # We're not interested in directories yet
   if ($file->isDir()) {
     continue;
   }
   
-  # Get the first 32 characters of the filename
-  $fileID = substr($file->getFilename(), 0, 32);
-  logger("Checking file: " . $fileID);
+  # Get the filename
+  $fileID = $file->getFilename();
+  mlog("Checking file: " . $fileID);
   $fileClass = new file();
   if ($fileClass->get($fileID) == false) {
-    logger("❌ File not found in metadata: " . $fileID);
+    mlog("❌ File not found in metadata: " . $fileID);
     $DeletedFiles[] = $fileID;
     unlink($file->getPathname());
   }
@@ -46,7 +49,7 @@ $files = new RecursiveIteratorIterator(
 $DeletedDirs = array();
 foreach ($files as $file) {
   if ($file->isDir() && count(scandir($file)) == 2) {
-    logger("Removing empty directory: " . $file->getPathname());
+    mlog("Removing empty directory: " . $file->getPathname());
     $DeletedDirs[] = $file->getPathname();
     rmdir($file->getPathname());
   }

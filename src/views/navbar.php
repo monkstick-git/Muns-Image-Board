@@ -1,78 +1,72 @@
 <?php
 
 $MenuItems = array(
-  'NavBar' => array(
-    'Home' => '/',
-    'Upload' => '/Site/Upload',
-    'Gallary' => '/Site/Gallary'
-  ),
-  'RightBarLoggedIn' => array(
-    'account' => array(
-      'Profile' => '/User/profile',
-      'My Files' => '/User/myfiles',
-      'Logout' => '/User/logout'
+    'NavBar' => array(
+        'Home' => '/',
+        'Upload' => '/Site/Upload',
+        'My Files' => '/User/myfiles',        
+        'Gallery' => '/Site/Gallary'
+    ),
+    'RightBarLoggedIn' => array(
+        'account' => array(
+            'Profile' => '/User/profile',
+            'My Files' => '/User/myfiles',
+            'Logout' => '/User/logout'
+        )
+    ),
+    'RightBarLoggedOut' => array(
+        'account' => array(
+            'Register' => '/User/register',
+            'Login' => '/User/login'
+        )
     )
-  ),
-  'RightBarLoggedOut' => array(
-    'account' => array(
-      'Register' => '/User/register',
-      'Login' => '/User/login'
-    )
-  )
 );
-#echo "<pre> " . print_r($_SESSION,true) . "</pre>";
-ob_start();
 
+ob_start();
 ?>
 
 <header>
-  <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">MunBoard</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
-        aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <ul class="navbar-nav mr-auto">
-        <?php foreach ($MenuItems['NavBar'] as $key => $value): ?>
-          <li class="nav-item">
-            <a class="nav-link" href="<?php echo $value; ?>"><?php echo $key; ?></a>
-          </li>
-        <?php endforeach; ?>
-      </ul>
-      <ul class="navbar-nav ml-auto">
-        <?php if ((isset($_SESSION['logged_in']) != true)): ?>
-          <?php foreach ($MenuItems['RightBarLoggedOut'] as $key => $value): ?>
-            <?php if (gettype($value) == 'array'): ?>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" data-toggle="dropdown"
-                  aria-haspopup="true" aria-expanded="false">Logged Out</a>
-                <il class="dropdown-menu">
-                  <?php foreach ($value as $key => $value): ?>
-                    <a class='dropdown-item' href='<?php echo $value; ?>'><?php echo $key; ?></a>
-                  <?php endforeach; ?>
-                </il>
-              </li>
-            <?php endif; ?>
-          <?php endforeach; ?>
-        <?php else: ?>
-          <?php foreach ($MenuItems['RightBarLoggedIn'] as $key => $value): ?>
-            <?php if (gettype($value) == 'array'): ?>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" data-toggle="dropdown"
-                  aria-haspopup="true" aria-expanded="false"><?php echo $GLOBALS['User']->username; ?></a>
-                <div class="dropdown-menu" aria-labelledby="dropdown08">
-                  <?php foreach ($value as $key => $value): ?>
-                    <a class='dropdown-item' href='<?php echo $value; ?>'><?php echo $key; ?></a>
-                  <?php endforeach; ?>
-                </div>
-              </li>
-            <?php endif; ?>
-          <?php endforeach; ?>
-        <?php endif; ?>
-      </ul>
-    </div>
-  </nav>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">MunBoard</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto">
+                    <?php foreach ($MenuItems['NavBar'] as $key => $value): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?= $value; ?>"><?= $key; ?></a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    <?php if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true): ?>
+                        <?php foreach ($MenuItems['RightBarLoggedOut'] as $value): ?>
+                            <?php foreach ($value as $key => $url): ?>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="<?= $url; ?>"><?= $key; ?></a>
+                                </li>
+                            <?php endforeach; ?>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                <?= $GLOBALS['User']->username; ?>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <?php foreach ($MenuItems['RightBarLoggedIn']['account'] as $key => $url): ?>
+                                    <li><a class="dropdown-item" href="<?= $url; ?>"><?= $key; ?></a></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+                </ul>
+            </div>
+        </div>
+    </nav>
 </header>
 <main role="main" class="main">
 

@@ -1,5 +1,14 @@
 <?php
 require_once '../system/bootstrap.php';
+
+if (!isset($_SESSION['logged_in'])) {
+  header('Location: /User/login');
+  $render->render_template('login');
+  die();
+} else {
+
+}
+
 $render->render_template('navbar');
 $system->beAuthenticated();
 

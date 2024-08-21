@@ -5,6 +5,14 @@ ob_start();
 <!-- 
   Hack to force the footer to have a space between content and footer.
  -->
+<style>
+  @media (max-width: 767px) {
+  body {
+      padding-bottom: 60px; /* or any height that suits your footer */
+  }
+}
+
+</style>
 <div class="sticky-bottom" style="height: 5em;">
   </nav>
   </main>

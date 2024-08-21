@@ -6,6 +6,7 @@
 require_once '../system/bootstrap-light.php';
 
 global $system;
+mlog("Executing maintenance script: " . basename(__FILE__));
 # Check if the script is being ran via the CLI
 if ((php_sapi_name() == "cli") == false) {
   echo "This script is only available via the CLI";
@@ -18,11 +19,11 @@ $DeletedFiles = array();
 
 foreach ($FileArray as $file) {
   $LoadedFile = new file();
-  $LoadedFile->get($file['id']);
+  $LoadedFile->get($file['hash'] . "_" . $file['id']);
 
   # Check if the file exists in the file driver
     if (isset($LoadedFile->Content) == false || $LoadedFile->Content == "") {
-        logger("❌ File not found in file driver: " . $file['id']);
+        mlog("❌ File not found in file driver: " . $file['id']);
         $DeletedFiles[] = $file['id'];
         $LoadedFile->delete();
     }
