@@ -5,6 +5,19 @@ ob_start();
 ?>
 
 <div class="container py-5">
+    <div class="d-flex justify-content-end mb-4">
+        <div class="btn-group" role="group" aria-label="Sort Options">
+            <a href="?sortType=name&sortDir=ASC" class="btn btn-outline-secondary btn-sm">Sort by Name ASC</a>
+            <a href="?sortType=name&sortDir=DESC" class="btn btn-outline-secondary btn-sm">Sort by Name DESC</a>
+            <a href="?sortType=size&sortDir=ASC" class="btn btn-outline-secondary btn-sm">Sort by Size ASC</a>
+            <a href="?sortType=size&sortDir=DESC" class="btn btn-outline-secondary btn-sm">Sort by Size DESC</a>
+            <a href="?sortType=created&sortDir=ASC" class="btn btn-outline-secondary btn-sm">Sort by Created ASC</a>
+            <a href="?sortType=created&sortDir=DESC" class="btn btn-outline-secondary btn-sm">Sort by Created DESC</a>
+            <a href="?sortType=modified&sortDir=ASC" class="btn btn-outline-secondary btn-sm">Sort by Modified ASC</a>
+            <a href="?sortType=modified&sortDir=DESC" class="btn btn-outline-secondary btn-sm">Sort by Modified DESC</a>
+        </div>
+    </div>
+
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
         <?php foreach ($FileArray as $key => $value):
             $fileValue = $value;
@@ -58,4 +71,3 @@ ob_start();
 <?php
 $template = ob_get_contents();
 ob_end_clean();
-?>
