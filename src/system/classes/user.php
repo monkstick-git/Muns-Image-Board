@@ -18,7 +18,7 @@ class user
     public $bio;
     public $apiKey;
     public $role;
-
+    public $quota;
     public $CSRF;
     private $Permissions;
 
@@ -135,6 +135,7 @@ class user
         $this->Datecreated = $data['created'];
         $this->bio = $data['bio'];
         $this->apiKey = $data['api'];
+        $this->quota = $data['quota'];
     }
 
     /**

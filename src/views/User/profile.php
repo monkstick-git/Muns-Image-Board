@@ -6,6 +6,7 @@ $FirstName = $_SESSION['user']->name;
 $LastName = $_SESSION['user']->surname;
 $MemberSince = $_SESSION['user']->Datecreated;
 $Space = floor($_SESSION['user']->getSpaceUsed() / 1024 / 1024);
+$Quota = floor($_SESSION['user']->quota);
 $bio = $_SESSION['user']->bio;
 $ImageCount = $_SESSION['user']->getImageCount();
 $apiKey = $_SESSION['user']->apiKey;
@@ -22,7 +23,7 @@ ob_start();
                     <h3 class="mt-3"><?= $FirstName ?> <?= $LastName ?></h3>
                     <p class="text-muted text-center">@<?= $Username ?></p>  <!-- Added text-center class here -->
                     <p><strong>Uploads:</strong> <?= $ImageCount ?></p>
-                    <p><strong>Space Used:</strong> <?= $Space ?> MB</p>
+                    <p><strong>Space Used:</strong> <?= $Space ?>/<?= $Quota ?> MB</p>
                     <a href="/User/edit" class="btn btn-dark mt-2">Edit Profile</a>
                     <p class="mt-3"><?= $bio ?></p>
                 </div>

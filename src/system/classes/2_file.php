@@ -271,6 +271,17 @@ class file
     public function setFromUpload($UploadObject)
     {
         $this->Owner = $GLOBALS['User']->id;
+        # Check if the user has a quota set and if they have reached it before uploading
+        $quota = $GLOBALS['User']->quota;
+        $spaceUsed = floor($GLOBALS['User']->getSpaceUsed() / 1024 / 1024);
+
+        if($spaceUsed >= $quota){
+            mlog("🔴 User has no quota left - denying upload");
+            # set header to 507 to indicate the user has reached their storage limit
+            http_response_code(507);
+            die("You have reached your storage limit");
+        }
+
         $this->FileType = $this->getObjectType($UploadObject['tmp_name']);
         mlog("Saving as type: " . $this->FileType);
         $this->FileName = $UploadObject['name'];

@@ -57,23 +57,48 @@ ob_start();
       _('progress_bar').style.display = 'block';
       var ajax_request = new XMLHttpRequest();
       ajax_request.open("POST", "/Site/Upload");
+      
+      // Upload progress
       ajax_request.upload.addEventListener('progress', function (event) {
         var percent_completed = Math.round((event.loaded / event.total) * 100);
         _('progress_bar_process').style.width = percent_completed + '%';
-        _('progress_bar_process').innerHTML = percent_completed + '% completed';
+        _('progress_bar_process').innerHTML = percent_completed + '% uploaded';
       });
 
+      // On upload completion
       ajax_request.addEventListener('load', function (event) {
-        _('uploaded_image').innerHTML = '<div class="alert alert-success">Files Uploaded Successfully</div>';
-        _('select_file').value = '';
+        if (ajax_request.status === 507) {  // Quota exceeded
+          _('uploaded_image').innerHTML = '<div class="alert alert-danger">Quota reached. Upload failed.</div>';
+        } else if (ajax_request.status === 200) {  // Success
+          // Switch to processing phase
+          _('progress_bar_process').innerHTML = 'Processing... Please wait';
+
+          // Wait for a small delay to simulate processing time, then show success message
+          setTimeout(function () {
+            _('uploaded_image').innerHTML = '<div class="alert alert-success">Files Uploaded Successfully</div>';
+            _('select_file').value = '';
+            _('progress_bar').style.display = 'none';
+            _('progress_bar_process').style.width = '0%';
+            _('progress_bar_process').innerHTML = '0%';
+          }, 2000); // Adjust the delay time as needed
+        } else {  // Other errors
+          _('uploaded_image').innerHTML = '<div class="alert alert-danger">An error occurred during upload. Please try again.</div>';
+        }
+      });
+
+      ajax_request.addEventListener('error', function (event) {
+        _('uploaded_image').innerHTML = '<div class="alert alert-danger">An error occurred during upload. Please try again.</div>';
         _('progress_bar').style.display = 'none';
         _('progress_bar_process').style.width = '0%';
         _('progress_bar_process').innerHTML = '0%';
       });
+
       ajax_request.send(form_data);
     }
   };
 </script>
+
+
 
 <?php
 $template = ob_get_contents();
