@@ -34,7 +34,7 @@ ob_start();
           <div class="card mb-4 box-shadow">
             <a href="<?php echo $fileURL; ?>">
               <img class="card-img-top lazyload" data-src="<?php echo $thumbnailfileURL; ?>" alt="Thumbnail"
-                src="<?php echo $thumbnailfileURL; ?>" data-holder-rendered="true" lazyload="on">
+                src="/assets/Images/loading.gif" data-holder-rendered="true" lazyload="on">
             </a>
             <div class="card-body">
               <p class="card-text"><?php echo $fileName; ?></p>
