@@ -63,7 +63,7 @@ class image extends file
         imagejpeg($tmp_img);
         $image_string = ob_get_contents();
         ob_end_clean();
-
+        $this->Thumbnail = $image_string;
         return $image_string;
     }
 
