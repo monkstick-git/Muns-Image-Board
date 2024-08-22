@@ -35,14 +35,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $image->set();
 
         $type = explode("/", $image->FileType)[1];
-        respondWithSuccess($settings['site_url'] . "images/raw/" . $image->FileHash . "_" . $image->FileID . "." . $type . "?api=1", $image->FileType);
+        respondWithSuccess($settings['site_url'] . "images/raw/" . $image->FileHash . "_" . $image->FileID . "." . $type, $image->FileType);
     } else {
         // Handle non-image files
         $exploded = explode(".", $_FILES['data']['name']);
         $fileTypeGuess = end($exploded); // Guess the file type based on extension
         $file->set();
         
-        respondWithSuccess($settings['site_url'] . "Site/download/" . $file->FileHash . "_" . $file->FileID . "." . $fileTypeGuess . "?api=1", $file->FileType);
+        respondWithSuccess($settings['site_url'] . "Site/download/" . $file->FileHash . "_" . $file->FileID . "." . $fileTypeGuess, $file->FileType);
     }
 } else {
     respondWithError(405, "Method Not Allowed");
