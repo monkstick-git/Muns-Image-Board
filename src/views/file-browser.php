@@ -30,6 +30,8 @@ ob_start();
             $ownerName = $tmpUser->username;
             $fileType = explode("/", ($fileValue['filetype']))[1];
             $fileURL = "/Site/download/$uniqueID.$fileType?r=0";
+            $imageURL = "/images/raw/$uniqueID.$fileType";
+            $thumbnailURL = "/images/thumbnail/$uniqueID.$fileType";
             $file = new image();
             $file->getFileMetadata($uniqueID);
             $fileName = $file->FileName;
@@ -55,6 +57,12 @@ ob_start();
                             <strong>Size:</strong> <?= $Size ?><br>
                             <strong>Owner:</strong> <?= $ownerName ?><br>
                             <strong>Type:</strong> <?= $type ?>
+                            <?php if (strpos($type, 'image/') === 0): ?>
+                                <br>
+                                <a href="<?=  $imageURL ?>" target="_blank">
+                                    View Image
+                                </a>
+                            <?php endif; ?>
                         </p>
                     </div>
                     <div class="card-footer d-flex justify-content-between">
@@ -63,7 +71,6 @@ ob_start();
                     </div>
                 </div>
             </div>
-
         <?php endforeach; ?>
     </div>
 </div>
