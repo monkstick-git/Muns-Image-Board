@@ -2,6 +2,7 @@
   "require": {
       "predis/predis": "1.1.10",
       "twbs/bootstrap": "5.3.3",
-      "maestroerror/php-heic-to-jpg": "1.0.7"
+      "maestroerror/php-heic-to-jpg": "1.0.7",
+      "videojs/video.js": "8.17.3"
   }
 }

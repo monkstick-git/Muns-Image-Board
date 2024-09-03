@@ -14,6 +14,8 @@ ob_start();
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/Images/favicons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/Images/favicons/favicon-16x16.png">
   <link rel="manifest" href="/assets/Images/favicons/site.webmanifest">
+  <link href="//vjs.zencdn.net/8.3.0/video-js.min.css" rel="stylesheet">
+  <script src="//vjs.zencdn.net/8.3.0/video.min.js"></script>
   
   <!-- Use only one Bootstrap CSS file -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -71,6 +73,7 @@ ob_start();
       width: 100%;
       text-align: center;
     }
+
 
     @media (min-width: 576px) {
       .text-muted {

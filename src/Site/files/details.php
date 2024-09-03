@@ -6,11 +6,11 @@ $render->render_template('navbar');
 $hash = filter_input(INPUT_GET, 'id');
 $file = new file();
 $file->get($hash);
-if (explode("/", $file->FileType)[0] === "image") {
+if ((explode("/", $file->FileType)[0] === "image") || (explode("/", $file->FileType)[0] === "video")) {
   $type = $file->FileType;
   $FileHash = $file->FileHash;
   $render->render_template('image-details', array(
-    'image' => $file
+    'file' => $file
   )
   );
 } else {

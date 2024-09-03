@@ -18,6 +18,8 @@ ob_start();
           $ownerName = $tmpUser->username;
         endif;
         $fileType = explode("/", ($fileValue['filetype']))[1];
+        $fileContentType = explode("/", ($fileValue['filetype']))[0]; # Image, Video etc
+
         $thumbnailfileURL = "/images/thumbnail/$fileID.$fileType";
         $fileURL = "/images/raw/$fileID.$fileType";
         $file = new image();
@@ -30,26 +32,17 @@ ob_start();
           $adminString = "";
         endif;
         ?>
-        <div class="col-md-4">
-          <div class="card mb-4 box-shadow">
-            <a href="<?php echo $fileURL; ?>">
-              <img class="card-img-top lazyload" data-src="<?php echo $thumbnailfileURL; ?>" alt="Thumbnail"
-                src="/assets/Images/loading.gif" data-holder-rendered="true" lazyload="on">
-            </a>
-            <div class="card-body">
-              <p class="card-text"><?php echo $fileName; ?></p>
-              <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center">
-                <div class="btn-group mb-2 mb-sm-0">
-                  <a type="button" class="btn btn-sm btn-outline-secondary"
-                    href="/Site/files/details?id=<?php echo $fileID; ?>">Details</a>
-                  <a type="button" class="btn btn-sm btn-outline-secondary"
-                    href="/Site/files/delete?id=<?php echo $fileID; ?>">❌ Delete ❌</a>
-                </div>
-                <small class="text-muted text-center text-sm-start">2024-08-21 13:39:41</small>
-              </div>
-            </div>
-          </div>
-        </div>
+      <?php 
+        // If the file is an image, display it
+        if ($fileContentType == "image"):
+          insertImageCard($fileURL, $thumbnailfileURL, $fileName, $fileID, $modified);
+        endif;
+
+        // If the file is a video, display a video card
+        if ($fileContentType == "video"):
+          insertVideoCard($fileURL, $fileName, $fileID, $modified);
+        endif;
+      ?>
       <?php endforeach; ?>
     </div>
   </div>

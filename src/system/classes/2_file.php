@@ -205,7 +205,7 @@ class file
      * Finds files based on the owner, type, order, and limit.
      *
      * @param int|null $userID The owner of the file or NULL for all users.
-     * @param string|null $fileType The type of file to find.
+     * @param mixed|null $fileType The type of files to find. Supply an array for multiple types.
      * @param string $fileSort The order to return the files in.
      * @param int $limit The number of files to return.
      * @return array An array of file objects.
@@ -213,13 +213,29 @@ class file
     public function Find($userID = null, $fileType = null, $fileSort = "`id` DESC", $limit = 1)
     {
         $id = $this->Mysql_Slave->safe($userID);
-        $FileType = $this->Mysql_Slave->safe($fileType);
+        
+        #$FileType = $this->Mysql_Slave->safe($fileType); # This is not needed any more, moved to the query
         $limitString = "LIMIT $limit";
+
+        # Build the query based on the fileType
+        # Sample: SELECT * FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $fileSort $limitString
+        if (is_array($fileType)) {
+            $Query = "SELECT * FROM `files-metadata` WHERE `owner` = '$id' AND";
+            foreach ($fileType as $key => $value) {
+                $FileType = $this->Mysql_Slave->safe($value);
+                $Query .= " `filetype` LIKE '%$FileType%' OR";
+            }
+            $Query = rtrim($Query, "OR");
+
+        } else {
+            $FileType = $this->Mysql_Slave->safe($fileType);
+            $Query = "SELECT * FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%'";
+        }
 
         if ($userID == null) {
             $data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `filetype` LIKE '%$FileType%' ORDER BY $fileSort $limitString", true, 5);
         } else {
-            $data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%' ORDER BY $fileSort $limitString", true, 5);
+            $data = $this->Mysql_Slave->query("$Query ORDER BY $fileSort $limitString", true, 5);
         }
 
         $files = array();

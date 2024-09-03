@@ -60,6 +60,7 @@ $redis = new Predis\Client('tcp://redis:6379');
 // Include settings and core functions
 require_once ROOT . '/system/settings.php';
 require_once ROOT . '/system/functions.php';
+require_once ROOT . '/system/viewSnippets.php';
 
 // Make $settings accessible globally
 global $settings;

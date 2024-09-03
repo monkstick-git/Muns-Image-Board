@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1e7b9f03fb122f39a9f93d186b435a9a",
+    "content-hash": "2d1db1b1f17c3deb55ea2b1d3326390c",
     "packages": [
         {
             "name": "maestroerror/heif-converter",
@@ -206,6 +206,39 @@
                 "source": "https://github.com/twbs/bootstrap/tree/v5.3.3"
             },
             "time": "2024-02-20T15:14:29+00:00"
+        },
+        {
+            "name": "videojs/video.js",
+            "version": "v8.17.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/videojs/video.js.git",
+                "reference": "c4007dbea3e632fedc8b227815861248cc8bbd40"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/videojs/video.js/zipball/c4007dbea3e632fedc8b227815861248cc8bbd40",
+                "reference": "c4007dbea3e632fedc8b227815861248cc8bbd40",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "An HTML5 video player.",
+            "homepage": "https://www.videojs.com/",
+            "keywords": [
+                "HTML5",
+                "player",
+                "video",
+                "videojs"
+            ],
+            "support": {
+                "issues": "https://github.com/videojs/video.js/issues",
+                "source": "https://github.com/videojs/video.js/tree/v8.17.3"
+            },
+            "time": "2024-07-30T17:07:29+00:00"
         }
     ],
     "packages-dev": [],

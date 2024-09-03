@@ -33,7 +33,7 @@ $limit = "$offset, $items_per_page";
 $files = new file();
 
 // Fetch the files to display based on user role (admin or regular user).
-$FileArray = $adminMenu ? $files->Find(null, 'image', "`id` DESC", $limit) : $files->Find($GLOBALS['User']->id, 'image', "`id` DESC", $limit);
+$FileArray = $adminMenu ? $files->Find(null, array("image","video"), "`id` DESC", $limit) : $files->Find($GLOBALS['User']->id, array("image","video"), "`id` DESC", $limit);
 
 // Calculate the total number of pages for pagination.
 $totalItems = $files->Count($GLOBALS['User']->id);
