@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Inserts a card template with the given file details and content.
+ *
+ * @param string $fileName The name of the file.
+ * @param string $fileID The unique ID of the file.
+ * @param string $uploadDate The date the file was uploaded.
+ * @param string $htmlContent The HTML content to be inserted inside the card.
+ *
+ * @return void
+ */
 function insertCardTemplate($fileName, $fileID, $uploadDate, $htmlContent)
 {
     echo '
@@ -19,17 +29,38 @@ function insertCardTemplate($fileName, $fileID, $uploadDate, $htmlContent)
     </div>';
 }
 
+/**
+ * Inserts an image card with a file thumbnail and link to the file.
+ *
+ * @param string $fileURL The URL of the full-sized image file.
+ * @param string $thumbnailfileURL The URL of the image thumbnail.
+ * @param string $fileName The name of the image file.
+ * @param string $fileID The unique ID of the file.
+ * @param string $uploadDate The date the file was uploaded.
+ *
+ * @return void
+ */
 function insertImageCard($fileURL, $thumbnailfileURL, $fileName, $fileID, $uploadDate)
 {
     $htmlContent = '
     <a href="' . htmlspecialchars($fileURL) . '">
         <img class="card-img-top lazyload" data-src="' . htmlspecialchars($thumbnailfileURL) . '" alt="Thumbnail"
-             src="/assets/Images/loading.gif" data-holder-rendered="true" lazyload="on">
+             src="/assets/Images/loading.webp" data-holder-rendered="true" lazyload="on">
     </a>';
 
     insertCardTemplate($fileName, $fileID, $uploadDate, $htmlContent);
 }
 
+/**
+ * Inserts a video card with a video player.
+ *
+ * @param string $fileURL The URL of the video file.
+ * @param string $fileName The name of the video file.
+ * @param string $fileID The unique ID of the file.
+ * @param string $uploadDate The date the file was uploaded.
+ *
+ * @return void
+ */
 function insertVideoCard($fileURL, $fileName, $fileID, $uploadDate)
 {
     $htmlContent = '
@@ -46,5 +77,3 @@ function insertVideoCard($fileURL, $fileName, $fileID, $uploadDate)
 
     insertCardTemplate($fileName, $fileID, $uploadDate, $htmlContent);
 }
-
-?>

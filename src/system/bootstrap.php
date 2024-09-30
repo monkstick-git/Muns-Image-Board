@@ -40,6 +40,7 @@ $logger = new log($_SERVER['REMOTE_ADDR']);
  */
 function mlog($Message, $Severity = "info")
 {
+    //return 0;
     $trace = debug_backtrace();
     $Class = $trace[1]['class'] ?? "Unknown";
     $Function = $trace[1]['function'] ?? "Unknown";

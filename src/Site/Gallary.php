@@ -33,11 +33,18 @@ $limit = "$offset, $items_per_page";
 $files = new file();
 
 // Fetch the files to display based on user role (admin or regular user).
-$FileArray = $adminMenu ? $files->Find(null, array("image","video"), "`id` DESC", $limit) : $files->Find($GLOBALS['User']->id, array("image","video"), "`id` DESC", $limit);
+$FileArray = $adminMenu ? $files->Find(null, array("image"), "`id` DESC", $limit) : $files->Find($GLOBALS['User']->id, array("image"), "`id` DESC", $limit);
 
 // Calculate the total number of pages for pagination.
 $totalItems = $files->Count($GLOBALS['User']->id);
 $totalPages = ceil($totalItems / $items_per_page);
+
+
+$render->render_template('paginate', [
+    'page' => $page,
+    'pages' => $totalPages,
+    'url' => "/Site/Gallary?page=",
+]);
 
 // Render the image gallery.
 $render->render_template('image-gallary', [

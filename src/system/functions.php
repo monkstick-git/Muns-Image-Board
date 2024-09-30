@@ -53,7 +53,7 @@ function Expand($data)
  * @param string $data The data to compress and encode.
  * @return string The compressed and base64-encoded string.
  */
-function Compress($data)
+function Compress($data, $level = 1, $encoding = "base64")
 {
     $data = gzcompress($data, 1);
     $data = base64_encode($data);

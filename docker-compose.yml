@@ -16,9 +16,8 @@ services:
 
   mysql:
     image: mysql:8
-    container_name: mysql
     env_file:
-      - "${sitePath}/.env"    
+      - "${sitePath}/.env"
     volumes:
       - ${sitePath}/mysql-data:/var/lib/mysql
     environment:
@@ -40,8 +39,8 @@ services:
       replicas: 1
       resources:
         limits:
-          cpus: "1"
-          memory: "128M"
+          cpus: "2"
+          memory: "256M"
     # ignored for docker swarm
     depends_on:
       - php
@@ -67,11 +66,11 @@ services:
     image: "devilbox/php-fpm:8.2-prod"
     restart: always
     deploy:
-      replicas: 1
+      replicas: 2
       resources:
         limits:
           cpus: "4"
-          memory: "1024M"
+          memory: "2048M"
     extra_hosts:
       - "host.docker.internal:host-gateway"
     # ignored for docker swarm
@@ -82,3 +81,11 @@ services:
       - type: bind
         source: "${sitePath}/docker-configs/custom-php"
         target: "/etc/php-custom.d"
+
+# phpdoc/phpdoc
+  # phpdoc:
+  #   image: phpdoc/phpdoc
+  #   volumes:
+  #     - ${sitePath}/src:/data
+  #   ports:
+  #     - "8083:80"

@@ -23,7 +23,7 @@ $settings['banned_formats'] = array(
 );
 
 // Cache Settings
-$settings['cache'] = true;
+$settings['cache'] = false;
 
 // File Storage Driver
 // Options: "mysql" or "local"
