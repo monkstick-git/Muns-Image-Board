@@ -35,8 +35,13 @@ class system
      */
     public function beAuthenticated()
     {
-        if (!isset($_SESSION['User'])) {
+        # Check if username is set in the session
+        $Username = $_SESSION['User']->username ?? false;
+
+        if (!$Username) {
             $this->redirect('/User/login');
+        }else{
+            return true;
         }
     }
 

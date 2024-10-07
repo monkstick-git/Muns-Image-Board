@@ -119,6 +119,19 @@ class user
         }
     }
 
+    public function getAllUsers(){
+        global $mysql_slaves;
+        $Users = $mysql_slaves->query("SELECT * FROM `users`");
+        $UserArray = array();
+        foreach($Users as $User){
+            $UserArray[] = new user();
+            $UserArray[count($UserArray) - 1]->populate_user_data($User);
+        }
+
+        return $UserArray;
+        
+    }
+
     /**
      * Populates the user object with data from the database.
      *
@@ -176,7 +189,7 @@ class user
             $this->get_user_by_id($result);
             return true;
         } else {
-            mlog("Error creating user: " . $mysql->error);
+            mlog("Error creating user: " . $this->username);
             return false;
         }
     }
