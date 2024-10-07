@@ -55,6 +55,7 @@ class image extends file
         }
 
         // Create a new true color image
+        logger("Creating Thumbnail: $new_width x $new_height");
         $tmp_img = imagecreatetruecolor($new_width, $new_height);
         imagecopyresampled($tmp_img, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
 

@@ -7,7 +7,7 @@ class render
 
     public function __construct()
     {
-        $this->render_template('header');
+        $this->render_template('Core/header');
     }
 
     public function __destruct()
@@ -19,13 +19,13 @@ class render
     {
         #echo "rendering template: $templateName\n";
         # Arguments can be used to pass variables to the template if it accepts any.
-        include ROOT . '/views/' . $templateName . '.php';
+        include ROOT . '/Views/' . $templateName . '.php';
         $this->buffer = $this->buffer . " " . $template;
     }
 
     public function render_flush()
     {
-        $this->render_template('footer');
+        $this->render_template('Core/footer');
         $this->buffer .= "</html>";
         echo $this->buffer;
     }

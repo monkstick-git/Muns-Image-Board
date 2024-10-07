@@ -21,8 +21,8 @@ function insertCardTemplate($fileName, $fileID, $uploadDate, $htmlContent)
                 <h6 class="card-subtitle mb-2 text-muted">' . htmlspecialchars($uploadDate) . '</h6>
                 <p class="card-text">Click the buttons below to view details or delete this file.</p>
                 <div class="d-flex justify-content-between">
-                    <a href="/Site/files/details?id=' . htmlspecialchars($fileID) . '" class="btn btn-primary">Details</a>
-                    <a href="/Site/files/delete?id=' . htmlspecialchars($fileID) . '" class="btn btn-danger">❌ Delete ❌</a>
+                    <a href="/File/Details?id=' . htmlspecialchars($fileID) . '" class="btn btn-primary">Details</a>
+                    <a href="/File/Delete?id=' . htmlspecialchars($fileID) . '" class="btn btn-danger">❌ Delete ❌</a>
                 </div>
             </div>
         </div>
@@ -44,9 +44,13 @@ function insertImageCard($fileURL, $thumbnailfileURL, $fileName, $fileID, $uploa
 {
     $htmlContent = '
     <a href="' . htmlspecialchars($fileURL) . '">
-        <img class="card-img-top lazyload" data-src="' . htmlspecialchars($thumbnailfileURL) . '" alt="Thumbnail"
-             src="/assets/Images/loading.webp" data-holder-rendered="true" lazyload="on">
+        <img class="card-img-top lazyload" 
+             src="/assets/Images/loading.webp" 
+             data-src="' . htmlspecialchars($thumbnailfileURL) . '" 
+             alt="Thumbnail" 
+             loading="lazy">
     </a>';
+    
 
     insertCardTemplate($fileName, $fileID, $uploadDate, $htmlContent);
 }

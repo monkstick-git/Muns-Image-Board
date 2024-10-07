@@ -13,6 +13,25 @@ ini_set('post_max_size', '512M');
 
 // Define the root path of the application
 define('ROOT', "/var/www/default/htdocs/httpdocs/");
+include_once ROOT . '/system/translation.php';
+
+$cssIncludes = array();
+$jsIncludes = array();
+
+// Include the necessary CSS and JS files
+$cssIncludes[] = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css";
+$cssIncludes[] = "https://unpkg.com/filepond@4.31.4/dist/filepond.min.css";
+$cssIncludes[] = "https://vjs.zencdn.net/7.24.1/video-js.min.css";
+$cssIncludes[] = "/assets/css/normalize.css";
+$cssIncludes[] = "/assets/css/style.css";
+
+$jsIncludes[] = "/assets/js/jquery-3.7.1.min.js";
+$jsIncludes[] = "/assets/js/site.js";
+$jsIncludes[] = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js";
+$jsIncludes[] = "https://unpkg.com/filepond@4.31.4/dist/filepond.min.js";
+$jsIncludes[] = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js";
+$jsIncludes[] = "https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.js";
+$jsIncludes[] = "https://vjs.zencdn.net/7.24.1/video.min.js";
 
 // Get the client's real IP address, accounting for proxies and Cloudflare
 $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
@@ -62,6 +81,9 @@ $redis = new Predis\Client('tcp://redis:6379');
 require_once ROOT . '/system/settings.php';
 require_once ROOT . '/system/functions.php';
 require_once ROOT . '/system/viewSnippets.php';
+
+// Include core controller
+require_once ROOT . '/Controllers/Controller.php';
 
 // Make $settings accessible globally
 global $settings;
@@ -146,6 +168,6 @@ if (isset($_REQUEST['r']) && $_REQUEST['r'] == "0") {
     } else {
         // Site Layout
         $Buffer = "";
-        $render = new render();
+        #$render = new render();
     }
 }
