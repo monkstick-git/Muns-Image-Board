@@ -4,14 +4,21 @@
 class render
 {
     public $buffer = "";
+    public $responseCode = "200"; # Default response code is 200 OK
 
     public function __construct()
     {
         $this->render_template('Core/header');
     }
 
+    public function setResponseCode($code)
+    {
+        $this->responseCode = $code;
+    }
+
     public function __destruct()
     {
+        http_response_code($this->responseCode);
         $this->render_flush();
     }
 

@@ -20,6 +20,7 @@ class user
     public $role;
     public $quota;
     public $CSRF;
+    public $totalSpaceUsed;
     private $Permissions;
 
     /**
@@ -149,6 +150,7 @@ class user
         $this->bio = $data['bio'];
         $this->apiKey = $data['api'];
         $this->quota = $data['quota'];
+        $this->totalSpaceUsed = $this->getSpaceUsed();
     }
 
     /**
@@ -296,13 +298,22 @@ class user
      *
      * @return int The total space used in bytes.
      */
-    public function getSpaceUsed()
+    public function getSpaceUsed(): int
     {
         global $mysql_slaves;
         $id = $mysql_slaves->safe($this->id);
         $id = $mysql_slaves->query("SELECT SUM(`size`) AS `size` FROM `files-metadata` WHERE `owner` = '$id'");
         $result = $id[0];
-        return $result['size'];
+        $SpaceUsed = $result['size'];
+        # Check to ensure SpaceUsed is not null before returning
+        if ($SpaceUsed == null) {
+            mlog("SpaceUsed is null for userID: $id, returning 0");
+            $this->totalSpaceUsed = 0;
+            return 0;
+        }
+        
+        $this->totalSpaceUsed = $SpaceUsed;
+        return $SpaceUsed;
     }
 
     /**

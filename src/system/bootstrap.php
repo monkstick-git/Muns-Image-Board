@@ -7,9 +7,13 @@
  * loads essential classes, and handles session management.
  */
 
+// Check if the site is being accessed via the api and then exit early
+
+
+
 // Set PHP memory limits
-ini_set('memory_limit', '512M');
-ini_set('post_max_size', '512M');
+ini_set('memory_limit', '1024M'); # Set to larger value if larger uploads are expected
+ini_set('post_max_size', '1024M'); # Set to larger value if larger uploads are expected
 
 // Define the root path of the application
 define('ROOT', "/var/www/default/htdocs/httpdocs/");
@@ -128,16 +132,6 @@ global $system;
 $system = new system();
 logger("System Loaded");
 
-// Set session cookie parameters (commented out for now)
-// session_set_cookie_params([
-//     'path' => '/',
-//     'domain' => $_SERVER['HTTP_HOST'],
-//     'httponly' => true,
-//     'samesite' => 'lax'
-// ]);
-
-// Define page constants and whitelisted pages
-$whitelisted_pages = array('/User/login', '/User/register', '/User/logout');
 $page = str_replace(".php", "", $_SERVER['DOCUMENT_URI']);
 define('PAGE', $page);
 

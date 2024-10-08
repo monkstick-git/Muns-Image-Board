@@ -72,7 +72,8 @@ class file_driver_mysql
         }, $chunks);
 
         // Decompress and return the file content
-        return Expand(implode("", $chunks));
+            return Expand(implode("", $chunks)); // Decompress and unencode the content
+        
     }
 
     /**

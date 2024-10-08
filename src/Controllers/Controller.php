@@ -15,12 +15,17 @@ class Controller
     public $ArgumentList;
     public $PreviousPage;
 
-    public function __construct()
+    public function __construct($DisableRender = false)
     {
         global $system;
         include_once(ROOT . '/Controllers/Helpers/helper.php');
 
-        $this->render = new Render();
+        // If the DisableRender flag is set to false, create a new render object. 
+        // It should be set to false when the controller is being used as an API controller.
+        if($DisableRender == false){
+            $this->render = new Render();
+        }
+        
         $this->system = $system;
         $this->requestType = $_SERVER['REQUEST_METHOD'];
         $this->populateArgumentList();

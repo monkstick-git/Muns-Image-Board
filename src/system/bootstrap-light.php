@@ -9,6 +9,8 @@
 
 // Define Root Path
 define('ROOT', "/var/www/default/htdocs/httpdocs/");
+include_once ROOT . '/system/translation.php';
+
 
 // Determine if the script is running in the CLI
 $isCLI = (php_sapi_name() == "cli");
@@ -49,6 +51,9 @@ $redis = new Predis\Client('tcp://redis:6379');
 require_once ROOT . '/system/settings.php';
 require_once ROOT . '/system/functions.php';
 
+// Include core controller
+require_once ROOT . '/Controllers/Controller.php';
+
 // Handle web-specific tasks if not running in CLI
 if (!$isCLI) {
     // Get the client's real IP address, accounting for proxies and Cloudflare
@@ -69,6 +74,10 @@ global $settings;
 // Include all PHP files in the system/classes/ directory
 $classes = glob(ROOT . '/system/classes/*.php');
 foreach ($classes as $class) {
+    # Check if the file is renderer.php
+    if (strpos($class, 'renderer.php') !== false) {
+        continue; // Skip the renderer class as it is not needed for the api
+    }
     require_once $class;
 }
 
@@ -108,7 +117,6 @@ logger("System Loaded");
 
 // Handle web-specific tasks if not running in CLI
 if (!$isCLI) {
-    $whitelisted_pages = array('/User/login', '/User/register', '/User/logout');
     $page = str_replace(".php", "", $_SERVER['DOCUMENT_URI']);
     define('PAGE', $page);
 

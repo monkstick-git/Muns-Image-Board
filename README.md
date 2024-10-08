@@ -112,6 +112,22 @@ Goto site:port/system/install.php to populate the database and create the schema
 - docker + docker-compose
 - git
 
+### Using the API
+The provided API has been written to be as simple as possible. It is designed to be used with ShareX, but can be used with any tool that supports HTTP POST requests.
+To use it, you will need to create a new custom uploader in ShareX. To do this, go to Destinations -> Destination Settings -> Destination -> Image Uploader -> Custom uploader settings.
+Fill in the following fields:
+Name: A name for the uploader
+Destination Type: Image uploader
+Method: POST
+Request URL: http://yourdomain.com/api/v1/Upload
+URL Parameters: api - your API key
+Body: Form data (multipart/form-data)
+File form name: data
+URL: {json:url}
+
+Here's an example screenshot:
+![alt text](image.png)
+
 ## Roadmap
 
 - [ ] Add Changelog

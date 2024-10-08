@@ -1,23 +1,34 @@
 {
+    "404/Index": "",    
+
+    "Admin/Index": "",
+    "Admin/Users": "",
+    "Admin/Files": "",
+
+    "Api/Index": "",
+    "ApiV1/Index": "",
+    "ApiV1/Files": "",
+    "ApiV1/Upload": "",
+
+    "File/Upload": "",
+    "File/ProcessUpload": "",
+    "File/Delete": "",
+    "File/Download": "",
+    "File/Details": "",    
+
     "Home/Index": "",
+    "Home/TestStyle": "",
+    "Home/Gallery": "",
+    
+    "Image/Raw": "",
+    "Image/Thumbnail": "",
+    
     "User/Login": "",
     "User/Logout": "",
     "User/Profile": "",
     "User/Edit": "",
     "User/Files": "",
     "User/LoggedOut": "",
-    "404/Index": "",
-    "Home/TestStyle": "",
-    "Home/Gallery": "",
-    "User/Register": "",
-    "Image/Raw": "",
-    "Image/Thumbnail": "",
-    "File/Upload": "",
-    "File/ProcessUpload": "",
-    "File/Delete": "",
-    "File/Download": "",
-    "File/Details": "",
-    "Admin/Index": "",
-    "Admin/Users": "",
-    "Admin/Files": ""
+    "User/Register": ""
+
 }

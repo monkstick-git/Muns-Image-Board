@@ -40,7 +40,7 @@ services:
       resources:
         limits:
           cpus: "2"
-          memory: "256M"
+          memory: "1024M" # Set to larger value if you need to support larger file uploads
     # ignored for docker swarm
     depends_on:
       - php
