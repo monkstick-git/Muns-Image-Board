@@ -17,8 +17,7 @@ ob_start();
 
   <?php
     # Loop through $cssIncludes and include each CSS file.
-    global $cssIncludes;
-    foreach ($cssIncludes as $css) {
+    foreach (Registry::get('cssIncludes') as $css) {
         echo "<link href=\"$css\" rel=\"stylesheet\">\n";
     }
   ?>

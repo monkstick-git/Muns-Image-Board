@@ -8,8 +8,6 @@
  */
 class file_driver_mysql
 {
-    public $mysql;
-    public $mysql_slave;
     public $Driver;
     public $Encoded;
 
@@ -18,10 +16,7 @@ class file_driver_mysql
      */
     public function __construct()
     {
-        global $mysql;
-        $this->mysql = $mysql;
-        global $mysql_slaves;
-        $this->mysql_slave = $mysql_slaves;
+
     }
 
     /**
@@ -42,8 +37,8 @@ class file_driver_mysql
 
         // Loop through each chunk and save it to the database
         foreach ($chunks as $index => $chunk) {
-            $created = $this->mysql->safe(date("Y-m-d H:i:s"));
-            $this->mysql->insert("
+            $created = Registry::get('Sql')->safe(date("Y-m-d H:i:s"));
+            Registry::get('Sql')->insert("
                 INSERT INTO `files-chunk` 
                 (`file_id`, `chunk`, `chunk_no`, `created`)
                 VALUES
@@ -64,7 +59,7 @@ class file_driver_mysql
         $id = explode("_", $UniqueID)[1];
 
         // Retrieve all chunks associated with the file ID
-        $chunks = $this->mysql_slave->query("SELECT * FROM `files-chunk` WHERE `file_id` = '$id'", true);
+        $chunks = Registry::get('SqlSlaves')->query("SELECT * FROM `files-chunk` WHERE `file_id` = '$id'", true);
 
         // Combine all chunks into a single string
         $chunks = array_map(function ($chunk) {
@@ -87,9 +82,9 @@ class file_driver_mysql
         $id = explode("_", $UniqueID)[1];
 
         // Ensure the ID is valid and sanitized
-        $id = $this->mysql->safe($id);
+        $id = Registry::get('Sql')->safe($id);
 
         // Delete all chunks associated with the file ID
-        $this->mysql->insert("DELETE FROM `files-chunk` WHERE `file_id` = '$id'");
+        Registry::get('Sql')->insert("DELETE FROM `files-chunk` WHERE `file_id` = '$id'");
     }
 }

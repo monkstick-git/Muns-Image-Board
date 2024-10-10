@@ -4,9 +4,9 @@ class ControllerHome extends Controller
 {
     public function Index()
     {
-        #$this->render->render_template('Core/header');
-        $this->render->render_template('Core/navbar');
-        #$this->render->render_template('Core/footer');
+        #Registry::get('render')->render_template('Core/header');
+        Registry::get('render')->render_template('Core/navbar');
+        #Registry::get('render')->render_template('Core/footer');
     }
 
     public function Gallery()
@@ -18,7 +18,7 @@ class ControllerHome extends Controller
         }
 
 
-        $this->render->render_template('Core/navbar');
+        Registry::get('render')->render_template('Core/navbar');
 
         // Determine if the admin menu should be shown.
         $adminMenu = false;
@@ -45,20 +45,20 @@ class ControllerHome extends Controller
         $totalPages = ceil($totalItems / $items_per_page);
 
 
-        $this->render->render_template('Site/Util/paginate', [
+        Registry::get('render')->render_template('Site/Util/paginate', [
             'page' => $page,
             'pages' => $totalPages,
             'url' => "/Home/Gallery?page=",
         ]);
 
         // Render the image gallery.
-        $this->render->render_template('Site/Image/gallery', [
+        Registry::get('render')->render_template('Site/Image/gallery', [
             'FileArray' => $FileArray,
             'adminMenu' => $adminMenu,
         ]);
 
         // Render the pagination controls.
-        $this->render->render_template('Site/Util/paginate', [
+        Registry::get('render')->render_template('Site/Util/paginate', [
             'page' => $page,
             'pages' => $totalPages,
             'url' => "/Home/Gallery?page=",

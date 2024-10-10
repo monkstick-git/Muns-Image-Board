@@ -2,7 +2,7 @@
 
 class log
 {
-    private $Driver = "local";
+    private $Driver = "local"; // Only local is supported for now
     public $IP;
     private $RandomID;
 

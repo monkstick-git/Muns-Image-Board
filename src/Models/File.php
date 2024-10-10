@@ -12,11 +12,9 @@ class file
     public $FileName;
     public $FileSize;
     public $FileType;
-    public $PublicFile;  // 0 = Private, 1 = Public
+    public $PublicFile = 0;  // 0 = Private, 1 = Public (Default is private)
     public $FilePath;
     public $Owner;
-    public $Mysql;
-    public $Mysql_Slave;
     public $Encoded;
     public $Decoded;
     public $FileHash;
@@ -38,10 +36,7 @@ class file
      */
     public function __construct()
     {
-        global $mysql;
-        $this->Mysql = $mysql;
-        global $mysql_slaves;
-        $this->Mysql_Slave = $mysql_slaves;
+
     }
 
     /**
@@ -54,9 +49,9 @@ class file
     {
         if (!is_numeric($id) && strpos($id, "_") !== false) {
             $imageID = explode("_", $id)[1];
-            $imageID = $this->Mysql_Slave->safe($imageID);
+            $imageID = Registry::get('SqlSlaves')->safe($imageID);
             $hash = explode("_", $id)[0];
-            $hash = $this->Mysql_Slave->safe($hash);
+            $hash = Registry::get('SqlSlaves')->safe($hash);
             mlog("Extracted ID: " . $imageID);
             mlog("Extracted Hash: " . $hash);
         } else {
@@ -64,7 +59,7 @@ class file
             return false;
         }
 
-        $data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `id` = '$imageID' AND `hash` = '$hash'", true);
+        $data = Registry::get('SqlSlaves')->query("SELECT * FROM `files-metadata` WHERE `id` = '$imageID' AND `hash` = '$hash'", true);
         if ($data == false) {
             mlog("No file found with ID: " . $id);
             return false;
@@ -93,8 +88,8 @@ class file
     public function delete($softDelete = false)
     {
         mlog("❌ Deleting file: " . $this->UniqueID);
-        $id = $this->Mysql->safe($this->FileID);
-        $this->Mysql->insert("DELETE FROM `files-metadata` WHERE `id` = '$id'");
+        $id = Registry::get('Sql')->safe($this->FileID);
+        Registry::get('Sql')->insert("DELETE FROM `files-metadata` WHERE `id` = '$id'");
 
         $this->_deleteFileFromDriver();
     }
@@ -107,13 +102,12 @@ class file
         mlog("✅ Saving file: " . $this->FileID);
 
         if ($this->Driver === null) {
-            global $settings;
-            $this->Driver = $settings['fileDriver'];
+            $this->Driver = Registry::get('settings')['fileDriver']; #$settings['fileDriver'];
         }
 
         mlog("🔴 The PublicFile is set to: " . $this->PublicFile);
 
-        $this->Mysql->insert("
+        Registry::get('Sql')->insert("
             INSERT INTO `files-metadata` 
             (`filetype`, `created`, `modified`, `size`, `name`, `owner`, `hash`, `driver`, `public`)
             VALUES
@@ -121,7 +115,7 @@ class file
         ");
 
         mlog("File Metadata Saved, Getting the ID of the file...");
-        $this->FileID = $this->Mysql->insert_id();
+        $this->FileID = Registry::get('Sql')->insert_id();
         mlog("Done! - File ID: " . $this->FileID);
         $this->UniqueID = $this->FileHash . "_" . $this->FileID;
 
@@ -192,7 +186,7 @@ class file
         mlog("✅ Updating file: " . $this->UniqueID);
         $this->Modified = date("Y-m-d H:i:s");
 
-        $this->Mysql->insert("
+        Registry::get('Sql')->insert("
             UPDATE `files-metadata` 
             SET `filetype` = '$this->FileType', `created` = '$this->Created', `modified` = '$this->Modified', `size` = '$this->FileSize', `name` = '$this->FileName', `owner` = '$this->Owner', `hash` = '$this->FileHash', `driver` = '$this->Driver'
             WHERE `id` = '$this->FileID'
@@ -212,9 +206,9 @@ class file
      */
     public function Find($userID = null, $fileType = null, $fileSort = "`id` DESC", $limit = 1)
     {
-        $id = $this->Mysql_Slave->safe($userID);
+        $id = Registry::get('SqlSlaves')->safe($userID);
         
-        #$FileType = $this->Mysql_Slave->safe($fileType); # This is not needed any more, moved to the query
+        #$FileType = Registry::get('SqlSlaves')->safe($fileType); # This is not needed any more, moved to the query
         $limitString = "LIMIT $limit";
 
         # Build the query based on the fileType
@@ -222,20 +216,20 @@ class file
         if (is_array($fileType)) {
             $Query = "SELECT * FROM `files-metadata` WHERE `owner` = '$id' AND";
             foreach ($fileType as $key => $value) {
-                $FileType = $this->Mysql_Slave->safe($value);
+                $FileType = Registry::get('SqlSlaves')->safe($value);
                 $Query .= " `filetype` LIKE '%$FileType%' OR";
             }
             $Query = rtrim($Query, "OR");
 
         } else {
-            $FileType = $this->Mysql_Slave->safe($fileType);
+            $FileType = Registry::get('SqlSlaves')->safe($fileType);
             $Query = "SELECT * FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%'";
         }
 
         if ($userID == null) {
-            $data = $this->Mysql_Slave->query("SELECT * FROM `files-metadata` WHERE `filetype` LIKE '%$FileType%' ORDER BY $fileSort $limitString", true, 5);
+            $data = Registry::get('SqlSlaves')->query("SELECT * FROM `files-metadata` WHERE `filetype` LIKE '%$FileType%' ORDER BY $fileSort $limitString", true, 5);
         } else {
-            $data = $this->Mysql_Slave->query("$Query ORDER BY $fileSort $limitString", true, 5);
+            $data = Registry::get('SqlSlaves')->query("$Query ORDER BY $fileSort $limitString", true, 5);
         }
 
         $files = array();
@@ -273,9 +267,9 @@ class file
      */
     public function Count($userID, $FileType = "image")
     {
-        $id = $this->Mysql_Slave->safe($userID);
-        $FileType = $this->Mysql_Slave->safe($FileType);
-        $data = $this->Mysql_Slave->query("SELECT COUNT(*) as count FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%'", true, 5);
+        $id = Registry::get('SqlSlaves')->safe($userID);
+        $FileType = Registry::get('SqlSlaves')->safe($FileType);
+        $data = Registry::get('SqlSlaves')->query("SELECT COUNT(*) as count FROM `files-metadata` WHERE `owner` = '$id' AND `filetype` LIKE '%$FileType%'", true, 5);
         return $data[0]['count'];
     }
 
@@ -286,16 +280,17 @@ class file
      */
     public function setFromUpload($UploadObject)
     {
-        $this->Owner = $GLOBALS['User']->id;
+        $this->Owner = Registry::get('User')->id;#$GLOBALS['User']->id;
         # Check if the user has a quota set and if they have reached it before uploading
-        $quota = $GLOBALS['User']->quota;
-        $spaceUsed = floor($GLOBALS['User']->getSpaceUsed() / 1024 / 1024);
+        $quota = Registry::get('User')->quota;
+        logger("User Quota: " . $quota);
+        $spaceUsed = floor(Registry::get('User')->getSpaceUsed() / 1024 / 1024);
 
         if($spaceUsed >= $quota){
             mlog("🔴 User has no quota left - denying upload");
             # set header to 507 to indicate the user has reached their storage limit
-            http_response_code(507);
-            die("You have reached your storage limit");
+            #http_response_code(507);
+            #die("You have reached your storage limit");
         }
 
         $this->FileType = $this->getObjectType($UploadObject['tmp_name']);

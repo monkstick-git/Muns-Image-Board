@@ -80,8 +80,8 @@ class image extends file
 
         // Insert the thumbnail into the database
         mlog("Creating Thumbnail for Image: $this->FileName");
-        $thumbnail = $this->Mysql->safe($this->CreateImageThumbNail());
-        $this->Mysql->insert("
+        $thumbnail = Registry::get('Sql')->safe($this->CreateImageThumbNail());
+        Registry::get('Sql')->insert("
             INSERT INTO `files-thumbnail` 
               (`file_id`, `thumbnail`)
             VALUES
@@ -108,7 +108,7 @@ class image extends file
 
         // Get the thumbnail for the image
         mlog("Getting Thumbnail for Image: $this->FileID");
-        $Data = $this->Mysql->query("
+        $Data = Registry::get('Sql')->query("
             SELECT `thumbnail` 
             FROM `files-thumbnail` 
             WHERE `file_id` = '$this->FileID';
@@ -134,8 +134,8 @@ class image extends file
         parent::update();
 
         // Insert the updated thumbnail into the database
-        $thumbnail = $this->Mysql->safe($this->CreateImageThumbNail());
-        $this->Mysql->insert("
+        $thumbnail = Registry::get('Sql')->safe($this->CreateImageThumbNail());
+        Registry::get('Sql')->insert("
             INSERT INTO `files-thumbnail` 
               (`file_id`, `thumbnail`)
             VALUES

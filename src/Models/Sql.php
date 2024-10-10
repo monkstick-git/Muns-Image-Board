@@ -59,10 +59,9 @@ class sql
     mlog("Query:" . $query . " - Cache: " . $isCache . " - TTL: " . $ttl . " - Database: " . $this->db_name);
     $this->connect();
     try {
-      global $system;
       $result = "";
       if ($cache == true) {
-        $cachedData = $system->cache_get($query);
+        $cachedData = Registry::get('system')->cache_get($query);
         if ($cachedData) {
           $return = unserialize($cachedData);
         } else {
@@ -75,7 +74,7 @@ class sql
               $return[] = $row;
             }
             if ($cache == true) {
-              $system->cache($query, serialize($return), $ttl);
+              Registry::get('system')->cache($query, serialize($return), $ttl);
             }
           }
         }
@@ -89,7 +88,7 @@ class sql
             $return[] = $row;
           }
           if ($cache == true) {
-            $system->cache($query, serialize($return));
+            Registry::get('system')->cache($query, serialize($return));
           }
         }
       }

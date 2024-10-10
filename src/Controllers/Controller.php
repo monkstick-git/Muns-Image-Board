@@ -9,24 +9,22 @@
 */
 class Controller
 {
-    public $render;
-    public $system;
     public $requestType;
     public $ArgumentList;
     public $PreviousPage;
 
     public function __construct($DisableRender = false)
     {
-        global $system;
         include_once(ROOT . '/Controllers/Helpers/helper.php');
 
         // If the DisableRender flag is set to false, create a new render object. 
         // It should be set to false when the controller is being used as an API controller.
         if($DisableRender == false){
-            $this->render = new Render();
+            Registry::set('render', new Render());
+        }else{
+            logger("🔴🔴🔴 RENDERER DISABLED 🔴🔴🔴");
         }
         
-        $this->system = $system;
         $this->requestType = $_SERVER['REQUEST_METHOD'];
         $this->populateArgumentList();
 

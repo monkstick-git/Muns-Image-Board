@@ -10,18 +10,25 @@ $ApiRoute = '/api';
 $API = false;
 if (strpos($Route, $ApiRoute) !== false) {
     // The API is being called, skip the rendering
-    require_once './system/bootstrap-light.php';
     $API = true;
+    #require_once './system/bootstrap-light.php';
 }else{
+    $API = false;
     // Include the bootstrap file for necessary initializations. This includes the renderer
-    require_once './system/bootstrap.php';
 }
 
+require_once './system/bootstrap.php';
 require_once './system/Router.php';
 
 // Initialize the router
 $Router = new Router();
 $Router->getRoute($_SERVER['REQUEST_URI']);
+# If the route + Method being called requires the renderer disabled, we will disable it here
+// Hack to disable rendering for specific routes for now
+$DisabledRenderRoutes = array();
+$DisabledRenderRoutes[] = 'file/download';
+$DisabledRenderRoutes[] = 'image/raw';
+
 
 // Log the route being accessed
 logger('Route: ' . $Router->Controller . '/' . $Router->Method);
@@ -36,9 +43,16 @@ if ($Router->isAllowedRoute()) {
     // Autoload the controller file if it exists
     $controllerPath = ROOT . '/Controllers/' . $ControllerFileName . '.php';
 
+
     if (file_exists($controllerPath)) {
         require_once $controllerPath;
         if (class_exists($ControllerName)) {
+            // Disable the renderer for specific routes
+            if (in_array(strtolower($Router->Controller . '/' . $Router->Method), $DisabledRenderRoutes)) {
+                logger("Disabling renderer for route: " . $Router->Controller . '/' . $Router->Method);
+                $API = true; // Disable the render object for API controllers (true) and disabled renderer routes
+            }
+            
             $Controller = new $ControllerName($API);
 
             // Check if the method exists in the controller
@@ -70,7 +84,6 @@ function show404($API) {
     if($API == true){
         // If the API is being called, return a 404 status code
         header("HTTP/1.0 404 Not Found");
-        
         exit();
     }
     require_once ROOT . '/Controllers/404.php';

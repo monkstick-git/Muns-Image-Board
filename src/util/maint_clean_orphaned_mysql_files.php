@@ -13,7 +13,7 @@ if ((php_sapi_name() == "cli") == false) {
 }
 
 global $mysql;
-$data = $mysql->query("SELECT id,file_id FROM `files-chunk`");
+$data = Registry::get('Sql')->query("SELECT id,file_id FROM `files-chunk`");
 $files = array();
 foreach ($data as $file) {
   $files[$file['file_id']][] = $file['id'];
@@ -26,7 +26,7 @@ foreach ($files as $fileID => $chunks) {
     mlog("❌ File not found in metadata: " . $fileID);
     $DeletedFiles[] = $fileID;
     mlog("Executing: DELETE FROM `files-chunk` WHERE `file_id` = '$fileID'");
-    $mysql->insert("DELETE FROM `files-chunk` WHERE `file_id` = '$fileID'");
+    Registry::get('Sql')->insert("DELETE FROM `files-chunk` WHERE `file_id` = '$fileID'");
   }
 }
 

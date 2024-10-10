@@ -39,6 +39,7 @@ class userHelper extends helper
         $_SESSION['user'] = $user;
         $_SESSION['logged_in'] = true;
         $_SESSION['user_id'] = $user->id;
+        //Registry::set('User', $user);
     }
 
     public function redirect_if_logged_in()

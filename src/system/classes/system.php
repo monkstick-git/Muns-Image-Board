@@ -76,12 +76,11 @@ class system
      */
     public function cache($input, $data, $ttl = 60)
     {
-        global $redis;
         $id = base64_encode($input);
 
-        if ($redis->get($id) === null) {
+        if (Registry::get('redis')->get($id) === null) {
             mlog("Adding to cache: $input");
-            $redis->set($id, $data, 'EX', $ttl);
+            Registry::get('redis')->set($id, $data, 'EX', $ttl);
         }
     }
 
@@ -93,10 +92,9 @@ class system
      */
     public function cache_get($query)
     {
-        global $redis;
         $id = base64_encode($query);
 
-        if (($cached_Obj = $redis->get($id)) !== null) {
+        if (($cached_Obj = Registry::get('redis')->get($id)) !== null) {
             mlog("Returning from cache: $id");
             return $cached_Obj;
         }

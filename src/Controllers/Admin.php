@@ -3,37 +3,38 @@
 class ControllerAdmin extends Controller
 {
 
-    public function __construct()
+    public function __construct($DisableRender = false)
     {
-        parent::__construct();
+        parent::__construct($DisableRender);
     }
 
     public function Index()
     {
-        if (!$this->system->beAuthenticated()) {
-            $this->system->redirect(location: '/User/login');
+        if (!Registry::get('system')->beAuthenticated()) {
+            Registry::get('system')->redirect(location: '/User/login');
             return;
         }
 
-        if (!$this->system->beAdmin()) {
-            $this->system->redirect(location: '/');
+        // TODO: Check if the user has the admin privileges instead of just checking if the user is an 'admin'
+        if (!Registry::get('system')->beAdmin()) {
+            Registry::get('system')->redirect(location: '/');
             return;
         }
 
 
-        $this->render->render_template('Core/navbar');
-        $this->render->render_template('Site/Admin/index');
+        Registry::get('render')->render_template('Core/navbar');
+        Registry::get('render')->render_template('Site/Admin/index');
     }
 
     public function Users()
     {
-        if (!$this->system->beAuthenticated()) {
-            $this->system->redirect(location: '/User/login');
+        if (!Registry::get('system')->beAuthenticated()) {
+            Registry::get('system')->redirect(location: '/User/login');
             return;
         }
 
-        if (!$this->system->beAdmin()) {
-            $this->system->redirect(location: '/');
+        if (!Registry::get('system')->beAdmin()) {
+            Registry::get('system')->redirect(location: '/');
             return;
         }
 
@@ -44,26 +45,26 @@ class ControllerAdmin extends Controller
             'Users' => $Users
         ];
 
-        $this->render->render_template('Core/navbar');
-        $this->render->render_template('Site/Admin/users', $Arguments);
+        Registry::get('render')->render_template('Core/navbar');
+        Registry::get('render')->render_template('Site/Admin/users', $Arguments);
     }
 
     public function Files()
     {
-        if (!$this->system->beAuthenticated()) {
-            $this->system->redirect(location: '/User/login');
+        if (!Registry::get('system')->beAuthenticated()) {
+            Registry::get('system')->redirect(location: '/User/login');
             return;
         }
 
-        if (!$this->system->beAdmin()) {
-            $this->system->redirect(location: '/');
+        if (!Registry::get('system')->beAdmin()) {
+            Registry::get('system')->redirect(location: '/');
             return;
         }
 
         $files = new file();
         $FileArray = $files->Find(null, null, "`id` DESC", 1000);
 
-        $this->render->render_template(
+        Registry::get('render')->render_template(
             'Site/Files/browse',
             array(
                 'FileArray' => $FileArray

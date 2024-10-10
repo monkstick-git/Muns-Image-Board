@@ -7,7 +7,7 @@ include 'bootstrap.php';
  */
 
 // Create Users Table
-$mysql->insert("
+Registry::get('Sql')->insert("
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `users` (
 ");
 
 // Create Files Metadata Table
-$mysql->insert("
+Registry::get('Sql')->insert("
 CREATE TABLE IF NOT EXISTS `files-metadata` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `hash` varchar(255) NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `files-metadata` (
 ");
 
 // Create Permissions Table
-$mysql->insert("
+Registry::get('Sql')->insert("
 CREATE TABLE IF NOT EXISTS `permissions-system` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
@@ -57,7 +57,7 @@ $tmpUser = new user();
 $api = $tmpUser->generate_api_key();
 
 // Create Default Admin User
-$mysql->insert("
+Registry::get('Sql')->insert("
 INSERT INTO `users` 
 (`id`, `username`, `password`, `api`, `email`, `name`, `surname`, `role`, `active`, `created`, `modified`) 
 VALUES 
@@ -65,7 +65,7 @@ VALUES
 ");
 
 // Create Files Chunk Table with foreign key to files-metadata
-$mysql->insert("
+Registry::get('Sql')->insert("
 CREATE TABLE IF NOT EXISTS `files-chunk` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `file_id` int(11),
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS `files-chunk` (
 ");
 
 // Create Thumbnails Table
-$mysql->insert("
+Registry::get('Sql')->insert("
 CREATE TABLE IF NOT EXISTS `files-thumbnail` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `file_id` int(11),
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `files-thumbnail` (
 ");
 
 // Create the Updates Table
-$mysql->insert("
+Registry::get('Sql')->insert("
 CREATE TABLE IF NOT EXISTS `updates` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `version` varchar(255) NOT NULL,

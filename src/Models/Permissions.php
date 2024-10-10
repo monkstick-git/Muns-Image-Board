@@ -3,12 +3,9 @@
 class permissions
 {
 
-    public $mysql_slaves;
-
     public function __construct()
     {
-        global $mysql_slaves;
-        $this->mysql_slaves = $mysql_slaves;
+
     }
 
     public function get(string $Permission, int $UserID)
@@ -26,7 +23,7 @@ class permissions
             $UserID = 0; # Guest user
         }
 
-        $query = $this->mysql_slaves->query("SELECT `permissions` FROM `permissions-system` WHERE `user_id` = '$UserID' AND JSON_EXTRACT(`permissions`, '$.$Type.$Permission') = 1", true, 30); # A small cache of 30 seconds to prevent too many queries
+        $query = Registry::get('SqlSlaves')->query("SELECT `permissions` FROM `permissions-system` WHERE `user_id` = '$UserID' AND JSON_EXTRACT(`permissions`, '$.$Type.$Permission') = 1", true, 30); # A small cache of 30 seconds to prevent too many queries
 
         if ($query) {
             return true;
@@ -55,8 +52,6 @@ class permissions
         $NewPermission = array();
         $NewPermission[$Type][$Permission] = 1;
 
-
-        global $mysql_slaves;
         # Get all the current permissions as an array
         $CurrentPermissions = $this->getAll($id);
         $CurrentPermissions = json_decode($CurrentPermissions, true);
@@ -81,16 +76,15 @@ class permissions
         $NewPermissions = json_encode($NewPermissions);
         mlog("Setting permissions for user $id to $NewPermissions");
 
-        global $mysql;
         if ($hasPermissions) {
             # Update the permissions
-            $query = $mysql->insert("UPDATE `permissions-system` SET `permissions` = '$NewPermissions' WHERE `user_id` = '$id'");
+            $query = Registry::get('Sql')->insert("UPDATE `permissions-system` SET `permissions` = '$NewPermissions' WHERE `user_id` = '$id'");
             if ($query) {
                 return true;
             }
         } else {
             # Insert the permissions
-            $query = $mysql->insert("INSERT INTO `permissions-system` (`id`, `user_id`, `permissions`) VALUES (NULL, '$id', '$NewPermissions')");
+            $query = Registry::get('Sql')->insert("INSERT INTO `permissions-system` (`id`, `user_id`, `permissions`) VALUES (NULL, '$id', '$NewPermissions')");
             if ($query) {
                 return true;
             }
@@ -110,10 +104,7 @@ class permissions
      */
     public function getAll(int $id)
     {
-        global $mysql_slaves;
-        $this->mysql_slaves = $mysql_slaves;
-
-        $query = $this->mysql_slaves->query("SELECT `permissions` FROM `permissions-system` WHERE `user_id` = '$id'");
+        $query = Registry::get('SqlSlaves')->query("SELECT `permissions` FROM `permissions-system` WHERE `user_id` = '$id'");
         if ($query) {
             return ($query[0]['permissions']);
         } else {

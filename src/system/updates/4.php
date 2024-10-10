@@ -6,7 +6,7 @@ global $mysql;
 global $mysql_slaves;
 
 # Check if Update is already applied
-$query = $mysql_slaves->query("SELECT * FROM `updates` WHERE `version` = '$Version'", false);
+$query = Registry::get('SqlSlaves')->query("SELECT * FROM `updates` WHERE `version` = '$Version'", false);
 if (count($query) == 0) {
 
   ### Start of Updates ###
@@ -18,20 +18,20 @@ if (count($query) == 0) {
 ALTER TABLE `files-metadata` ADD `public` BOOLEAN NULL DEFAULT 0 AFTER `driver`;
   ";
 
-  $mysql->insert($update);
+  Registry::get('Sql')->insert($update);
 
   $update = "
 UPDATE `files-metadata` SET `public` = 0 WHERE `public` IS NULL;
 ";
 
-  $mysql->insert($update);
+  Registry::get('Sql')->insert($update);
 
   # Update the Updates Table
   ## Commenting out to test updates ###
   $update = "
  INSERT INTO updates (version, description, created) VALUES ('$Version','$Description', '" . date("Y-m-d H:i:s") . "');
  ";
-  $mysql->insert($update);
+  Registry::get('Sql')->insert($update);
 
   ### End of Updates ###
 } else {

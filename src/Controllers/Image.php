@@ -5,9 +5,9 @@ class ControllerImage extends Controller
 
     private $imageHelper;
 
-    public function __construct()
+    public function __construct($DisableRender = false)
     {
-        parent::__construct();
+        parent::__construct($DisableRender);
         include_once(ROOT . '/Controllers/Helpers/imageHelper.php');
         $this->imageHelper = new imageHelper();
     }
@@ -26,7 +26,7 @@ class ControllerImage extends Controller
         }
 
         // Permission check (always allow for now)
-        if (!$this->imageHelper->permissionCheck($_SESSION['User']->id, $Image)) {
+        if (!$this->imageHelper->permissionCheck(Registry::get('User')->id, $Image)) {
             $this->imageHelper->displayDeniedImage();
             die();
         }
@@ -51,7 +51,7 @@ class ControllerImage extends Controller
         }
 
         // Permission check (always allow for now)
-        if (!$this->imageHelper->permissionCheck($_SESSION['User']->id, $Image)) {
+        if (!$this->imageHelper->permissionCheck(Registry::get('User')->id, $Image)) {
             $this->imageHelper->displayDeniedImage();
             die();
         }

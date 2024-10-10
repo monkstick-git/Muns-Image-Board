@@ -47,10 +47,9 @@ class ControllerApiv1 extends Controller
     {
         // Private API, authentication required
         if ($this->apiv1Helper->User) {
-            $GLOBALS['User'] = $this->apiv1Helper->User; // Set the global user object to the authenticated user - This is used in the file class to set the userID
-            global $settings; // Get the settings array from the global scope 
+            Registry::update('User', $this->apiv1Helper->User); // Set the global user object to the authenticated user - This is used in the file class to set the userID
+            logger(print_r(Registry::get('User'), true));            
             $Data = $_FILES['data'] ?? null;
-
             $quotaCheck = $this->apiv1Helper->checkRemainingQuota($Data); // Check if the user has enough quota to upload the file
 
             if ($quotaCheck == false) {
@@ -80,6 +79,10 @@ class ControllerApiv1 extends Controller
 
         # set the response header to application/json
         header('Content-Type: application/json');
+        // Check if $this->Response['status'] is not set
+        if (!isset($this->Response['status'])) {
+            $this->Response['status'] = 500;// Unknown error
+        }
         # Set the response code to $this->Response['status']
         http_response_code($this->Response['status']);
         # Output the response as JSON

@@ -81,8 +81,8 @@ class user
      */
     public function is_admin()
     {
-        global $mysql_slaves;
-        $query = $mysql_slaves->query("SELECT `role` FROM `users` WHERE `id` = '$this->id'");
+        $id = Registry::get('SqlSlaves')->safe($this->id);
+        $query = Registry::get('SqlSlaves')->query("SELECT `role` FROM `users` WHERE `id` = '$id'");
         $query = $query[0];
         return ($query['role'] == "admin");
     }
@@ -94,9 +94,9 @@ class user
      */
     public function get_user_by_api($api)
     {
-        global $mysql_slaves;
-        $id = $mysql_slaves->safe($api);
-        $id = $mysql_slaves->query("SELECT * FROM `users` WHERE `api` = '$id'");
+        
+        $id = Registry::get('SqlSlaves')->safe($api);
+        $id = Registry::get('SqlSlaves')->query("SELECT * FROM `users` WHERE `api` = '$id'");
         $result = $id[0];
         $this->populate_user_data($result);
     }
@@ -109,9 +109,8 @@ class user
     public function get_user_by_id($id)
     {
         if (isset($id)) {
-            global $mysql_slaves;
-            $id = $mysql_slaves->safe($id);
-            $id = $mysql_slaves->query("SELECT * FROM `users` WHERE `id` = '$id'");
+            $id = Registry::get('SqlSlaves')->safe($id);
+            $id = Registry::get('SqlSlaves')->query("SELECT * FROM `users` WHERE `id` = '$id'");
             $result = $id[0];
             $this->populate_user_data($result);
         } else {
@@ -121,8 +120,7 @@ class user
     }
 
     public function getAllUsers(){
-        global $mysql_slaves;
-        $Users = $mysql_slaves->query("SELECT * FROM `users`");
+        $Users = Registry::get('SqlSlaves')->query("SELECT * FROM `users`");
         $UserArray = array();
         foreach($Users as $User){
             $UserArray[] = new user();
@@ -149,6 +147,7 @@ class user
         $this->Datecreated = $data['created'];
         $this->bio = $data['bio'];
         $this->apiKey = $data['api'];
+        logger("User Model Quota: " . $data['quota']);
         $this->quota = $data['quota'];
         $this->totalSpaceUsed = $this->getSpaceUsed();
     }
@@ -170,11 +169,10 @@ class user
      */
     public function create_user()
     {
-        global $mysql;
-        $Username = $mysql->safe($this->username);
+        $Username = Registry::get('Sql')->safe($this->username);
         $Password = password_hash($this->password, PASSWORD_DEFAULT);
-        $apiKey = $mysql->safe($this->generate_api_key());
-        $result = $mysql->insert("INSERT INTO `users` (`username`, `password`, `api`, `email`, `name`, `surname`, `role`, `active`, `created`, `modified`) VALUES ('$Username', '$Password', '$apiKey', 'null', 'null', 'null', 'user', 1, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "');");
+        $apiKey = Registry::get('Sql')->safe($this->generate_api_key());
+        $result = Registry::get('Sql')->insert("INSERT INTO `users` (`username`, `password`, `api`, `email`, `name`, `surname`, `role`, `active`, `created`, `modified`) VALUES ('$Username', '$Password', '$apiKey', 'null', 'null', 'null', 'user', 1, '" . date("Y-m-d H:i:s") . "', '" . date("Y-m-d H:i:s") . "');");
 
         mlog("✅ User created with new ID of: $result");
         $this->id = $result;
@@ -219,11 +217,10 @@ class user
      */
     public function setPassword($Password)
     {
-        global $mysql;
         if ($this->password_complexity_check($Password)) {
             $Password = password_hash($Password, PASSWORD_DEFAULT);
-            $id = $mysql->safe($this->id);
-            $result = $mysql->insert("UPDATE `users` SET `password` = '$Password' WHERE `id` = '$id'");
+            $id = Registry::get('Sql')->safe($this->id);
+            $result = Registry::get('Sql')->insert("UPDATE `users` SET `password` = '$Password' WHERE `id` = '$id'");
             return (bool) $result;
         }
         return false;
@@ -237,9 +234,9 @@ class user
      */
     public function check_if_username_exists($Username)
     {
-        global $mysql_slaves;
-        $Username = $mysql_slaves->safe($Username);
-        $Username = $mysql_slaves->query("SELECT * FROM `users` WHERE `username` = '$Username'", false);
+        
+        $Username = Registry::get('SqlSlaves')->safe($Username);
+        $Username = Registry::get('SqlSlaves')->query("SELECT * FROM `users` WHERE `username` = '$Username'", false);
         return count($Username) > 0;
     }
 
@@ -250,9 +247,9 @@ class user
      */
     public function get_user_by_username($Username)
     {
-        global $mysql_slaves;
-        $Username = $mysql_slaves->safe($Username);
-        $Username = $mysql_slaves->query("SELECT * FROM `users` WHERE `username` = '$Username'");
+        
+        $Username = Registry::get('SqlSlaves')->safe($Username);
+        $Username = Registry::get('SqlSlaves')->query("SELECT * FROM `users` WHERE `username` = '$Username'");
         $result = $Username[0];
         $this->populate_user_data($result);
     }
@@ -264,14 +261,13 @@ class user
      */
     public function update()
     {
-        global $mysql;
-        $id = $mysql->safe($this->id);
-        $name = $mysql->safe($this->name);
-        $surname = $mysql->safe($this->surname);
-        $bio = $mysql->safe($this->bio);
+        $id = Registry::get('Sql')->safe($this->id);
+        $name = Registry::get('Sql')->safe($this->name);
+        $surname = Registry::get('Sql')->safe($this->surname);
+        $bio = Registry::get('Sql')->safe($this->bio);
 
         $query = "UPDATE `users` SET `name` = '$name', `surname` = '$surname', `bio` = '$bio' WHERE `id` = '$id'";
-        return (bool) $mysql->insert($query);
+        return (bool) Registry::get('Sql')->insert($query);
     }
 
     /**
@@ -300,11 +296,11 @@ class user
      */
     public function getSpaceUsed(): int
     {
-        global $mysql_slaves;
-        $id = $mysql_slaves->safe($this->id);
-        $id = $mysql_slaves->query("SELECT SUM(`size`) AS `size` FROM `files-metadata` WHERE `owner` = '$id'");
-        $result = $id[0];
-        $SpaceUsed = $result['size'];
+        
+        $id = Registry::get('SqlSlaves')->safe($this->id);
+        $userSpaceUsed = Registry::get('SqlSlaves')->query("SELECT SUM(`size`) AS `size` FROM `files-metadata` WHERE `owner` = '$id'");
+        $result = $userSpaceUsed[0];
+        $SpaceUsed = isset($result['size']) ? $result['size'] : null;
         # Check to ensure SpaceUsed is not null before returning
         if ($SpaceUsed == null) {
             mlog("SpaceUsed is null for userID: $id, returning 0");
@@ -323,9 +319,9 @@ class user
      */
     public function getImageCount()
     {
-        global $mysql_slaves;
-        $id = $mysql_slaves->safe($this->id);
-        $id = $mysql_slaves->query("SELECT COUNT(`id`) AS `count` FROM `files-metadata` WHERE `owner` = '$id'");
+        
+        $id = Registry::get('SqlSlaves')->safe($this->id);
+        $id = Registry::get('SqlSlaves')->query("SELECT COUNT(`id`) AS `count` FROM `files-metadata` WHERE `owner` = '$id'");
         $result = $id[0];
         return $result['count'];
     }

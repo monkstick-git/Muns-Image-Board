@@ -20,12 +20,10 @@ class apiv1Helper extends helper
 
     public function UploadFile($Data)
     {
-        global $settings;
         // Process the uploaded file
         $file = new file();
         $file->setFromUpload($Data);
         $fileType = explode("/", $file->FileType)[0];
-
         // Image files
         if ($fileType === "image") {
             unset($file);
@@ -37,7 +35,7 @@ class apiv1Helper extends helper
                 $image->set();
                 $type = explode("/", $image->FileType)[1];
 
-                return $settings['site_url'] . "image/raw?id=" . $image->FileHash . "_" . $image->FileID . "." . $type;
+                return Registry::get('settings')['site_url'] . "image/raw?id=" . $image->FileHash . "_" . $image->FileID . "." . $type;
             } catch (Exception $e) {
                 return false;
             }
@@ -46,9 +44,9 @@ class apiv1Helper extends helper
             try {
                 $exploded = explode(".", $_FILES['data']['name']);
                 $fileTypeGuess = end($exploded); // Guess the file type based on extension
+                $file->PublicFile = 1; // Assume the image should be public
                 $file->set();
-
-                return $settings['site_url'] . "Site/download?id=" . $file->FileHash . "_" . $file->FileID . "." . $fileTypeGuess;
+                return Registry::get('settings')['site_url'] . "File/Download?id=" . $file->FileHash . "_" . $file->FileID . "." . $fileTypeGuess;
             } catch (Exception $e) {
                 return false;
             }

@@ -5,9 +5,10 @@ class ControllerUser extends Controller
 
     private $userHelper;
 
-    public function __construct()
+    public function __construct($DisableRender = false)
     {
-        parent::__construct();
+
+        parent::__construct($DisableRender);
         include_once(ROOT . '/Controllers/Helpers/userHelper.php');
         $this->userHelper = new userHelper();
     }
@@ -18,7 +19,7 @@ class ControllerUser extends Controller
      */
     public function Login()
     {
-        $this->render->render_template('Core/navbar');
+        Registry::get('render')->render_template('Core/navbar');
 
         # Redirect if already logged in
         $this->userHelper->redirect_if_logged_in();
@@ -26,12 +27,12 @@ class ControllerUser extends Controller
 
         # Display the login form if the request method is GET
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-            $this->render->render_template('Site/Auth/login');
+            Registry::get('render')->render_template('Site/Auth/login');
         }
 
         if ($this->userHelper->username && $this->userHelper->password) {
             if (!$this->userHelper->validateCsrf()) {
-                $this->render->render_template('Site/Auth/login', ['errors' => CSRF_ERROR]);
+                Registry::get('render')->render_template('Site/Auth/login', ['errors' => CSRF_ERROR]);
                 return;
             }
 
@@ -40,10 +41,10 @@ class ControllerUser extends Controller
 
             if ($authenticatedUser) {
                 $this->userHelper->login(user: $authenticatedUser);
-                $this->system->redirect('/');
+                Registry::get('system')->redirect('/');
                 return;
             } else {
-                $this->render->render_template('Site/Auth/login', ['errors' => USERNAME_PASSWORD_ERROR]);
+                Registry::get('render')->render_template('Site/Auth/login', ['errors' => USERNAME_PASSWORD_ERROR]);
                 return;
             }
         }
@@ -63,7 +64,7 @@ class ControllerUser extends Controller
         unset($_SESSION);
         session_destroy();
 
-        $this->system->redirect('/User/LoggedOut');
+        Registry::get('system')->redirect('/User/LoggedOut');
     }
 
     /**
@@ -72,12 +73,12 @@ class ControllerUser extends Controller
      */
     public function LoggedOut()
     {
-        $this->render->render_template('Core/navbar');
+        Registry::get('render')->render_template('Core/navbar');
         $arguments = array(
             'message' => LOGGED_OUT_MESSAGE,
             'message_header' => LOGGED_OUT_MESSAGE_HEADER
         );
-        $this->render->render_template('Site/Auth/loggedout', $arguments);
+        Registry::get('render')->render_template('Site/Auth/loggedout', $arguments);
         return;
     }
 
@@ -88,11 +89,11 @@ class ControllerUser extends Controller
     public function Register()
     {
         $this->userHelper->redirect_if_logged_in();
-        $this->render->render_template('Core/navbar');
+        Registry::get('render')->render_template('Core/navbar');
 
         # Check if GET request
         if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-            $this->render->render_template('Site/Auth/register');
+            Registry::get('render')->render_template('Site/Auth/register');
             return;
         }
 
@@ -104,7 +105,7 @@ class ControllerUser extends Controller
             $arguments = array(
                 'errors' => CSRF_ERROR
             );
-            $this->render->render_template('Site/Auth/register', $arguments);
+            Registry::get('render')->render_template('Site/Auth/register', $arguments);
             return;
         }
 
@@ -114,16 +115,16 @@ class ControllerUser extends Controller
             $arguments = array(
                 'errors' => $Error
             );
-            $this->render->render_template('Site/Auth/register', $arguments);
+            Registry::get('render')->render_template('Site/Auth/register', $arguments);
             return;
         }
 
         # If no simple errors exist, we can attempt to create the user.
         $RegisterSuccess = $this->userHelper->RegisterUser();
         if ($RegisterSuccess === true) {
-            $this->render->render_template('Site/Auth/login', ['success' => REGISTER_SUCCESS_MESSAGE]);
+            Registry::get('render')->render_template('Site/Auth/login', ['success' => REGISTER_SUCCESS_MESSAGE]);
         } else {
-            $this->render->render_template('Site/Auth/register', ['errors' => $RegisterSuccess]);
+            Registry::get('render')->render_template('Site/Auth/register', ['errors' => $RegisterSuccess]);
         }
     }
 
@@ -133,10 +134,10 @@ class ControllerUser extends Controller
      */
     public function Profile()
     {
-        $this->system->beAuthenticated(); // Redirect if not logged in
+        Registry::get('system')->beAuthenticated(); // Redirect if not logged in
 
-        $this->render->render_template('Core/navbar');
-        $this->render->render_template('Site/Auth/profile');
+        Registry::get('render')->render_template('Core/navbar');
+        Registry::get('render')->render_template('Site/Auth/profile');
     }
 
     /**
@@ -145,20 +146,20 @@ class ControllerUser extends Controller
      */
     public function Edit()
     {
-        $this->system->beAuthenticated(); // Redirect if not logged in
+        Registry::get('system')->beAuthenticated(); // Redirect if not logged in
 
-        $this->render->render_template('Core/navbar');
+        Registry::get('render')->render_template('Core/navbar');
         $arguments = array();
 
         if ($this->requestType == 'GET') {
-            $this->render->render_template('Site/Auth/edit', $arguments);
+            Registry::get('render')->render_template('Site/Auth/edit', $arguments);
             return;
         }
 
         // Check if the form has been submitted
         if ($this->requestType == 'POST') {
             $User = new user();
-            $User->get_user_by_id($_SESSION['user_id']);
+            $User->get_user_by_id(Registry::get('User')->id);
 
             $profileUpdated = false;
 
@@ -166,7 +167,7 @@ class ControllerUser extends Controller
             if (!empty($this->ArgumentList['password'])) {
                 // Bit hacky but this attempts to change the password and returns an array of success and error messages
                 $arguments = $this->userHelper->changePassword(ArgumentList: $this->ArgumentList, User: $User);
-                $this->render->render_template('Site/Auth/edit', $arguments);
+                Registry::get('render')->render_template('Site/Auth/edit', $arguments);
                 return;
             }
 
@@ -190,11 +191,11 @@ class ControllerUser extends Controller
             if (!empty($updates)) {
                 if ($User->update()) {
                     $arguments['success']['profile'] = "Profile updated: " . implode(", ", $updates);
-                    $this->render->render_template('Site/Auth/edit', $arguments);
+                    Registry::get('render')->render_template('Site/Auth/edit', $arguments);
                     return;
                 } else {
                     $arguments['errors']['profile'] = "Failed to update profile.";
-                    $this->render->render_template('Site/Auth/edit', $arguments);
+                    Registry::get('render')->render_template('Site/Auth/edit', $arguments);
                     return;
                 }
             }
@@ -206,11 +207,11 @@ class ControllerUser extends Controller
      */
     public function Files()
     {
-        $this->system->beAuthenticated(); // Redirect if not logged in
+        Registry::get('system')->beAuthenticated(); // Redirect if not logged in
         
-        $this->render->render_template('Core/navbar');
+        Registry::get('render')->render_template('Core/navbar');
         if (!$this->userHelper->hasPermission("FILE.READ_OWN")) {
-            $this->render->render_template('Core/error', ['errors' => ERROR_PERMISSION_DENIED]);
+            Registry::get('render')->render_template('Core/error', ['errors' => ERROR_PERMISSION_DENIED]);
             return;
         }
 
@@ -220,6 +221,6 @@ class ControllerUser extends Controller
             'FileArray' => $UsersFiles
         );
 
-        $this->render->render_template('Site/Files/browse', $arguments);
+        Registry::get('render')->render_template('Site/Files/browse', $arguments);
     }
 }

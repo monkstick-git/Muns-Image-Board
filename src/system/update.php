@@ -1,7 +1,6 @@
 <?php
 include 'bootstrap.php';
-global $system;
-if(false == $system->beAdmin()){
+if(false == Registry::get('system')->beAdmin()){
     echo "Not authorized";
     exit;
 }else{

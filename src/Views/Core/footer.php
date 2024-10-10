@@ -9,8 +9,7 @@ ob_start();
 
 <?php
     # Loop through $cssIncludes and include each CSS file.
-    global $jsIncludes;
-    foreach ($jsIncludes as $js) {
+    foreach (Registry::get("jsIncludes") as $js) {
       echo "<script src=\"$js\" defer></script>\n";
     }
   ?>

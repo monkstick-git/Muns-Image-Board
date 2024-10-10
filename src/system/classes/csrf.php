@@ -13,7 +13,7 @@ class csrf
     private function csrf_token()
     {
         # Check if a token is already set and if not set a new one
-        if (!isset($_SESSION['csrf_token'])) {
+        if (!isset($this->Token)) {
             $this->Token = $this->generate();
         }else{
             $this->Token = $_SESSION['csrf_token'];

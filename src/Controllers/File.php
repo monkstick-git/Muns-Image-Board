@@ -5,9 +5,9 @@ class ControllerFile extends Controller
 
     private $fileHelper;
 
-    public function __construct()
+    public function __construct($DisableRender = false)
     {
-        parent::__construct();
+        parent::__construct($DisableRender);
         include_once(ROOT . '/Controllers/Helpers/fileHelper.php');
         $this->fileHelper = new fileHelper();
     }
@@ -18,15 +18,14 @@ class ControllerFile extends Controller
      */
     public function Upload()
     {
-        $this->system->beAuthenticated();
-
-        $this->render->render_template('Core/navbar');
-        $this->render->render_template('Site/Files/upload');
+        Registry::get('system')->beAuthenticated();
+        Registry::get('render')->render_template('Core/navbar');
+        Registry::get('render')->render_template('Site/Files/upload');
     }
 
     public function ProcessUpload()
     {
-        $this->system->beAuthenticated();
+        Registry::get('system')->beAuthenticated();
 
         $UploadedFiles = $_FILES['filesToUpload'];
         $FileUploaded = $this->fileHelper->uploadFile(ArgumentList: $this->ArgumentList, FileList: $UploadedFiles);
@@ -35,15 +34,15 @@ class ControllerFile extends Controller
     public function Delete()
     {
 
-        $this->system->beAuthenticated();
+        Registry::get('system')->beAuthenticated();
 
         # Displays details of a file
         $hash = filter_input(INPUT_GET, 'id');
         $file = new file();
         $file->get($hash);
-        if ($_SESSION['user']->id != $file->Owner) {
+        if (Registry::get('User')->id != $file->Owner) {
             mlog("🔴 User is not the owner of the file");
-            $this->render->render_template(templateName: 'Core/error', arguments: ['error' => 'You are not the owner of this file']);
+            Registry::get('render')->render_template(templateName: 'Core/error', arguments: ['error' => 'You are not the owner of this file']);
             exit();
         } else {
             mlog("✅ User is the owner of the file - attempting to delete");
@@ -66,42 +65,40 @@ class ControllerFile extends Controller
 
         // Check if the user has permission to download the file
         if (!$this->fileHelper->checkPermissions($File)) {
-            $this->render->render_template(templateName: 'Core/error', arguments: ['errors' => FILE_ERROR_PERMISSION]);
+            Registry::get('render')->render_template(templateName: 'Core/error', arguments: ['errors' => FILE_ERROR_PERMISSION]);
             return;
         }
 
         // Check if the file exists
         if ($File == false) {
-            $this->render->render_template(templateName: 'Core/error', arguments: ['errors' => FILE_ERROR_PERMISSION]);
+            Registry::get('render')->render_template(templateName: 'Core/error', arguments: ['errors' => FILE_ERROR_PERMISSION]);
             return;
         }
 
-        // Download the file
-        $this->render->render_template(templateName: 'Core/error', arguments: ['errors' => 'It worked']);
         $this->fileHelper->downloadFile(File: $File);
-
-
-
+        return;
     }
 
     public function Details()
     {
-        $this->system->beAuthenticated();
+        Registry::get('system')->beAuthenticated();
 
         # Displays details of a file
         $hash = filter_input(INPUT_GET, 'id');
         $file = new file();
         $file->get($hash);
-        if ($_SESSION['user']->id != $file->Owner) {
+        if (Registry::get('User')->id != $file->Owner) {
             mlog("🔴 User is not the owner of the file");
-            $this->render->render_template(templateName: 'Core/error', arguments: ['error' => 'You are not the owner of this file']);
+            Registry::get('render')->render_template(templateName: 'Core/error', arguments: ['error' => 'You are not the owner of this file']);
             exit();
         } else {
             // All checks passed, show image details
-            $this->render->render_template('Site/Image/details', array(
-                'file' => $file
-              )
-              );            
+            Registry::get('render')->render_template(
+                'Site/Image/details',
+                array(
+                    'file' => $file
+                )
+            );
         }
     }
 }

@@ -6,7 +6,7 @@ global $mysql;
 global $mysql_slaves;
 
 # Check if Update is already applied
-$query = $mysql_slaves->query("SELECT * FROM `updates` WHERE `version` = '$Version'", false);
+$query = Registry::get('SqlSlaves')->query("SELECT * FROM `updates` WHERE `version` = '$Version'", false);
 if (count($query) == 0) {
   echo "Updating Database to version $Version<br>";
   echo "Description: $Description<br>";
@@ -15,7 +15,7 @@ SELECT * FROM munboard.users where api = ' ';
 ";
   $Users = array();
 
-  $Users = $mysql->query($update, false);
+  $Users = Registry::get('Sql')->query($update, false);
   $TempUser = new user();
 
   foreach ($Users as $User) {
@@ -27,7 +27,7 @@ SELECT * FROM munboard.users where api = ' ';
     $update = "
     UPDATE munboard.users SET api = '$api' WHERE id = '$id';
     ";
-    $mysql->insert($update); # Remember to add FALSE to the end of the query to prevent the query from being cached
+    Registry::get('Sql')->insert($update); # Remember to add FALSE to the end of the query to prevent the query from being cached
   }
 
   # Update the Updates Table
@@ -35,7 +35,7 @@ SELECT * FROM munboard.users where api = ' ';
 INSERT INTO updates (version, description, created) VALUES ('$Version','$Description', '" . date("Y-m-d H:i:s") . "');
 ";
 
-  $mysql->insert($update);
+  Registry::get('Sql')->insert($update);
 }else{
   echo "Update Already Applied<br>";
 }

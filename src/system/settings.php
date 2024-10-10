@@ -10,18 +10,6 @@
 // Site URL
 $settings['site_url'] = $_ENV['SITE_URL'];
 
-// Allowed File Formats
-$settings['allowed_video_formats'] = array("webm", "mp4", "mp3", "flv", "aac", "ogg", "oga");
-$settings['allowed_image_formats'] = array("jpg", "jpeg", "gif", "png", "bmp");
-
-// Banned File Formats
-$settings['banned_formats'] = array(
-    "php", "html", "htm", "ade", "adp", "bat", "chm", "cmd", "com", "cpl", 
-    "exe", "hta", "ins", "isp", "jar", "jse", "lib", "lnk", "mde", "msc", 
-    "msp", "mst", "pif", "scr", "sct", "shb", "sys", "vb", "vbe", "vbs", 
-    "vxd", "wsc", "wsf", "wsh"
-);
-
 // Cache Settings
 $settings['cache'] = false;
 
