@@ -57,13 +57,7 @@ class ControllerUser extends Controller
      */
     public function Logout()
     {
-        session_start();
-        # clear the $_SESSION
-        session_unset();
-        # destroy the session
-        unset($_SESSION);
-        session_destroy();
-
+        Registry::get('User')->logout();
         Registry::get('system')->redirect('/User/LoggedOut');
     }
 
