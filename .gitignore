@@ -3,3 +3,4 @@
 /src/uploads/*
 /redis-data/*
 /src/logs/*
+.env

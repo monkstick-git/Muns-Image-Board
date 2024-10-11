@@ -19,10 +19,10 @@ ob_start();
   <nav class="fixed-bottom navbar navbar-expand-md navbar-dark bg-dark">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" href="/Site/Gallary">Gallary</a>
+        <a class="nav-link" href="<?=Registry::get("RouteTranslations")['GalleryPage'];?>">Gallary</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/Site/About">About</a>
+        <a class="nav-link" href="<?=Registry::get("RouteTranslations")['AboutPage'];?>">About</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="https://github.com/monkstick-git/Muns-Image-Board">Source</a>

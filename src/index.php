@@ -7,14 +7,10 @@
 
 $Route = $_SERVER['REQUEST_URI'];
 $ApiRoute = '/api';
-$API = false;
+$API = false; // Default to false - Renderer will be used
 if (strpos($Route, $ApiRoute) !== false) {
     // The API is being called, skip the rendering
     $API = true;
-    #require_once './system/bootstrap-light.php';
-}else{
-    $API = false;
-    // Include the bootstrap file for necessary initializations. This includes the renderer
 }
 
 require_once './system/bootstrap.php';
@@ -25,13 +21,14 @@ $Router = new Router();
 $Router->getRoute($_SERVER['REQUEST_URI']);
 # If the route + Method being called requires the renderer disabled, we will disable it here
 // Hack to disable rendering for specific routes for now
+// This will be replaced with a more robust solution in the future. Ideally something like Registry::set('Renderer', false); in the controller / method
 $DisabledRenderRoutes = array();
 $DisabledRenderRoutes[] = 'file/download';
 $DisabledRenderRoutes[] = 'image/raw';
-
+$DisabledRenderRoutes[] = 'file/view';
 
 // Log the route being accessed
-logger('Route: ' . $Router->Controller . '/' . $Router->Method);
+logger('Route: ' . $Router->Controller . '/' . $Router->Method) ;
 
 // Check if the route is allowed
 if ($Router->isAllowedRoute()) {

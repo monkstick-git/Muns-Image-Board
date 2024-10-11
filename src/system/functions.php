@@ -60,23 +60,24 @@ function Compress($data, $level = 1, $encoding = "base64")
     return $data;
 }
 
-function getClientRealIP(){
+function getClientRealIP()
+{
     // Get the client's real IP address, accounting for proxies and Cloudflare
-$_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
+    $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
 
-if (isset($_SERVER['HTTP_X_REAL_IP'])) {
-    $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
-}
+    if (isset($_SERVER['HTTP_X_REAL_IP'])) {
+        $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_REAL_IP'];
+    }
 
-if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
-    $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
-}
+    if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+        $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_CF_CONNECTING_IP'];
+    }
 
-if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-    $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
-}
+    if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $_SERVER['REMOTE_ADDR'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    }
 
-Registry::set('ClientIP', $_SERVER['REMOTE_ADDR']);
+    Registry::set('ClientIP', $_SERVER['REMOTE_ADDR']);
 }
 
 
@@ -94,6 +95,8 @@ Registry::set('ClientIP', $_SERVER['REMOTE_ADDR']);
  */
 function insertCardTemplate($fileName, $fileID, $uploadDate, $htmlContent)
 {
+    $DetailsPage = Registry::get("RouteTranslations")['FileDetailsPage'];
+    $DeletePage = Registry::get("RouteTranslations")['FileDeletePage'];
     echo '
     <div class="col-md-4 d-flex align-items-stretch">
         <div class="card mb-4 shadow-sm" style="width: 100%;">
@@ -103,8 +106,8 @@ function insertCardTemplate($fileName, $fileID, $uploadDate, $htmlContent)
                 <h6 class="card-subtitle mb-2 text-muted">' . htmlspecialchars($uploadDate) . '</h6>
                 <p class="card-text">Click the buttons below to view details or delete this file.</p>
                 <div class="d-flex justify-content-between">
-                    <a href="/File/Details?id=' . htmlspecialchars($fileID) . '" class="btn btn-primary">Details</a>
-                    <a href="/File/Delete?id=' . htmlspecialchars($fileID) . '" class="btn btn-danger">❌ Delete ❌</a>
+                    <a href="' . $DetailsPage . '?id=' . htmlspecialchars($fileID) . '" class="btn btn-primary">Details</a>
+                    <a href="' . $DeletePage . '?id=' . htmlspecialchars($fileID) . '" class="btn btn-danger">❌ Delete ❌</a>
                 </div>
             </div>
         </div>
@@ -127,7 +130,7 @@ function insertImageCard($fileURL, $thumbnailfileURL, $fileName, $fileID, $uploa
     $htmlContent = '
     <a href="' . htmlspecialchars($fileURL) . '">
         <img class="card-img-top lazyload" 
-             src="/assets/Images/loading.webp" 
+             src="'. Registry::get("RouteTranslations")['ImagePath'] .'/loading.webp" 
              data-src="' . htmlspecialchars($thumbnailfileURL) . '" 
              alt="Thumbnail" 
              loading="lazy">

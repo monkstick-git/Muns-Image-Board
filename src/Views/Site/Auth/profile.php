@@ -24,7 +24,7 @@ ob_start();
                     <p class="text-muted text-center">@<?= $Username ?></p>  <!-- Added text-center class here -->
                     <p><strong>Uploads:</strong> <?= $ImageCount ?></p>
                     <p><strong>Space Used:</strong> <?= $Space ?>/<?= $Quota ?> MB</p>
-                    <a href="/User/edit" class="btn btn-dark mt-2">Edit Profile</a>
+                    <a href="<?=Registry::get("RouteTranslations")['UserEditPage'];?>" class="btn btn-dark mt-2">Edit Profile</a>
                     <p class="mt-3"><?= $bio ?></p>
                 </div>
                 <div class="text-center mt-3">

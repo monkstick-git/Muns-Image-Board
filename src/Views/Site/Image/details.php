@@ -16,9 +16,9 @@ ob_start();
         <div class="col-md-6 col-lg-4">
             <div class="card mb-4 box-shadow">
                 <?php if ($fileType === 'image'): ?>
-                    <a href="/images/raw/<?= $FileID ?>.<?= $shortType ?>">
+                    <a href="<?= Registry::get("RouteTranslations")['ImageViewPage']?>?id=<?= $FileID ?>.<?= $shortType ?>">
                         <img class="card-img-top lazyload" 
-                             data-src="/Image/raw?id=<?= $FileID ?>.<?= $shortType ?>" 
+                             data-src="<?= Registry::get("RouteTranslations")['ImageViewPage']?>?id=<?= $FileID ?>.<?= $shortType ?>" 
                              alt="<?= $fileName ?>" 
                              src="https://cdn.dribbble.com/users/3251/screenshots/470914/aah.gif" 
                              data-holder-rendered="true" 
@@ -28,7 +28,7 @@ ob_start();
                 <?php elseif ($fileType === 'video'): ?>
                     <div class="embed-responsive embed-responsive-16by9">
                         <video class="card-img-top embed-responsive-item" controls>
-                            <source src="/Image/Raw?id=<?= $FileID ?>.<?= $shortType ?>" type="<?= $type ?>">
+                            <source src="<?= Registry::get("RouteTranslations")['ImageViewPage']?>?id=<?= $FileID ?>.<?= $shortType ?>" type="<?= $type ?>">
                             Your browser does not support the video tag.
                         </video>
                     </div>
@@ -37,7 +37,7 @@ ob_start();
                     <p class="card-text text-center"><?= htmlspecialchars($fileName) ?></p>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="btn-group">
-                            <a type="button" class="btn btn-sm btn-outline-secondary" href="/Image/raw?id=<?= $FileID ?>.<?= $shortType ?>">Download</a>
+                            <a type="button" class="btn btn-sm btn-outline-secondary" href="<?= Registry::get("RouteTranslations")['ImageViewPage']?>?id=<?= $FileID ?>.<?= $shortType ?>">Download</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Delete</button>
                         </div>
                         <small class="text-muted"><?= htmlspecialchars($modified) ?></small>

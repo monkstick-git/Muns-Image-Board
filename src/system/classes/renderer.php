@@ -8,7 +8,7 @@ class render
 
     public function __construct()
     {
-        $this->render_template('Core/header');
+        $this->render_template(templateName: 'Core/header');
     }
 
     public function setResponseCode($code)
@@ -24,7 +24,6 @@ class render
 
     public function render_template($templateName, $arguments = array())
     {
-        #echo "rendering template: $templateName\n";
         # Arguments can be used to pass variables to the template if it accepts any.
         include ROOT . '/Views/' . $templateName . '.php';
         $this->buffer = $this->buffer . " " . $template;

@@ -14,7 +14,7 @@ class userHelper extends helper
         $user = new User();
         $user->get_user_by_username($this->username);
 
-        if ($user && password_verify($this->password, $user->password)) {
+        if ($user && password_verify($this->password, $user->password)) {        
             return $user; // Return user object if authentication succeeds
         }
 
@@ -36,10 +36,10 @@ class userHelper extends helper
 
     public function login($user)
     {
+        Registry::get('User')->login();        
         $_SESSION['user'] = $user;
         $_SESSION['logged_in'] = true;
         $_SESSION['user_id'] = $user->id;
-        //Registry::set('User', $user);
     }
 
     public function redirect_if_logged_in()

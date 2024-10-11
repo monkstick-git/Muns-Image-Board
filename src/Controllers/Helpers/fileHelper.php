@@ -68,7 +68,7 @@ class fileHelper extends helper
     public function checkPermissions($File)
     {
         if ($File->PublicFile == 0) { // If the file is private (1 = public)
-            if ($_SESSION['user']->id != $File->Owner) { // As of now, only the owner can download the file if it is private
+            if (Registry::get('User')->id != $File->Owner) { // As of now, only the owner can download the file if it is private
                 mlog("🔴 User is not the owner of the file");
                 return false;
             } else {
@@ -79,6 +79,14 @@ class fileHelper extends helper
             mlog("✅ File is public - attempting to download");
             return true;
         }
+    }
+
+    public function displayFile($File){
+        header("Content-Type: $File->FileType");
+        # set header to real filename. Use "attachment" to force download instead of view
+        header("Content-Disposition: inline; filename=\"$File->FileName\"");
+
+        echo $File->Content;
     }
 
 }

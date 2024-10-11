@@ -82,9 +82,19 @@ class user
     public function is_admin()
     {
         $id = Registry::get('SqlSlaves')->safe($this->id);
-        $query = Registry::get('SqlSlaves')->query("SELECT `role` FROM `users` WHERE `id` = '$id'");
-        $query = $query[0];
-        return ($query['role'] == "admin");
+        $query = Registry::get('SqlSlaves')->query("SELECT `role` FROM `users` WHERE `id` = '$id' LIMIT 1");
+        $query = $query[0] ?? false;
+        $Role = $query['role'] ?? false;
+
+        if (!$Role) {
+            return false;
+        } else {
+            if ($Role == "admin") {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     /**
@@ -94,10 +104,13 @@ class user
      */
     public function get_user_by_api($api)
     {
-        
+
         $id = Registry::get('SqlSlaves')->safe($api);
-        $id = Registry::get('SqlSlaves')->query("SELECT * FROM `users` WHERE `api` = '$id'");
-        $result = $id[0];
+        $id = Registry::get('SqlSlaves')->query("SELECT * FROM `users` WHERE `api` = '$id' LIMIT 1");
+        $result = $id[0] ?? false;
+        if (!$result) {
+            return false;
+        }
         $this->populate_user_data($result);
     }
 
@@ -119,16 +132,17 @@ class user
         }
     }
 
-    public function getAllUsers(){
+    public function getAllUsers()
+    {
         $Users = Registry::get('SqlSlaves')->query("SELECT * FROM `users`");
         $UserArray = array();
-        foreach($Users as $User){
+        foreach ($Users as $User) {
             $UserArray[] = new user();
             $UserArray[count($UserArray) - 1]->populate_user_data($User);
         }
 
         return $UserArray;
-        
+
     }
 
     /**
@@ -138,18 +152,17 @@ class user
      */
     public function populate_user_data($data)
     {
-        $this->id = $data['id'];
-        $this->name = $data['name'];
-        $this->surname = $data['surname'];
-        $this->email = $data['email'];
-        $this->username = $data['username'];
-        $this->password = $data['password'];
-        $this->Datecreated = $data['created'];
-        $this->bio = $data['bio'];
-        $this->apiKey = $data['api'];
-        logger("User Model Quota: " . $data['quota']);
-        $this->quota = $data['quota'];
-        $this->totalSpaceUsed = $this->getSpaceUsed();
+        $this->id = $data['id'] ?? null;
+        $this->name = $data['name'] ?? null;
+        $this->surname = $data['surname'] ?? null;
+        $this->email = $data['email'] ?? null;
+        $this->username = $data['username'] ?? null;
+        $this->password = $data['password'] ?? null;
+        $this->Datecreated = $data['created'] ?? null;
+        $this->bio = $data['bio'] ?? null;
+        $this->apiKey = $data['api'] ?? null;
+        $this->quota = $data['quota'] ?? null;
+        $this->totalSpaceUsed = $this->getSpaceUsed() ?? null;
     }
 
     /**
@@ -234,7 +247,7 @@ class user
      */
     public function check_if_username_exists($Username)
     {
-        
+
         $Username = Registry::get('SqlSlaves')->safe($Username);
         $Username = Registry::get('SqlSlaves')->query("SELECT * FROM `users` WHERE `username` = '$Username'", false);
         return count($Username) > 0;
@@ -247,7 +260,7 @@ class user
      */
     public function get_user_by_username($Username)
     {
-        
+
         $Username = Registry::get('SqlSlaves')->safe($Username);
         $Username = Registry::get('SqlSlaves')->query("SELECT * FROM `users` WHERE `username` = '$Username'");
         $result = $Username[0];
@@ -275,6 +288,7 @@ class user
      */
     public function login()
     {
+        logger("▶▶▶ User logged in: " . $this->username);
         $this->loggedIn = true;
     }
 
@@ -296,7 +310,7 @@ class user
      */
     public function getSpaceUsed(): int
     {
-        
+
         $id = Registry::get('SqlSlaves')->safe($this->id);
         $userSpaceUsed = Registry::get('SqlSlaves')->query("SELECT SUM(`size`) AS `size` FROM `files-metadata` WHERE `owner` = '$id'");
         $result = $userSpaceUsed[0];
@@ -307,7 +321,7 @@ class user
             $this->totalSpaceUsed = 0;
             return 0;
         }
-        
+
         $this->totalSpaceUsed = $SpaceUsed;
         return $SpaceUsed;
     }
@@ -319,7 +333,7 @@ class user
      */
     public function getImageCount()
     {
-        
+
         $id = Registry::get('SqlSlaves')->safe($this->id);
         $id = Registry::get('SqlSlaves')->query("SELECT COUNT(`id`) AS `count` FROM `files-metadata` WHERE `owner` = '$id'");
         $result = $id[0];

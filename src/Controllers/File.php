@@ -101,4 +101,23 @@ class ControllerFile extends Controller
             );
         }
     }
+
+    public function View()
+    {
+        // Load Image or fail
+        $File = $this->fileHelper->loadFile($this->ArgumentList);
+        if ($File == false) {
+            Registry::get('system')->Redirect('/'); // Redirect to home if the file is not found
+            return;
+        }
+
+        // Permission check (always allow for now)
+        if (!$this->fileHelper->checkPermissions($File)) {
+            Registry::get('system')->Redirect('/'); // Redirect to home if the file is not found
+            return;
+        }
+
+        // Display the image if permission is granted and the image is loaded
+        $this->fileHelper->displayFile($File);
+    }    
 }

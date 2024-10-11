@@ -6,10 +6,15 @@ class Router
     public $Method;
     public $Query;
     public $Routes;
+    public $RouteTranslations;
 
     public function __construct()
     {
         $this->Routes = json_decode(file_get_contents(ROOT . '/system/routes.json'), true);
+        Registry::set('Routes', $this->Routes);
+        $this->RouteTranslations = json_decode(file_get_contents(ROOT . '/system/routeTranslations.json'), true);
+        // These Translations will be used so if /User/Files gets changed to say, /Files/User, the alias will still work.
+        Registry::set('RouteTranslations', $this->RouteTranslations); // A WIP to map route aliases to actual routes. E.g: "MyFiles" => "User/Files"
     }
 
     public function getRoute($requestUri)

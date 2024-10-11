@@ -29,7 +29,7 @@ ob_start();
                     <p><strong>Space Used:</strong> <?= $Space ?> MB</p>
                 </div>
                 <div class="mt-3">
-                    <form action="/User/edit" method="post">
+                    <form action="<?=Registry::get("RouteTranslations")['UserEditPage'];?>" method="post">
                         <?php if ($NoMatch): ?>
                             <div class="alert alert-warning" role="alert">
                                 <?= $NoMatch ?>

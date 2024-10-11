@@ -1,0 +1,23 @@
+{
+    "404": "404/Index",
+    "HomePage": "/",
+    "AboutPage": "/Home/About",
+    "AdminPage": "/Admin/Index",
+    "UserEditPage": "/User/Edit",
+    "UploadPage": "/File/Upload",
+    "FileDownloadPage": "/File/Download",
+    "FileDeletePage": "/File/Delete",
+    "FileDetailsPage": "/File/Details",
+    "MyFilesPage": "/User/Files",
+    "ImageViewPage": "/Image/Raw",
+    "ImageThumbnailPage": "/Image/Thumbnail",
+    "GalleryPage": "/Home/Gallery",
+    "RegisterPage": "/User/Register",
+    "LoginPage": "/User/Login",
+    "ProfilePage": "/User/Profile",
+    "LogoutPage": "/User/Logout",
+    "CSSPath": "/assets/css/",
+    "JSPath": "/assets/js/",
+    "ImagePath": "/assets/images/"
+
+}

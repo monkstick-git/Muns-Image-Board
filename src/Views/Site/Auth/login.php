@@ -13,8 +13,8 @@ $CSRF = $_SESSION['User']->CSRF->Token;
 ob_start();
 ?>
 
-<link href="/assets/css/signin.css" rel="stylesheet">
-<form class="form-signin" action="/User/login" method="POST" enctype="multipart/form-data">
+<link href="<?= Registry::get("RouteTranslations")['CSSPath']?>/signin.css" rel="stylesheet">
+<form class="form-signin" action="<?=Registry::get("RouteTranslations")['LoginPage'];?>" method="POST" enctype="multipart/form-data">
   <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72"
     height="72">
   <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>

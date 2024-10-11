@@ -29,9 +29,9 @@ ob_start();
             $tmpUser->get_user_by_id($fileOwner);
             $ownerName = $tmpUser->username;
             $fileType = explode("/", ($fileValue['filetype']))[1];
-            $fileURL = "/File/Download?id=$uniqueID.$fileType";
-            $imageURL = "/image/raw?id=$uniqueID.$fileType";
-            $thumbnailURL = "/image/thumbnail?id=$uniqueID.$fileType";
+            $fileURL = Registry::get("RouteTranslations")['FileDownloadPage'] . "?id=$uniqueID.$fileType";
+            $imageURL = Registry::get("RouteTranslations")['ImageViewPage'] . "?id=$uniqueID.$fileType";
+            $thumbnailURL = Registry::get("RouteTranslations")['ImageThumbnailPage'] . "?id=$uniqueID.$fileType";
             $file = new image();
             $file->getFileMetadata($uniqueID);
             $fileName = $file->FileName;
@@ -44,7 +44,7 @@ ob_start();
             # Add KB to the end
             $Size = $Size . " KB";
             $type = $file->FileType;
-            $deleteURL = "/File/Delete?id=$uniqueID";
+            $deleteURL = Registry::get("RouteTranslations")['FileDeletePage'] . "?id=$uniqueID";
             ?>
 
             <div class="col">

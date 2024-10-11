@@ -9,6 +9,7 @@
 
 // Site URL
 $settings['site_url'] = $_ENV['SITE_URL'];
+$settings['SiteName'] = "Muns Image Board";
 
 // Cache Settings
 $settings['cache'] = false;

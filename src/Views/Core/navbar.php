@@ -1,31 +1,37 @@
 <?php
-
+$Sitename  = Registry::get('settings')['SiteName'];
 $MenuItems = [
     'NavBar' => [
-        'Home' => '/',
-        'Upload' => '/File/Upload',
-        'My Files' => '/User/Files',
-        'Gallery' => '/Home/Gallery'
+        'Home' => Registry::get("RouteTranslations")['HomePage'],
+        'Upload' => Registry::get("RouteTranslations")['UploadPage'],
+        'My Files' => Registry::get("RouteTranslations")['MyFilesPage'],
+        'Gallery' => Registry::get("RouteTranslations")['GalleryPage'],
+        // Admin Menu Only visible to admins via some logic below. TODO: Implement this better
     ],
     'RightBar' => [
         'loggedOut' => [
-            'Register' => '/User/register',
-            'Login' => '/User/login'
+            'Register' => Registry::get("RouteTranslations")['RegisterPage'],
+            'Login' => Registry::get("RouteTranslations")['LoginPage']
         ],
         'loggedIn' => [
-            'Profile' => '/User/profile',
-            'My Files' => '/User/Files',
-            'Logout' => '/User/logout'
+            'Profile' => Registry::get("RouteTranslations")['ProfilePage'],
+            'My Files' => Registry::get("RouteTranslations")['MyFilesPage'],
+            'Logout' => Registry::get("RouteTranslations")['LogoutPage']
         ]
     ]
 ];
 
+$User = Registry::get('User'); // Get the user object from the registry
+$Username = $User->username ?? 'Guest'; // Get the username if it exists
+$LoggedIn = $User->loggedIn ?? false; // Check if the user is logged in
+$IsAdmin = $User->is_admin() ?? false; // Check if the user is an admin
+#print_r($User);
 ob_start();
 ?>
 <header>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">MunBoard</a>
+            <a class="navbar-brand" href="#"><?=$Sitename?></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
                 aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -38,11 +44,16 @@ ob_start();
                             <a class="nav-link" href="<?= $value; ?>"><?= $key; ?></a>
                         </li>
                     <?php endforeach; ?>
+                    <?php if ($IsAdmin): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?=Registry::get("RouteTranslations")['AdminPage'];?>">Admin</a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
 
                 <!-- Right Side (Account Nav) -->
                 <ul class="navbar-nav ms-auto">
-                    <?php if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true): ?>
+                    <?php if ($LoggedIn == false): ?>
                         <?php foreach ($MenuItems['RightBar']['loggedOut'] as $key => $url): ?>
                             <li class="nav-item">
                                 <a class="nav-link" href="<?= $url; ?>"><?= $key; ?></a>
@@ -52,7 +63,7 @@ ob_start();
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                 data-bs-toggle="dropdown" aria-expanded="false">
-                                <?= $GLOBALS['User']->username; ?>
+                                <?= $Username; ?>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <?php foreach ($MenuItems['RightBar']['loggedIn'] as $key => $url): ?>
