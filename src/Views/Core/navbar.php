@@ -6,6 +6,7 @@ $MenuItems = [
         'Upload' => Registry::get("RouteTranslations")['UploadPage'],
         'My Files' => Registry::get("RouteTranslations")['MyFilesPage'],
         'Gallery' => Registry::get("RouteTranslations")['GalleryPage'],
+        "URL Shortener" => Registry::get("RouteTranslations")['ShortNew'],
         // Admin Menu Only visible to admins via some logic below. TODO: Implement this better
     ],
     'RightBar' => [

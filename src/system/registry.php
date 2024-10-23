@@ -23,10 +23,14 @@ class Registry {
     }
 
     // Static method to get a value from the registry
-    public static function get($key) {
+    public static function get($key, $exitOnError = true) {
         # Ensure that the key exists in the registry
         if (!isset(self::$instances[$key])) {
-            throw new Exception("Key $key does not exist in the registry");
+            if($exitOnError == true){
+                throw new Exception("Key $key does not exist in the registry");
+            }else{
+                return false;
+            }
         }else{
             return self::$instances[$key];
         }

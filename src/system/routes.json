@@ -30,6 +30,13 @@
     "User/Edit": "",
     "User/Files": "",
     "User/LoggedOut": "",
-    "User/Register": ""
+    "User/Register": "",
+
+    "S/Index": "",
+    "S/New": "",
+    "S/Create": "",
+    "S/List": "",
+
+    "System/Update": ""
 
 }

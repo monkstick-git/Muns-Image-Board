@@ -18,6 +18,12 @@
     "LogoutPage": "/User/Logout",
     "CSSPath": "/assets/css/",
     "JSPath": "/assets/js/",
-    "ImagePath": "/assets/images/"
-
+    "ImagePath": "/assets/images/",
+    "ShortIndex": "/S/Index",
+    "ShortDetails": "/S/Details",
+    "ShortEdit": "/S/Edit",
+    "ShortDelete": "/S/Delete",
+    "ShortCreate": "/S/Create",
+    "ShortNew": "/S/New",
+    "ShortList": "/S/List"
 }

@@ -28,30 +28,36 @@ class sql
   {
     mlog($query);
     # Inserts should never be cached
-    $return = false;
     $this->connect();
+
     try {
-      $result = "";
-      $this->mysql->query($query);
-      if ($this->mysql->insert_id) {
-        return $this->mysql->insert_id;
-      } else {
-        $return = true;
+      # Execute the query
+      if ($this->mysql->query($query) === false) {
+        # Log the error and return false if the query fails
+        mlog("MySQL Error: " . $this->mysql->error);
+        return false;
       }
 
-      return $return;
+      # Check if an insert occurred and return the insert ID, else return true
+      if ($this->mysql->insert_id) {
+        return $this->mysql->insert_id;
+      }
+
+      return true;  # Return true if no insert ID but query was successful
     } catch (Exception $e) {
-      mlog($e->getMessage());
+      # Log the exception message and return false
+      mlog("Exception: " . $e->getMessage());
       return false;
     }
   }
 
+
   public function query($query, $cache = true, $ttl = 3600)
   {
-    if($this->cache == false){
+    if ($this->cache == false) {
       $cache = false;
       $isCache = "false";
-    }else{
+    } else {
       $isCache = "true";
     }
 

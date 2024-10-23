@@ -30,8 +30,9 @@ require_once ROOT . '/Models/File.php';
 require_once ROOT . '/Models/Permissions.php';
 require_once ROOT . '/Models/Image.php';
 require_once ROOT . '/Models/Session.php';
+require_once ROOT . '/Models/Short.php';
 
-if (!Registry::get('api')) { // If the site is not being accessed via the API, load the javascript and css files
+if (!Registry::get('api', false)) { // If the site is not being accessed via the API, load the javascript and css files
     // Include the necessary CSS and JS files
     $cssIncludes[] = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css";
     $cssIncludes[] = "https://unpkg.com/filepond@4.31.4/dist/filepond.min.css";
@@ -47,6 +48,7 @@ if (!Registry::get('api')) { // If the site is not being accessed via the API, l
     $jsIncludes[] = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js";
     $jsIncludes[] = "https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.js";
     $jsIncludes[] = "https://vjs.zencdn.net/7.24.1/video.min.js";
+    $jsIncludes[] = "https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js";
     Registry::set('jsIncludes', $jsIncludes);
 }
 
@@ -92,7 +94,7 @@ require_once ROOT . '/Controllers/Controller.php';
 // Include all PHP files in the system/classes/ directory
 $classes = glob(ROOT . '/system/classes/*.php');
 foreach ($classes as $class) {
-    if (Registry::get('api')) {
+    if (Registry::get('api',exitOnError: false)) {
         if (strpos($class, 'renderer.php') !== false) { // Skip the renderer class as it is not needed for the api
             continue;
         }
