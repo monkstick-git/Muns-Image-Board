@@ -130,7 +130,7 @@ function insertImageCard($fileURL, $thumbnailfileURL, $fileName, $fileID, $uploa
     $htmlContent = '
     <a href="' . htmlspecialchars($fileURL) . '">
         <img class="card-img-top lazyload" 
-             src="'. Registry::get("RouteTranslations")['ImagePath'] .'/loading.webp" 
+             src="'. Registry::get("RouteTranslations")['ImagePath'] .'loading.webp" 
              data-src="' . htmlspecialchars($thumbnailfileURL) . '" 
              alt="Thumbnail" 
              loading="lazy">

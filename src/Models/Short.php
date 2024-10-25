@@ -17,21 +17,18 @@ class short {
         $ShortURL = Registry::get('SqlSlaves')->safe($ShortURL);
         $LongURL = Registry::get('SqlSlaves')->safe($LongURL);
         $userID = Registry::get('SqlSlaves')->safe($userID);
-        $this->save(url: $LongURL, short: $ShortURL, userID: $userID);
-        # return logic here
+        
+        return $this->save(url: $LongURL, short: $ShortURL, userID: $userID);
+        
     }
 
     private function save($url, $short, $userID) {
+        $url = Registry::get('SqlSlaves')->safe($url);
+        $short = Registry::get('SqlSlaves')->safe($short);
+        $userID = Registry::get('SqlSlaves')->safe($userID);
+
         $sql = "INSERT INTO urls (long_url, short_url, user_id) VALUES ('$url', '$short', '$userID')";
-        if(Registry::get('Sql')->insert($sql)){
-            echo "URL saved successfully<br>";
-            echo "URL: $url<br>";
-            echo "Short URL: $short<br>";
-        } else {
-            #$Error = Registry::get('Sql')->error;
-            echo "Error saving URL<br>";
-            #echo "Error: $Error<br>";
-        }
+        return Registry::get('Sql')->insert($sql);
     }
 
     public function get($ShortURL) {
@@ -56,6 +53,39 @@ class short {
         $result = Registry::get('SqlSlaves')->query($sql);
         if($result){
             return $result;
+        }else{
+            return false;
+        }
+    }
+
+    public function getOwner($LinkID){
+        $LinkID = $LinkID ?? false;
+        if(!$LinkID){
+            return false;
+        }
+        $LinkID = Registry::get('SqlSlaves')->safe($LinkID);
+        $sql = "SELECT user_id FROM urls WHERE id = '$LinkID'";
+        $result = Registry::get('SqlSlaves')->query($sql);
+        if($result){
+            return $result[0]['user_id'];
+        }else{
+            return false;
+        }
+    }
+
+    public function delete($uid, $LinkID){
+        $uid = $uid ?? false;
+        $LinkID = $LinkID ?? false;
+        if(!$uid || !$LinkID){
+            return false;
+        }
+        $uid = Registry::get('SqlSlaves')->safe($uid);
+        $LinkID = Registry::get('SqlSlaves')->safe($LinkID);
+        
+        # Delete the URL
+        $sql = "DELETE FROM urls WHERE id = '$LinkID' AND user_id = '$uid'";
+        if(Registry::get('Sql')->insert($sql)){
+            return true;
         }else{
             return false;
         }

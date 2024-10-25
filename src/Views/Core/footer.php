@@ -14,21 +14,24 @@ ob_start();
     }
   ?>
 
-</body>
-<footer class="container">
-  <nav class="fixed-bottom navbar navbar-expand-md navbar-dark bg-dark">
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" href="<?=Registry::get("RouteTranslations")['GalleryPage'];?>">Gallary</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="<?=Registry::get("RouteTranslations")['AboutPage'];?>">About</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="https://github.com/monkstick-git/Muns-Image-Board">Source</a>
-      </li>
-  </nav>
-</footer>
+
+  <!-- Footer section -->
+  <footer class="fixed-bottom navbar navbar-expand-md navbar-dark bg-dark">
+    <nav class="container">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" href="<?=Registry::get("RouteTranslations")['GalleryPage'];?>">Gallery</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="<?=Registry::get("RouteTranslations")['AboutPage'];?>">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="https://github.com/monkstick-git/Muns-Image-Board">Source</a>
+        </li>
+      </ul>
+    </nav>
+  </footer>
+  </body>
 <?php
 $template = ob_get_contents();
 ob_end_clean();

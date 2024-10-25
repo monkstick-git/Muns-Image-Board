@@ -45,7 +45,14 @@ class ControllerS extends Controller
         $LongURL = $this->shortHelper->sanitizeURL(URL: $this->ArgumentList['longUrl']);
         $ShortURL = $this->shortHelper->generateShortURL(URL: $this->ArgumentList['longUrl']);
 
-        $this->shortHelper->store(LongURL: $LongURL, ShortURL: $ShortURL);
+        $Success = $this->shortHelper->store(LongURL: $LongURL, ShortURL: $ShortURL);
+        if($Success){
+            $Arguments = array('shortURL' => $ShortURL);
+            Registry::get('render')->render_template('Site/Short/index', $Arguments);
+        }else{
+            $Arguments = array('errors' => 'Failed to create short URL');
+            Registry::get('render')->render_template('Errors/404', $Arguments);
+        }
     }
 
     function Get()
@@ -73,6 +80,21 @@ class ControllerS extends Controller
         $ShortURLs = $this->shortHelper->list(uid: $UserID);
         $Arguments = array('shortURLs' => $ShortURLs);
         Registry::get('render')->render_template('Site/Short/list', $Arguments);
+    }
+
+    function Delete(){
+        Registry::get('system')->beAuthenticated();
+        $LinkID = $this->ArgumentList['id'];
+        $UserID = Registry::get('User')->id;
+        # Check if the owner of the short URL is the same as the logged-in user
+        $Owner = $this->shortHelper->getOwner(LinkID: $LinkID);
+        if($Owner != $UserID){
+            $Arguments = array('errors' => 'You do not have permission to delete this short URL');
+            Registry::get('render')->render_template('Errors/404', $Arguments);
+        }else{
+            return $this->shortHelper->delete(uid: $UserID, LinkID: $LinkID);
+        }
+        #$this->shortHelper->delete(uid: $UserID, LinkID: $LinkID);
     }
 
 }

@@ -35,4 +35,14 @@ class shortHelper extends helper
         return $short->list(uid: $uid);
     }
 
+    function delete($uid, $LinkID){
+        $short = new short();
+        return $short->delete(uid: $uid, LinkID: $LinkID);
+    }
+
+    function getOwner($LinkID){
+        $short = new short();
+        return $short->getOwner(LinkID: $LinkID);
+    }
+
 }
