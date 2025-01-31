@@ -30,7 +30,7 @@ class ControllerHome extends Controller
         $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT, ['options' => ['default' => 1, 'min_range' => 1]]);
 
         // Set items per page and calculate the offset for the database query.
-        $items_per_page = 6;
+        $items_per_page = 48;
         $offset = ($page - 1) * $items_per_page;
         $limit = "$offset, $items_per_page";
 
