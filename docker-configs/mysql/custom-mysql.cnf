@@ -1,0 +1,27 @@
+[mysqld]
+skip-name-resolve             # Avoid DNS lookups
+max_connections = 250          # Limit connections to save memory
+table_open_cache = 256        # Keep table cache small for memory efficiency
+open_files_limit = 512
+
+# InnoDB Settings
+innodb_buffer_pool_size = 512M   # Half of total RAM for InnoDB buffer pool
+innodb_buffer_pool_instances = 1 # No need to split small pools
+innodb_log_file_size = 128M      # Sufficient for small write operations
+innodb_log_buffer_size = 16M     # Log buffer reduced to save memory
+innodb_flush_log_at_trx_commit = 2  # Speeds up writes at slight durability cost
+innodb_io_capacity = 400         # Lower I/O to match resources
+innodb_adaptive_hash_index = 0   # Saves memory, disable adaptive hash indexing
+innodb_flush_method = O_DIRECT   # Optimize disk I/O
+
+
+# Packet Size for Chunked Uploads
+max_allowed_packet = 128M        # Adjust to allow chunk uploads within RAM constraints
+
+# Temporary Tables
+tmp_table_size = 64M             # Reduce memory for temp tables
+max_heap_table_size = 64M
+
+# Thread and Stack Optimization
+thread_cache_size = 8
+thread_stack = 192K              # Reduce stack size to save memory
