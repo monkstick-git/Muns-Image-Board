@@ -96,11 +96,12 @@ class image extends file
      * and then retrieves the thumbnail associated with the image.
      *
      * @param int $id The ID of the image.
+     * @param bool $minimal Whether to retrieve minimal data or not. Minimal data skips loading the content.
      * @return bool Returns true if the image and thumbnail are successfully retrieved, false otherwise.
      */
-    public function get($id)
+    public function get($id, $minimal = true)
     {
-        if (parent::get($id) == false) {
+        if (parent::get(id: $id, minimal: $minimal) == false) {
             // Return early if the parent class fails.
             // There's not going to be a thumbnail if the file doesn't exist
             return false;

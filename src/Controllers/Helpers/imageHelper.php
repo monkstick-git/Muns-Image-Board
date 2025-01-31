@@ -2,12 +2,12 @@
 
 class imageHelper extends helper
 {
-    public function loadImage($ArgumentList)
+    public function loadImage($ArgumentList, $minimal = false)
     {
         try {
             $id = $ArgumentList['id'];
             $file = new image();
-            if ($file->get($id) == false) {
+            if ($file->get(id: $id, minimal: $minimal) == false) {
                 return false;
             } else {
                 return $file;
@@ -63,7 +63,7 @@ class imageHelper extends helper
         if (isset($Image->Thumbnail) && $Image->Thumbnail != "") {
 
         } else {
-            logger("Creating Thumbnail");
+            mlog("Creating Thumbnail for Image: $Image->FileName");
             $Image->ThumbNail = $Image->CreateImageThumbNail();
             $Image->update();
             // Wait for the update to complete before continuing. This is a hacky way to ensure the thumbnail is created and commited before it is displayed

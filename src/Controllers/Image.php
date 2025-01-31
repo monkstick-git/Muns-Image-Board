@@ -19,7 +19,7 @@ class ControllerImage extends Controller
     public function raw()
     {
         // Load Image or fail
-        $Image = $this->imageHelper->loadImage($this->ArgumentList);
+        $Image = $this->imageHelper->loadImage(ArgumentList: $this->ArgumentList, minimal: false);
         if ($Image == false) {
             $this->imageHelper->displayDeniedImage();
             die();
@@ -44,7 +44,7 @@ class ControllerImage extends Controller
     {
 
         // Load Image or fail (also handles permission check)
-        $Image = $this->imageHelper->loadImage($this->ArgumentList);
+        $Image = $this->imageHelper->loadImage($this->ArgumentList, minimal: true);
         if ($Image == false) {
             $this->imageHelper->displayDeniedImage();
             die();

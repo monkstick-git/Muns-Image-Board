@@ -48,6 +48,7 @@ class file
     public function getFileMetadata($id)
     {
         if (!is_numeric($id) && strpos($id, "_") !== false) {
+            mlog("Extracting ID from: " . $id);
             $imageID = explode("_", $id)[1];
             $imageID = Registry::get('SqlSlaves')->safe($imageID);
             $hash = explode("_", $id)[0];
@@ -162,7 +163,7 @@ class file
      * @param string $id The unique ID of the file.
      * @return mixed The file object if retrieved successfully, false otherwise.
      */
-    public function get($id)
+    public function get($id, $minimal=false)
     {
         if ($this->getFileMetadata($id) == false) {
             mlog("Failed to get file metadata for: " . $id);
@@ -170,10 +171,19 @@ class file
         }
 
         mlog("🗃 getting file: " . $this->UniqueID);
-        $File = $this->_getFileFromDriver($this->UniqueID);
-        $this->Content = $File;
-        mlog("✅ File loaded: " . $this->UniqueID);
-        mlog("✅ File Size: " . strlen($File));
+        if($minimal == false){
+            $File = $this->_getFileFromDriver($this->UniqueID);
+            mlog("✅ File loaded: " . $this->UniqueID);
+            mlog("Setting File Content");
+            $this->Content = $File;
+            mlog("File Set");
+            mlog("✅ File Size: " . strlen($File));            
+        }else{
+            mlog("Skipping file content load as minimal is set to true");
+            return true;
+        }
+        
+
 
         return $this;
     }
@@ -249,7 +259,9 @@ class file
     private function _getFileFromDriver($id)
     {
         if (isset($this->Driver) && file_exists(ROOT . '/system/classes/drivers/file/' . $this->Driver . ".php")) {
+            mlog("Loading Driver: " . $this->Driver);
             require_once ROOT . '/system/classes/drivers/file/' . $this->Driver . ".php";
+            mlog("Driver Loaded: " . $this->Driver);
         } else {
             mlog("Error Finding Driver: " . $this->Driver);
         }
