@@ -41,7 +41,7 @@ class ControllerUser extends Controller
 
             if ($authenticatedUser) {
                 $this->userHelper->login(user: $authenticatedUser);
-                Registry::get('system')->redirect('/');
+                Registry::get('system')->redirect(Registry::get("RouteTranslations")['ProfilePage']);
                 return;
             } else {
                 Registry::get('render')->render_template('Site/Auth/login', ['errors' => USERNAME_PASSWORD_ERROR]);
