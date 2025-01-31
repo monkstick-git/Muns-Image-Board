@@ -12,7 +12,7 @@ $settings['site_url'] = $_ENV['SITE_URL'];
 $settings['SiteName'] = "Muns Image Board";
 
 // Cache Settings
-$settings['cache'] = false;
+$settings['cache'] = true; // Only set to false for debugging purposes. Huge improvement in performance if set to true.
 
 // File Storage Driver
 // Options: "mysql" or "local"
