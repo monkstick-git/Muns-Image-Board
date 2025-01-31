@@ -3,7 +3,7 @@ $Error = false;
 
 if (isset($arguments)) {
     if (isset($arguments['errors'])) {
-        $Error = $arguments['errors'];
+        $Error = $arguments['errors']['errors'];
     }
 }
 
@@ -12,7 +12,7 @@ $CSRF = $_SESSION['User']->CSRF->Token;
 ob_start();
 ?>
 
-<link href="<?= Registry::get("RouteTranslations")['CSSPath']?>/signin.css" rel="stylesheet">
+<link href="<?= Registry::get("RouteTranslations")['CSSPath']?>signin.css" rel="stylesheet">
 <form class="form-signin" action="<?=Registry::get("RouteTranslations")['RegisterPage'];?>" method="POST" enctype="multipart/form-data">
 
     <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
@@ -34,7 +34,9 @@ ob_start();
 
     <?php if ($Error): ?>
             <div class='alert alert-warning' role='alert'>
-                Error: <?= htmlspecialchars($Error, ENT_QUOTES, 'UTF-8') ?>
+                <?php foreach ($Error as $error): ?>
+                    <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?><br>
+                <?php endforeach; ?>
             </div>
     <?php endif; ?>
 </form>

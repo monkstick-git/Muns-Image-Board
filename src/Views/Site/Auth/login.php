@@ -12,7 +12,12 @@ $CSRF = $_SESSION['User']->CSRF->Token;
 
 ob_start();
 ?>
-
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1 class="text-center"></h1>
+    </div>
+  </div>
 <link href="<?= Registry::get("RouteTranslations")['CSSPath']?>/signin.css" rel="stylesheet">
 <form class="form-signin" action="<?=Registry::get("RouteTranslations")['LoginPage'];?>" method="POST" enctype="multipart/form-data">
   <img class="mb-4" src="https://getbootstrap.com/docs/4.0/assets/brand/bootstrap-solid.svg" alt="" width="72"
