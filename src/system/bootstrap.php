@@ -34,20 +34,13 @@ require_once ROOT . '/Models/Short.php';
 
 if (!Registry::get('api', false)) { // If the site is not being accessed via the API, load the javascript and css files
     // Include the necessary CSS and JS files
-    $cssIncludes[] = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css";
-    $cssIncludes[] = "https://unpkg.com/filepond@4.31.4/dist/filepond.min.css";
-    #$cssIncludes[] = "https://vjs.zencdn.net/7.24.1/video-js.min.css";
+    $cssIncludes[] = "/assets/css/bootstrap.min.css"; 
     $cssIncludes[] = "/assets/css/normalize.css";
-    $cssIncludes[] = "/assets/css/style.css";
+    $cssIncludes[] = "/assets/css/style.css?1";
     Registry::set('cssIncludes', $cssIncludes);
 
-    $jsIncludes[] = "/assets/js/jquery-3.7.1.min.js";
     $jsIncludes[] = "/assets/js/site.js";
-    $jsIncludes[] = "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js";
-    $jsIncludes[] = "https://unpkg.com/filepond@4.31.4/dist/filepond.min.js";
-    $jsIncludes[] = "https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js";
-    $jsIncludes[] = "https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.js";
-    #$jsIncludes[] = "https://vjs.zencdn.net/7.24.1/video.min.js";
+    $jsIncludes[] = "/assets/js/bootstrap.bundle.min.js";
     Registry::set('jsIncludes', $jsIncludes);
 }
 
