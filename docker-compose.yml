@@ -20,6 +20,7 @@ services:
       - "${sitePath}/.env"
     volumes:
       - ${sitePath}/mysql-data:/var/lib/mysql
+      - ${sitePath}/docker-configs/mysql:/etc/mysql/conf.d/
     environment:
       MYSQL_ROOT_PASSWORD: "root"
       MYSQL_DATABASE: "munboard"
@@ -69,7 +70,6 @@ services:
       replicas: 2
       resources:
         limits:
-          cpus: "4"
           memory: "2048M"
     extra_hosts:
       - "host.docker.internal:host-gateway"
