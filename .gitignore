@@ -4,3 +4,4 @@
 /redis-data/*
 /src/logs/*
 .env
+/template/*
