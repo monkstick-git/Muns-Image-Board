@@ -4,10 +4,52 @@ $adminMenu = $arguments['adminMenu'];
 ob_start();
 ?>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let isFetching = false;
+    const galleryContainer = document.querySelector('.gallery-container');
+    let totalPages = parseInt(galleryContainer.dataset.totalPages);
+    let currentPage = parseInt(galleryContainer.dataset.currentPage);
+
+    window.addEventListener('scroll', () => {
+        if (isFetching) return;
+
+        let offsetPercent = 30;
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - (document.body.offsetHeight * (offsetPercent / 100))) {
+            fetchMoreImages();
+        }
+    });
+
+    function fetchMoreImages() {
+        if (currentPage >= totalPages) return; // Stop fetching if last page is reached
+        isFetching = true;
+        currentPage++;
+        galleryContainer.dataset.currentPage = currentPage; // Update the data attribute
+
+        fetch(`/Home/Gallery?page=${currentPage}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(response => response.text())
+            .then(html => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+
+                // Append only new gallery items
+                tempDiv.querySelectorAll('.col-md-4').forEach(item => {
+                    galleryContainer.appendChild(item);
+                });
+            })
+            .catch(error => console.error('Error fetching images:', error))
+            .finally(() => {
+                isFetching = false; // Allow new fetches once this one completes
+            });
+    }
+});
+</script>
+
+
+
 <div class="container-fluid album py-5 bg-light">
     <div class="row justify-content-center">
-        <!-- Update row-cols-md-3 to row-cols-md-6 for 6 images per row on medium screens and larger -->
-        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-6 g-3">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-6 g-3 gallery-container" data-total-pages="<?= $arguments['totalPages'] ?>" data-current-page="1">
             <?php foreach ($FileArray as $key => $value): ?>
                 <?php
                 $fileValue = $value;
@@ -20,7 +62,7 @@ ob_start();
                 endif;
                 $fileType = explode("/", ($fileValue['filetype']))[1];
                 $fileContentType = explode("/", ($fileValue['filetype']))[0]; # Image, Video etc
-
+            
                 $thumbnailfileURL = "/image/thumbnail?id=$fileID.$fileType";
                 $fileURL = "/image/raw?id=$fileID.$fileType";
                 $file = new image(); # TODO: This should be passed to the view, not created here
@@ -35,12 +77,10 @@ ob_start();
                 ?>
 
                 <?php
-                // If the file is an image, display it
                 if ($fileContentType == "image"):
                     insertImageCard($fileURL, $thumbnailfileURL, $fileName, $fileID, $modified);
                 endif;
 
-                // If the file is a video, display a video card
                 if ($fileContentType == "video"):
                     insertVideoCard($fileURL, $fileName, $fileID, $modified);
                 endif;
@@ -49,6 +89,7 @@ ob_start();
         </div>
     </div>
 </div>
+
 
 <?php
 $template = ob_get_contents();

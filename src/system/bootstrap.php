@@ -36,7 +36,7 @@ if (!Registry::get('api', false)) { // If the site is not being accessed via the
     // Include the necessary CSS and JS files
     $cssIncludes[] = "/assets/css/bootstrap.min.css"; 
     $cssIncludes[] = "/assets/css/normalize.css";
-    $cssIncludes[] = "/assets/css/style.css?1";
+    $cssIncludes[] = "/assets/css/style.css?4";
     Registry::set('cssIncludes', $cssIncludes);
 
     $jsIncludes[] = "/assets/js/site.js";

@@ -82,6 +82,24 @@ services:
         source: "${sitePath}/docker-configs/custom-php"
         target: "/etc/php-custom.d"
 
+  # As of now, Ollama won't download the required models automatically.
+  # You need to download the models manually.
+  # Exec into the container and run the following command:
+  # ollama pull llama3.2:latest
+  # This doesn't need to happen every time you start the container. The volume will persist.
+  #  ollama:
+  #    image: ollama/ollama
+  #    container_name: ollama
+  #    # Limit the memory usage of the container
+  #    deploy:
+  #      resources:
+  #        limits:
+  #          memory: "4096M"
+  #    ports:
+  #      - "11434:11434" # Default Ollama API port
+  #    volumes:
+  #      - ./ollama/models/:/root/.ollama # Local storage for your models
+
 # phpdoc/phpdoc
   # phpdoc:
   #   image: phpdoc/phpdoc

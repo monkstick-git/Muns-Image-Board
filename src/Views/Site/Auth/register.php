@@ -3,7 +3,7 @@ $Error = false;
 
 if (isset($arguments)) {
     if (isset($arguments['errors'])) {
-        $Error = $arguments['errors']['errors'];
+        $Error = $arguments['errors'];
     }
 }
 

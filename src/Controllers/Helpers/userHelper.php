@@ -14,7 +14,7 @@ class userHelper extends helper
         $user = new User();
         $user->get_user_by_username($this->username);
 
-        if ($user && password_verify($this->password, $user->password)) {        
+        if ($user && password_verify($this->password, $user->password)) {
             return $user; // Return user object if authentication succeeds
         }
 
@@ -28,15 +28,15 @@ class userHelper extends helper
         # Check if either csrf or submittedCSRF is empty
         if (!$this->csrf || !$this->submittedCSRF) {
             return false;
-        }else{
+        } else {
             return $this->csrf === $this->submittedCSRF;
         }
-        
+
     }
 
     public function login($user)
     {
-        Registry::get('User')->login();        
+        Registry::get('User')->login();
         $_SESSION['user'] = $user;
         $_SESSION['logged_in'] = true;
         $_SESSION['user_id'] = $user->id;
@@ -88,6 +88,51 @@ class userHelper extends helper
         return $Error;
     }
 
+    public function checkRegisterInputWithAI()
+    {
+        mlog("🤖 Checking username with AI");
+        $Error = array();
+            $AIResponse = $this->_RegistrationExecuteAI($this->username);
+            if ($AIResponse) {
+                if ($AIResponse['score'] < 5) {
+                    # Re-run the AI to be sure as it sometimes gives false negatives
+                    $AIResponse = $this->_RegistrationExecuteAI($this->username);
+                    if ($AIResponse['score'] > 5) {
+                        mlog("🤖❌ Username is offensive! ");
+                        $Error['username'] = $AIResponse['explanation'];
+                    }else{
+                        // Name is not offensive
+                        mlog("🤖✅ Username is allowed! ");
+                    }
+                }else{
+                    mlog("🤖❌ Username is offensive!");
+                    $Error['username'] = $AIResponse['explanation'];
+                }
+            }
+        mlog("🤖 AI check complete");
+        mlog("🤖 AI Response: " . print_r($AIResponse, true));
+
+        return $Error;
+    }
+
+    private function _RegistrationExecuteAI($username)
+    {
+        $AI = new Ai_username_moderator();
+        $AI->setPrompt($this->username);
+        $AI->createPayload();
+        $AI->execute();
+        $AIResponse = $AI->response;
+        # Expected format: json strong with 'explanation' and 'score' keys
+
+        # As the AI isn't 100% accurate with it's response, we will do a try catch to handle the json decode, just in case.
+        try {
+            $AIResponse = json_decode($AIResponse, true);
+            return $AIResponse;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+
     public function registerUser()
     {
         $User = new user();
@@ -123,7 +168,8 @@ class userHelper extends helper
         }
     }
 
-    public function changePassword($ArgumentList, $User){
+    public function changePassword($ArgumentList, $User)
+    {
         if ($ArgumentList['password'] == $ArgumentList['passwordConfirm']) {
             $PasswordChanged = $User->setPassword($ArgumentList['password']);
 
@@ -140,31 +186,33 @@ class userHelper extends helper
         return $arguments;
     }
 
-    public function hasPermission($Permission){
+    public function hasPermission($Permission)
+    {
         return $_SESSION['User']->has_permission($Permission);
     }
 
-    public function getUsersFiles($ArgumentList){
+    public function getUsersFiles($ArgumentList)
+    {
         $UsersFiles = new file();
 
-        if(isset($ArgumentList['sortType']) && isset($ArgumentList['sortDir'])){
+        if (isset($ArgumentList['sortType']) && isset($ArgumentList['sortDir'])) {
             $sortType = $ArgumentList['sortType'];
             $sortDir = $ArgumentList['sortDir'];
-        
+
             # Allowed sort types:
             $allowedSortTypes = array("name", "size", "created", "modified");
-        
+
             # Allowed sort directions:
             $allowedSortDirs = array("ASC", "DESC");
-        
-            if(in_array($sortType, $allowedSortTypes) && in_array($sortDir, $allowedSortDirs)){
+
+            if (in_array($sortType, $allowedSortTypes) && in_array($sortDir, $allowedSortDirs)) {
                 mlog("✅ Sort order is set to: $sortType $sortDir");
                 $files = $UsersFiles->Find($_SESSION['user_id'], null, "`$sortType` $sortDir", 1000);
-            }else{
+            } else {
                 mlog("❌ Sort order is set to: $sortType $sortDir");
                 $files = $UsersFiles->Find($_SESSION['user_id'], null, "`id` DESC", 1000);
             }
-        }else{
+        } else {
             $files = $UsersFiles->Find($_SESSION['user_id'], null, "`id` DESC", 1000);
         }
 

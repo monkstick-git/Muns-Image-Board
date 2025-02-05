@@ -108,7 +108,7 @@ class permissions
         if ($query) {
             return ($query[0]['permissions']);
         } else {
-            return false;
+            return array();
         }
     }
 

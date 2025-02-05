@@ -105,6 +105,17 @@ class ControllerUser extends Controller
 
         $Error = $this->userHelper->checkRegisterInput(); // Check the input for errors.
 
+        if(Registry::get('settings')['ai']['enabled']){
+            mlog("🤖 AI is enabled. Checking username with AI.");
+            // If no errors and AI is enabled, check the username with the AI
+            if (empty($Error)) {
+                $Error = $this->userHelper->checkRegisterInputWithAI();
+            }
+        }else{
+            // If AI is disabled, log the error
+            mlog("🤖 AI is disabled. Skipping AI check.");
+        }
+
         if ($Error) {
             $arguments = array(
                 'errors' => $Error
@@ -216,5 +227,24 @@ class ControllerUser extends Controller
         );
 
         Registry::get('render')->render_template('Site/Files/browse', $arguments);
+    }
+
+    public function Delete()
+    {
+        Registry::get('system')->beAuthenticated(); // Redirect if not logged in
+
+        if (!$this->userHelper->hasPermission("USER.DELETE")) {
+            Registry::get('render')->render_template('Core/error', ['errors' => ERROR_PERMISSION_DENIED]);
+            return;
+        }
+
+        $User = new user();
+        $User->get_user_by_id($this->ArgumentList['id']);
+
+        if ($User->delete_user()) {
+            Registry::get('render')->render_template('Core/success', ['message' => "User deleted successfully."]);
+        } else {
+            Registry::get('render')->render_template('Core/error', ['errors' => "Failed to delete user."]);
+        }
     }
 }

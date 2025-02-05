@@ -31,6 +31,7 @@ ob_start();
                         <strong>Surname:</strong> <?= $Surname ?><br>
                         <strong>ID:</strong> <?= $ID ?><br>
                         <strong>Created:</strong> <?= $Datecreated ?>
+                        <a href="/User/Delete/<?= $ID ?>" class="btn btn-danger">Delete</a>
                     </p>
                 </div>
             </div>

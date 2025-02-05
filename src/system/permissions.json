@@ -1,0 +1,33 @@
+{
+    "FILE": [
+        "READ_OWN",
+        "READ_ALL",
+        "UPLOAD_OWN",
+        "UPLOAD_ALL",
+        "DELETE_OWN",
+        "DELETE_ALL",
+        "MODIFY_OWN",
+        "MODIFY_ALL"
+    ],
+    "URL": [
+        "CREATE",
+        "VIEW",
+        "EDIT",
+        "DELETE"
+    ],
+    "SYSTEM": [
+        "LOGIN",
+        "LOGOUT",
+        "REGISTER",
+        "CONFIGURE",
+        "VIEW_LOGS",
+        "MANAGE_USERS"
+    ],
+    "AUTH": [
+        "ENABLE_2FA",
+        "DISABLE_2FA",
+        "RESET_PASSWORD",
+        "CHANGE_PASSWORD",
+        "SET_SECURITY_QUESTION"
+    ]
+}

@@ -74,6 +74,17 @@ class user
         return $this->Permissions->getAll($this->id);
     }
 
+    public function getAllPermissions($UserID = null)  {
+        if ($UserID == null) {
+            mlog("User ID is NULL, setting to self");
+            $UserID = $this->id ?? 0; // Guest user if self is also null
+        }
+        error_log("Getting all permissions for user ID: $UserID");
+        $Permissions = $this->Permissions->getAll(id: $UserID);
+        $PermissionsEncoded = json_decode($Permissions, true);
+        return $PermissionsEncoded;
+    }
+
     /**
      * Checks if the user is an administrator.
      *

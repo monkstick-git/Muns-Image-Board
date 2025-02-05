@@ -71,4 +71,27 @@ class ControllerAdmin extends Controller
             )
         );
     }
+
+    public function Permissions()
+    {
+        if (!Registry::get('system')->beAuthenticated()) {
+            Registry::get('system')->redirect(location: '/User/login');
+            return;
+        }
+
+        if (!Registry::get('system')->beAdmin()) {
+            Registry::get('system')->redirect(location: '/');
+            return;
+        }
+        Registry::get('render')->render_template('Core/navbar');
+
+        $Permissions = Registry::get('User')->getAllPermissions();
+        # Load the .json file from system/permissions.json
+        $PermissionMatrix = json_decode(file_get_contents('system/permissions.json'), true);
+        $Arguments = [
+            'Permissions' => $Permissions,
+            'PermissionMatrix' => $PermissionMatrix
+        ];
+        Registry::get('render')->render_template('Site/Admin/permissions', $Arguments);
+    }
 }

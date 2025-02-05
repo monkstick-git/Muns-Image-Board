@@ -14,6 +14,13 @@ $settings['SiteName'] = "Muns Image Board";
 // Cache Settings
 $settings['cache'] = true; // Only set to false for debugging purposes. Huge improvement in performance if set to true.
 
+// AI Settings
+$settings['ai'] = array(
+    'url' => $_ENV['OLLAMA_URL'],
+    'model' => 'llama3.2:latest',
+    'enabled' => true
+);
+
 // File Storage Driver
 // Options: "mysql" or "local"
 $settings['fileDriver'] = "mysql";

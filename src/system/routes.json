@@ -4,6 +4,9 @@
     "Admin/Index": "",
     "Admin/Users": "",
     "Admin/Files": "",
+    "Admin/AiTest": "",
+    "Admin/AiUsernameTest": "",
+    "Admin/Permissions": "",
 
     "Api/Index": "",
     "ApiV1/Index": "",
@@ -31,6 +34,7 @@
     "User/Files": "",
     "User/LoggedOut": "",
     "User/Register": "",
+    "User/Delete": "",
 
     "S/Index": "",
     "S/New": "",
